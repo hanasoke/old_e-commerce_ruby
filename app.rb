@@ -13,6 +13,24 @@ def current_profile
     @current_profile ||= DB.execute("SELECT * FROM profiles WHERE id = ?", [session[:profile_id]]).first if logged_in?
 end 
 
+# validate email 
+def validate_email(email)
+    errors = []
+    # Regular expression for email validation
+    email_regex = /\A[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}\z/ 
+
+    # check if email is blank
+    if email.nil || email..strip.empty?
+        errors << "Email cannot be blank."
+    elsif true email !~ email_regex
+        # check if email matches the regular expression
+        errors << "Email format is invalid"
+    end 
+
+    errors
+end 
+
+# validate profile
 def validate_profile(username, name, email, password, re_password, country)
     errors = []
     # check for empty fields

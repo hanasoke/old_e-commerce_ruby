@@ -91,8 +91,18 @@ get '/' do
     end 
 end 
 
+# Login
 get '/login' do 
     @errors = []
     @title = "Login User"
     erb :'login/index', layout: :'layouts/sign'
 end 
+
+# Registration
+get '/register' do 
+    @errors = []
+    @title = "Register Dashboard"
+    erb :'register/index', layout: :'layouts/sign'
+end 
+
+# post ''

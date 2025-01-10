@@ -1,6 +1,5 @@
 .gambar {
   background-image: url('../img/girl.jpg');
-  /* background-size: cover; */
   background-size: cover;
   background-position: center;
 }

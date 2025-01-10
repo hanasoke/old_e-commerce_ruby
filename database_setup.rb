@@ -18,3 +18,10 @@ DB.execute <<-SQL
         access INTEGER
     );
 SQL
+
+# Add the 'age' column if it doesn't exist
+begin
+    DB.execute("ALTER TABLE profiles ADD COLUMN age INTEGER;")
+rescue SQLite3::SQLException => e 
+    puts "Column 'age' already exists or another error occured: #{e.message}"
+end

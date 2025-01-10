@@ -54,12 +54,37 @@ def validate_photo(photo)
 end
 
 # validate profile
-def validate_profile(username, name, email, password, re_password, country)
+def validate_profile(username, name, email, password, re_password, age, phone, country)
     errors = []
-    # check for empty fields
+
+    # username validation
     errors << "Username cannot be blank." if username.nil? || username.strip.empty?
+
+    # name validation
     errors << "Name cannot be blank." if name.nil? || name.strip.empty?
+
+    # password validation
     errors << "Password cannot be blank." if password.nil? || password.strip.empty?
+
+    # phone validation
+    if phone.nil? || phone.strip.empty?
+        errors << "Phone Cannot be Blank."
+    elsif phone.to_s !~ /\A\d+(\.\d{1,2})?\z/
+        errors << "Age must be a valid number."
+    elsif phone.to_i <= 0
+        errors << "Age must be a positive number."
+    end
+
+    # age validation
+    if age.nil? || age.strip.empty?
+        errors << "Phone Cannot be Blank."
+    elsif age.to_s !~ /\A\d+(\.\d{1,2})?\z/
+        errors << "Age must be a valid number."
+    elsif age.to_i <= 0
+        errors << "Age must be a positive number."
+    end
+
+    # country validation
     errors << "Country cannot be blank." if country.nil? || country.strip.empty?
 
     # validate email
@@ -105,4 +130,5 @@ get '/register' do
     erb :'register/index', layout: :'layouts/sign'
 end 
 
-# post ''
+post 'register' do 
+    @errors = validate_profile(params[:name], params[:username], params[:email], params[:password], params[:'re-password'], params[:country])

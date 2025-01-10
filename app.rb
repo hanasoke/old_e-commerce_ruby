@@ -26,9 +26,32 @@ def validate_email(email)
         # check if email matches the regular expression
         errors << "Email format is invalid"
     end 
-
     errors
 end 
+
+def validate_photo(photo) 
+    errors = []
+
+    if photo.nil? || photo[:tempfile].nil?
+        errors << "Photo is required."
+    else
+        # Check file type
+        valid_types = ["image/jpeg", "image/png", "image/gif"]
+        unless valid_types.include?(photo[:type])
+            errors << "Photo must be a JPG, PNG, or GIF file."
+        end  
+
+        # Check file size (5MB max)
+        max_size = 4 * 1024 * 1024 # 4MB in bytes
+        min_size = 2 * 20000 #40 KB
+        if photo[:tempfile].size > max_size
+            errors << "Photo size must be less than 4MB."
+        elsif photo[:tempfile].size < min_size 
+            errors << "Photo size must be greater than 40KB."
+        end 
+    end 
+    errors
+end
 
 # validate profile
 def validate_profile(username, name, email, password, re_password, country)

@@ -20,9 +20,9 @@ def validate_email(email)
     email_regex = /\A[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}\z/ 
 
     # check if email is blank
-    if email.nil || email..strip.empty?
+    if email.nil? || email.strip.empty?
         errors << "Email cannot be blank."
-    elsif true email !~ email_regex
+    elsif email !~ email_regex
         # check if email matches the regular expression
         errors << "Email format is invalid"
     end 
@@ -79,4 +79,20 @@ def validate_profile_login(email, password)
     # Validate email format
     errors.concat(validate_email(email)) 
     errors
+end 
+
+# Routes 
+get '/' do 
+    @title = "Homepage"
+    if logged_in?
+        erb :'user/index', layout: :'layouts/main' 
+    else 
+        redirect '/login'
+    end 
+end 
+
+get '/login' do 
+    @errors = []
+    @title = "Login User"
+    erb :'login/index', layout: :'layouts/sign'
 end 

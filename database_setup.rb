@@ -7,7 +7,7 @@ DB.results_as_hash = true
 DB.execute <<-SQL 
     CREATE TABLE IF NOT EXISTS profiles (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
-        username TEXT UNIQUE
+        username TEXT UNIQUE,
         name TEXT UNIQUE,
         email TEXT UNIQUE,
         password TEXT,

@@ -70,3 +70,13 @@ def validate_profile(username, name, email, password, re_password, country)
     errors << "Password do not match." if password != re_password
     errors
 end 
+
+def validate_profile_login(email, password)
+    errors = []
+    errors << "Email cannot be blank." if email.nil? || email.strip.empty?
+    errors << "Password cannot be blank." if password.nil? || password.strip.empty?
+
+    # Validate email format
+    errors.concat(validate_email(email)) 
+    errors
+end 

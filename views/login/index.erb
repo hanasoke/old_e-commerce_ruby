@@ -12,6 +12,35 @@
                 <h1 class="h4 text-gray-900 mb-4">Welcome User</h1>
               </div>
 
+              <!-- Success Alert -->
+              <% if session[:success] %>
+                <div class="alert alert-success alert-dismissible fade show">
+                  <div>
+                    <%= session[:success] %>
+                  </div>
+                  <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+                </div>
+                <% session[:success] = nil %> 
+              <% end %>
+              <!-- Clear the flash message -->
+
+              <!-- Success Alert -->
+              <% if @errors&.any? %>
+                <% @errors.each do|error| %>
+                <div class="alert alert-danger alert-dismissible fade show">
+                  <div>
+                    <%= errors %>
+                  </div>
+                  <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+                </div>
+                <% end %> 
+              <% end %>
+              <!-- Clear the flash message -->
+
               <form class="user" action="/login" method="post">
                 <div class="form-group">
                   <input type="email" class="form-control form-control-user" name="email" id="email" placeholder="Enter Email Addres..." value="<%= params[:email]%>" />

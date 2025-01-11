@@ -25,7 +25,13 @@ def validate_email(email)
     elsif email !~ email_regex
         # check if email matches the regular expression
         errors << "Email format is invalid"
+    # else 
+    #     # Check for Email fields
+    #     query = id ? "SELECT id FROM profiles WHERE LOWER(email) = ? AND id != ?" : "SELECT id FROM profiles WHERE LOWER(email) = ?"
+    #     existing_email = DB.execute(query, id ? [email.downcase, id] : [email.downcase]).first
+    #     errors << "Email already exist. Please choose a different name." if existing_email
     end 
+
     errors
 end 
 
@@ -54,7 +60,7 @@ def validate_photo(photo)
 end
 
 # validate profile
-def validate_profile(username, name, email, password, re_password, age, phone, country)
+def validate_profile(username, name, email, password, re_password, age, phone, country, access)
     errors = []
 
     # username validation
@@ -86,6 +92,9 @@ def validate_profile(username, name, email, password, re_password, age, phone, c
 
     # country validation
     errors << "Country cannot be blank." if country.nil? || country.strip.empty?
+
+    # access validation
+    errors << "Access cannot be blank." if access.nil? || access.strip.empty?
 
     # validate email
     email_errors = validate_email(email)
@@ -130,5 +139,53 @@ get '/register' do
     erb :'register/index', layout: :'layouts/sign'
 end 
 
-post 'register' do 
-    @errors = validate_profile(params[:name], params[:username], params[:email], params[:password], params[:'re-password'], params[:country])
+post '/register' do 
+    # Flash message
+    session[:success] = "Your Account has been registered."
+    
+    @errors = validate_profile(params[:name], params[:username], params[:email], params[:password], params[:'re-password'], params[:'phone'], params[:'age'], params[:country], params[:access])
+
+    # photo validation
+    photo = params['photo']
+    @errors += validate_photo(photo) # Add photo validation errors
+
+    photo_filename = nil 
+
+    if @errors.empty?
+
+        # Handle photo upload
+        if photo && photo[:tempfile]
+            photo_filename = "#{Time.now.to_i}_#{photo[:filename]}"
+            File.open("./public/uploads/img/#{photo_filename}", 'wb') do |f|
+                f.write(photo[:tempfile].read)
+            end 
+        end 
+
+        name = params[:name]
+        username = params[:username]
+        email = params[:email]
+        password = BCrypt::Password.create(params[:password])
+        phone = params[:phone]
+        age = params[:age]
+        country = params[:country]
+        access = params[:access]
+
+        begin 
+            DB.execute("INSERT INTO profiles (name, username, email, password, phone, age, country, photo, access) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?)", [name, username, email, password, phone, age, country, photo_filename, access])
+            redirect '/login'
+        
+        resque SQLite3::ConstraintException
+            @errors << "Username already exists"
+        end 
+    end 
+
+    erb :'register/index', layout: :'layouts/sign'
+end 
+
+helpers do 
+    def flash(type) 
+        message = session[type]
+        session[type] = nil #clear flash message after displaying
+        message
+    end 
+end 

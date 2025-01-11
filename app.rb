@@ -132,13 +132,6 @@ get '/' do
     end 
 end 
 
-# Login
-get '/login' do 
-    @errors = []
-    @title = "Login User"
-    erb :'login/index', layout: :'layouts/sign'
-end 
-
 # Registration
 get '/register' do 
     @errors = []
@@ -192,5 +185,56 @@ helpers do
         message = session[type]
         session[type] = nil #clear flash message after displaying
         message
+    end 
+end 
+
+# Login
+get '/login' do 
+    @errors = []
+    @title = "Login User"
+    erb :'login/index', layout: :'layouts/sign'
+end 
+
+post '/login' do 
+    @errors = validate_profile_login(params[:email], params[:password])
+
+    if @errors.empty?
+        email = params[:email]
+        profile = DB.execute("SELECT * FROM profiles WHERE email = ?", [email]).first
+
+        if profile && BCrypt::Password.new(profile['password']) == params[:password]
+            session[:profile_id] = profile['id']
+            
+            # Check access level and redirect accordingly
+            if profile['access'] == 0
+                # Redirect to the user page for regular users
+                redirect '/user_page'
+            elsif profile['access'] == 1
+                # Redirect to the admin page for admins
+                redirect '/admin_page' 
+            else 
+                @errors << "Invalid access level"
+            end 
+        else 
+            @errors << "Invalid email or password"
+        end 
+    end 
+    erb :'login/index', layout: :'layouts/sign'
+end 
+
+get '/user_page' do 
+    @title = "User Page"
+    erb :'user/index', layout: :'layouts/main'
+end 
+
+get '/admin_page' do 
+    redirect '/login' unless session[:profile_id] && DB.execute("SELECT access FROM profiles WHERE id = ?", [session[:profile_id]]).first['access'] == 1
+    @title = "Admin Page"
+    erb :'admin/index', layout: :'layouts/admin'
+end 
+
+before do 
+    if session[:profile_id].nil? && !['/login', 'register'].include?(request.path_info)
+        redirect '/login'
     end 
 end 

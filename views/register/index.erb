@@ -9,7 +9,17 @@
             <h1 class="h4 text-gray-900 mb-4">Register</h1>
           </div>
 
-          <form class="user" action="/register" method="post">
+          <!-- Display errors if present -->
+          <% if @errors&.any? %> <% @errors.each do|error| %>
+          <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <div><%= error %></div>
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <% end %> <% end %>
+
+          <form class="user" action="/register" method="post" enctype="multipart/form-data" >
             <div class="form-group">
               <input type="text" class="form-control form-control-user" id="username" name="username" placeholder="Username" value="<%= params[:username]%>" />
             </div>
@@ -21,10 +31,10 @@
             </div>
             <div class="form-group row">
               <div class="col-sm-6 mb-3 mb-sm-0">
-                <input type="password" class="form-control form-control-user" name="password" id="password" placeholder="Password" />
+                <input type="password" class="form-control form-control-user" name="password" id="password" placeholder="Password" value="<%= params[:password]%>" />
               </div>
               <div class="col-sm-6">
-                <input type="password" class="form-control form-control-user" id="re-password" placeholder="Repeat Password" name="re-password" />
+                <input type="password" class="form-control form-control-user" id="re-password" placeholder="Repeat Password" name="re-password" value="<%= params[:password]%>" />
               </div>
             </div>
             <div class="form-group">
@@ -33,6 +43,14 @@
             <div class="mb-3">
               <label for="photo" class="form-label">The Image</label>
               <input type="file" class="form-control" name="photo" id="photo" />
+            </div>
+            <div class="mb-3">
+              <label for="age" class="form-label">Age</label>
+              <input type="number" class="form-control" name="age" id="age" value="<%= params[:age]%>" />
+            </div>
+            <div class="mb-3">
+              <label for="phone" class="form-label">Phone Number</label>
+              <input type="number" class="form-control" name="phone" id="phone" value="<%= params[:phone]%>" />
             </div>
             <div class="mb-3">
               <input type="hidden" class="form-control" name="access" id="access" value="0" />

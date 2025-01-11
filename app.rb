@@ -26,38 +26,14 @@ def validate_email(email)
         # check if email matches the regular expression
         errors << "Email format is invalid"
     # else 
-    #     # Check for Email fields
-    #     query = id ? "SELECT id FROM profiles WHERE LOWER(email) = ? AND id != ?" : "SELECT id FROM profiles WHERE LOWER(email) = ?"
-    #     existing_email = DB.execute(query, id ? [email.downcase, id] : [email.downcase]).first
-    #     errors << "Email already exist. Please choose a different name." if existing_email
+        # Check for Email fields
+        query = id ? "SELECT id FROM profiles WHERE LOWER(email) = ? AND id != ?" : "SELECT id FROM profiles WHERE LOWER(email) = ?"
+        existing_email = DB.execute(query, id ? [email.downcase, id] : [email.downcase]).first
+        errors << "Email already exist. Please choose a different name." if existing_email
     end 
 
     errors
 end 
-
-def validate_photo(photo) 
-    errors = []
-
-    if photo.nil? || photo[:tempfile].nil?
-        errors << "Photo is required."
-    else
-        # Check file type
-        valid_types = ["image/jpeg", "image/png", "image/gif"]
-        unless valid_types.include?(photo[:type])
-            errors << "Photo must be a JPG, PNG, or GIF file."
-        end  
-
-        # Check file size (5MB max)
-        max_size = 4 * 1024 * 1024 # 4MB in bytes
-        min_size = 2 * 20000 #40 KB
-        if photo[:tempfile].size > max_size
-            errors << "Photo size must be less than 4MB."
-        elsif photo[:tempfile].size < min_size 
-            errors << "Photo size must be greater than 40KB."
-        end 
-    end 
-    errors
-end
 
 # validate profile
 def validate_profile(username, name, email, password, re_password, age, phone, country, access)
@@ -75,7 +51,7 @@ def validate_profile(username, name, email, password, re_password, age, phone, c
     # phone validation
     if phone.nil? || phone.strip.empty?
         errors << "Phone Cannot be Blank."
-    elsif phone.strip !~ /\A\d{1, 4}?[ -]?\(?\d{1,4}?\)?[ -]?\d{1,4}[ -]?\d{1, 9}\z/
+    elsif phone.to_s !~ /\A\d+(\.\d{1,2})?\z/
         errors << "Phone must be a valid number."
     elsif phone.to_i <= 0
         errors << "Phone must be a positive number."
@@ -115,6 +91,37 @@ def validate_profile_login(email, password)
     errors
 end 
 
+def validate_photo(photo)
+  errors = []
+
+  # Check if the photo parameter is valid and has expected structure
+  if photo.nil? || !photo.is_a?(Hash) || photo[:tempfile].nil?
+    errors << "Photo is required."
+  else
+    # Check file type
+    valid_types = ["image/jpeg", "image/png", "image/gif"]
+    if !photo[:type] || !valid_types.include?(photo[:type])
+      errors << "Photo must be a JPG, PNG, or GIF file."
+    end
+
+    # Check file size (5MB max, 40KB min)
+    max_size = 4 * 1024 * 1024 # 4MB in bytes
+    min_size = 40 * 1024       # 40KB in bytes
+    file_size = photo[:tempfile].size if photo[:tempfile] && photo[:tempfile].respond_to?(:size)
+
+    if file_size.nil?
+      errors << "Photo file size could not be determined."
+    elsif file_size > max_size
+      errors << "Photo size must be less than 4MB."
+    elsif file_size < min_size
+      errors << "Photo size must be greater than 40KB."
+    end
+  end
+  errors
+end
+
+
+
 # Routes 
 get '/' do 
     @title = "Homepage"
@@ -140,23 +147,22 @@ get '/register' do
 end 
 
 post '/register' do 
+    # Validate inputs
+    @errors = validate_profile(params[:name], params[:username], params[:email], params[:password], params[:'re-password'], params[:age], params[:phone], params[:country], params[:access])
+
     # Flash message
     session[:success] = "Your Account has been registered."
-    
-    @errors = validate_profile(params[:name], params[:username], params[:email], params[:password], params[:'re-password'], params[:'phone'], params[:'age'], params[:country], params[:access])
 
-    # photo validation
     photo = params['photo']
-    @errors += validate_photo(photo) # Add photo validation errors
+    @errors += validate_photo(photo) if photo # Add photo validation errors
 
-    photo_filename = nil 
+    photo_filename = nil
 
     if @errors.empty?
-
         # Handle photo upload
         if photo && photo[:tempfile]
             photo_filename = "#{Time.now.to_i}_#{photo[:filename]}"
-            File.open("./public/uploads/img/#{photo_filename}", 'wb') do |f|
+            File.open("./public/uploads/#{photo_filename}", 'wb') do |f|
                 f.write(photo[:tempfile].read)
             end 
         end 
@@ -165,20 +171,19 @@ post '/register' do
         username = params[:username]
         email = params[:email]
         password = BCrypt::Password.create(params[:password])
-        phone = params[:phone]
         age = params[:age]
+        phone = params[:phone]
         country = params[:country]
         access = params[:access]
 
         begin 
-            DB.execute("INSERT INTO profiles (name, username, email, password, phone, age, country, photo, access) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?)", [name, username, email, password, phone, age, country, photo_filename, access])
+            DB.execute("INSERT INTO profiles (name, username, email, password, age, phone, country, photo, access) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?)",    [name, username, email, password, age, phone, country, photo_filename, access])
             redirect '/login'
         
-        resque SQLite3::ConstraintException
+        rescue SQLite3::ConstraintException
             @errors << "Username already exists"
         end 
     end 
-
     erb :'register/index', layout: :'layouts/sign'
 end 
 

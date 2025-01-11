@@ -69,15 +69,15 @@ def validate_profile(username, name, email, password, re_password, age, phone, c
     # phone validation
     if phone.nil? || phone.strip.empty?
         errors << "Phone Cannot be Blank."
-    elsif phone.to_s !~ /\A\d+(\.\d{1,2})?\z/
-        errors << "Age must be a valid number."
+    elsif phone.strip !~ /\A\d{1, 4}?[ -]?\(?\d{1,4}?\)?[ -]?\d{1,4}[ -]?\d{1, 9}\z/
+        errors << "Phone must be a valid number."
     elsif phone.to_i <= 0
-        errors << "Age must be a positive number."
+        errors << "Phone must be a positive number."
     end
 
     # age validation
     if age.nil? || age.strip.empty?
-        errors << "Phone Cannot be Blank."
+        errors << "Age Cannot be Blank."
     elsif age.to_s !~ /\A\d+(\.\d{1,2})?\z/
         errors << "Age must be a valid number."
     elsif age.to_i <= 0

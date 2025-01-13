@@ -233,8 +233,8 @@ get '/admin_page' do
     erb :'admin/index', layout: :'layouts/admin'
 end 
 
-before do 
-    if session[:profile_id].nil? && !['/login', 'register'].include?(request.path_info)
-        redirect '/login'
-    end 
-end 
+# before do 
+#     if session[:profile_id].nil? && !['/login', 'register'].include?(request.path_info)
+#         redirect '/login'
+#     end 
+# end 

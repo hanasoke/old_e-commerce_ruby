@@ -230,6 +230,12 @@ end
 get '/admin_page' do 
     redirect '/login' unless session[:profile_id] && DB.execute("SELECT access FROM profiles WHERE id = ?", [session[:profile_id]]).first['access'] == 1
     @title = "Admin Page"
+    @profiles = DB.execute("SELECT * FROM profiles")
     erb :'admin/index', layout: :'layouts/admin'
 end 
 
+# logout
+get '/logout' do 
+    session.clear
+    redirect '/login'
+end 

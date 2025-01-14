@@ -230,7 +230,7 @@ end
 get '/admin_page' do 
     redirect '/login' unless session[:profile_id] && DB.execute("SELECT access FROM profiles WHERE id = ?", [session[:profile_id]]).first['access'] == 1
     @title = "Admin Page"
-    @profiles = DB.execute("SELECT * FROM profiles")
+    @profiles = DB.execute("SELECT * FROM profiles WHERE access = 0")
     erb :'admin/index', layout: :'layouts/admin'
 end 
 
@@ -255,4 +255,9 @@ end
 get '/transactions_lists' do 
     @title = "Transactions Lists"
     erb :'admin/transactions', layout: :'layouts/admin'
+end 
+
+get '/admin_profile' do 
+    @title = "Admin Profile"
+    erb :'admin/admin_profile', layout: :'layouts/admin'
 end 

@@ -119,7 +119,24 @@ def validate_photo(photo)
   errors
 end
 
+def editing_profile(name, username, email, password, re_password, age, phone, country, access editing: false)
+    errors = []
+    errors << "Username cannot be blank." if username.nil? || username.strip.empty?
+    errors << "Name cannot be blank." if name.nil? || name.strip.empty?
+    errors << "Age cannot be blank." if age.nil? || age.strip.empty?
+    errors << "Phone cannot be blank." if phone.nil? || phone.strip.empty?
+    errors << "Country cannot be blank." if country.nil? || country.strip.empty?
 
+    # Skip password validation if editing and password is blank
+    unless editing && (password.nil? || password.strip.empty?)
+        errors << "Password cannot be blank." if password.nil? || password.strip.empty?
+        errors << "Password do not match." if password != re_password
+    end
+
+    # Validate email
+    errors.concat(validate_email(email))
+    errors
+end 
 
 # Routes 
 get '/' do 
@@ -265,4 +282,13 @@ end
 get '/profiles/edit' do 
     @title = "Edit Admin Profile"
     erb :'admin/edit_admin_profile', layout: :'layouts/admin'
+end 
+
+post '/profiles/edit' do 
+    redirect '/login' unless logged_in?
+
+    editing = true 
+    @errors = edi
+
+
 end 

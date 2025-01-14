@@ -261,3 +261,8 @@ get '/admin_profile' do
     @title = "Admin Profile"
     erb :'admin/admin_profile', layout: :'layouts/admin'
 end 
+
+get '/profiles/edit' do 
+    @title = "Edit Admin Profile"
+    erb :'admin/edit_admin_profile', layout: :'layouts/admin'
+end 

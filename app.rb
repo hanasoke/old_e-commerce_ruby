@@ -83,7 +83,6 @@ end
 
 def validate_profile_login(email, password)
     errors = []
-    errors << "Email cannot be blank." if email.nil? || email.strip.empty?
     errors << "Password cannot be blank." if password.nil? || password.strip.empty?
 
     # Validate email format
@@ -143,9 +142,6 @@ post '/register' do
     # Validate inputs
     @errors = validate_profile(params[:name], params[:username], params[:email], params[:password], params[:'re-password'], params[:age], params[:phone], params[:country], params[:access])
 
-    # Flash message
-    session[:success] = "Your Account has been registered."
-
     photo = params['photo']
     @errors += validate_photo(photo) if photo # Add photo validation errors
 
@@ -160,6 +156,9 @@ post '/register' do
             end 
         end 
 
+        # Flash message
+        session[:success] = "Your Account has been registered."
+
         name = params[:name]
         username = params[:username]
         email = params[:email]
@@ -170,12 +169,13 @@ post '/register' do
         access = params[:access]
 
         begin 
-            DB.execute("INSERT INTO profiles (name, username, email, password, age, phone, country, photo, access) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?)",    [name, username, email, password, age, phone, country, photo_filename, access])
+            DB.execute("INSERT INTO profiles (name, username, email, password, age, phone, country, photo, access) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?)", [name, username, email, password, age, phone, country, photo_filename, access])
             redirect '/login'
         
         rescue SQLite3::ConstraintException
             @errors << "Username already exists"
         end 
+
     end 
     erb :'register/index', layout: :'layouts/sign'
 end 
@@ -233,8 +233,3 @@ get '/admin_page' do
     erb :'admin/index', layout: :'layouts/admin'
 end 
 
-# before do 
-#     if session[:profile_id].nil? && !['/login', 'register'].include?(request.path_info)
-#         redirect '/login'
-#     end 
-# end 

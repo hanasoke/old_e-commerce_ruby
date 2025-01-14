@@ -25,3 +25,18 @@ SQL
 # rescue SQLite3::SQLException => e 
 #     puts "Column 'age' already exists or another error occured: #{e.message}"
 # end
+
+DB.execute <<-SQL 
+    CREATE TABLE IF NOT EXISTS cars (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        name TEXT,
+        type TEXT,
+        brand TEXT,
+        transmission TEXT,
+        seat INTEGER,
+        machine INTEGER,
+        power INTEGER,
+        photo TEXT,
+        price INTEGER
+    );
+SQL

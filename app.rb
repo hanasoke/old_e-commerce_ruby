@@ -239,3 +239,20 @@ get '/logout' do
     session.clear
     redirect '/login'
 end 
+
+# Read all cars 
+get '/car_lists' do 
+    @title = "Car List"
+    # @cars = DB.execute("SELECT * FROM cars")
+    erb :'admin/cars', layout: :'layouts/admin'
+end 
+
+get '/payment_lists' do 
+    @title = "Payment Lists"
+    erb :'admin/payments', layout: :'layouts/admin'
+end 
+
+get '/transactions_lists' do 
+    @title = "Transactions Lists"
+    erb :'admin/transactions', layout: :'layouts/admin'
+end 

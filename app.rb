@@ -255,7 +255,7 @@ end
 get '/car_lists' do 
     @title = "Car List"
     # @cars = DB.execute("SELECT * FROM cars")
-    erb :'admin/cars', layout: :'layouts/admin'
+    erb :'admin/cars/views', layout: :'layouts/admin'
 end 
 
 get '/payment_lists' do 

@@ -119,7 +119,7 @@ def validate_photo(photo)
   errors
 end
 
-def editing_profile(name, username, email, password, re_password, age, phone, country, access editing: false)
+def editing_profile(name, username, email, password, re_password, age, phone, country, access, editing: false)
     errors = []
     errors << "Username cannot be blank." if username.nil? || username.strip.empty?
     errors << "Name cannot be blank." if name.nil? || name.strip.empty?
@@ -280,7 +280,11 @@ get '/admin_profile' do
 end 
 
 get '/profiles/edit' do 
+    redirect '/login' unless logged_in?
+
     @title = "Edit Admin Profile"
+    @profile = current_profile
+    @errors = []
     erb :'admin/edit_admin_profile', layout: :'layouts/admin'
 end 
 
@@ -288,7 +292,17 @@ post '/profiles/edit' do
     redirect '/login' unless logged_in?
 
     editing = true 
-    @errors = edi
+    @errors = editing_profile(params[:name], params[:username], params[:email], params[:password], params[:re_password], params[:age], params[:phone], params[:country], params[:access], editing: editing)
+
+    if @errors.empty?
+        update_query = "UPDATE profiles SET name = ?, username = ?, email = ?, age = ?, phone = ?, country = ?"
+
+        # Flash message 
+        session[:success] = "Your Profile has been successfully updated"
+
+        
+    end
+    
 
 
 end 

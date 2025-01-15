@@ -6,14 +6,19 @@
   <div class="card-body">
     <div class="row">
       <div class="col">
+        <% if @errors&.any? %> <% @errors.each do |error| %>
         <div class="alert alert-danger alert-dismissible fade show" role="alert">
-          <div>Error</div>
+          <div><%= error %></div>
           <button type="button" class="close" data-dismiss="alert" aria-label="Close">&times;</button>
         </div>
+        <% end %> <% end %>
       </div>
     </div>
 
-    <form>
+    <form action="/profiles/<%= @profile['id']%> edit" method="post" enctype="multipart/form-data">
+      <div class="mb-3">
+        <input type="hidden" name="_method" value="post" />
+      </div>
       <div class="mb-3">
         <label for="name" class="form-label">Name</label>
         <input type="text" class="form-control" id="name" name="name" value="<%= @profile['name'] %>" />
@@ -41,11 +46,12 @@
       <div class="mb-3">
         <label for="photo" class="form-label">Photo</label>
         <% if @profile['photo'] %>
-            <img src="/uploads/<%= @profile['photo'] %>" class="img-thumbnail" alt="<%= @profile['name'] %>" style="max-width: 200px" />
+        <img src="/uploads/<%= @profile['photo'] %>" class="img-thumbnail" alt="<%= @profile['name'] %>" style="max-width: 200px" />
         <% end %>
-        <input type="text" class="form-control" id="photo" name="photo" />
+        <input type="file" class="form-control" id="photo" name="photo" />
       </div>
       <button type="submit" class="btn btn-primary float-right">Submit</button>
+      <a class="btn btn-secondary float-left" href="/admin_profile">Back</a>
     </form>
   </div>
 </div>

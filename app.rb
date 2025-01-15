@@ -119,19 +119,13 @@ def validate_photo(photo)
   errors
 end
 
-def editing_profile(name, username, email, password, re_password, age, phone, country, access, editing: false)
+def editing_profile(name, username, email, age, phone, country, access, editing: false)
     errors = []
     errors << "Username cannot be blank." if username.nil? || username.strip.empty?
     errors << "Name cannot be blank." if name.nil? || name.strip.empty?
     errors << "Age cannot be blank." if age.nil? || age.strip.empty?
     errors << "Phone cannot be blank." if phone.nil? || phone.strip.empty?
     errors << "Country cannot be blank." if country.nil? || country.strip.empty?
-
-    # Skip password validation if editing and password is blank
-    unless editing && (password.nil? || password.strip.empty?)
-        errors << "Password cannot be blank." if password.nil? || password.strip.empty?
-        errors << "Password do not match." if password != re_password
-    end
 
     # Validate email
     errors.concat(validate_email(email))
@@ -292,17 +286,48 @@ post '/profiles/edit' do
     redirect '/login' unless logged_in?
 
     editing = true 
-    @errors = editing_profile(params[:name], params[:username], params[:email], params[:password], params[:re_password], params[:age], params[:phone], params[:country], params[:access], editing: editing)
+    @errors = editing_profile(params[:name], params[:username], params[:email], params[:age], params[:phone], params[:country], params[:access], editing: editing)
+
+    # error photo variable check
+    photo = params['photo']
+    @errors += validate_photo(photo) if photo && photo[:tempfile] # Validate only if a new photo is provided
+
+    photo_filename = nil 
 
     if @errors.empty?
-        update_query = "UPDATE profiles SET name = ?, username = ?, email = ?, age = ?, phone = ?, country = ?"
+        # Handle file upload
+        if photo && photo[:tempfile]
+            photo_filename = "#{Time.now.to_i}_#{photo[:filename]}"
+            File.open("./public/uploads/#{photo_filename}", "wb") do |f|
+                f.write(photo[:tempfile].read)
+            end 
+        end 
+
+        update_query = "UPDATE profiles SET name = ?, username = ?, email = ?, age = ?, phone = ?, country = ?, photo = COALSCENE(?, photo) " 
+        params_array = [params[:name], params[:username], params[:email], params[:age], params[:phone], params[:country], photo_filename]
 
         # Flash message 
         session[:success] = "Your Profile has been successfully updated"
 
+        update_query += "WHERE id = ?"
+        params_array << session[:profile_id]
+
+        DB.execute(update_query, params_array)
+        redirect '/admin_profile'
+    else 
+        # Handle validation errors and re-render the edit form
+        original_profile = DB.execute("SELECT * FROM profiles WHERE id = ?", [params[:id]]).first
         
+        # Merge profile input with original data to retain user edits
+        @profile = {
+            'id' => params[:id],
+            'name' => params[:name] || original_profile['name'],
+            'username' => params[:username] || original_profile['username'] ,
+            'email' => params[:email] || original_profile['email'],
+            'age' => params[:age] || original_profile['age'],
+            'country' => params[:country] || original_profile['country'],
+            'photo' => photo_filename || original_profile['photo']
+        }
+        erb :'admin/edit_admin_profile', layout: :'layouts/admin'
     end
-    
-
-
 end 

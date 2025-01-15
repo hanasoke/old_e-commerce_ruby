@@ -319,6 +319,77 @@ post '/profiles/:id/edit' do
             'country' => params[:country] || original_profile['country'],
             'photo' => photo_filename || original_profile['photo']
         }
-        erb :'admin/edit_admin_profile', layout: :'layouts/admin'
+        erb :'admin/edit_admin_profile', layout: :'layouts/sign'
     end
+end 
+
+# Show Forgot Password Page
+get '/forgot_password' do 
+    @errors = []
+    erb :'password/forgot_password', layout: :'layouts/sign'
+end 
+
+post '/forgot_password' do 
+    email = params[:email]
+    @errors = []
+
+    session[:success] = "Password reset link sent to your email."
+
+    if email.strip.empty?
+        @errors << "Email cannot be blank."
+    elsif !DB.execute("SELECT * FROM profiles WHERE email = ?", [email]).first
+        @errors << "Email not found in our records."
+    else 
+        # Generate reset token (basic implementation, use a secure library in production)
+        reset_token = SecureRandom.hex(20)
+        DB.execute("UPDATE profiles SET reset_token = ? WHERE email = ?", [reset_token, email])
+
+        # Semulate sending an email (in production, send a real email)
+        reset_url = "http://localhost:4567/reset_password/#{reset_token}"
+        puts "Reset password link: #{reset_url}" # Replace with email sending logic
+        redirect '/login'
+    end 
+    
+    erb :'password/forgot_password', layout: :'layouts/sign'
+end 
+
+# Show Reset Password Page
+get '/reset_password/:token' do 
+    @reset_token = params[:token]
+    @profile = DB.execute("SELECT * FROM profiles WHERE reset_token = ?", [@reset_token]).first
+
+    if @profile.nil?
+        session[:error] = "Invalid or expired reset token."
+        redirect '/login'
+    end
+    
+    erb :'password/reset_password', layout: :'layouts/sign'
+end 
+
+# Handle Reset Password Submission
+post '/reset_password' do 
+    reset_token = params[:reset_token]
+    password = params[:password]
+    re_password = params[:re_password]
+    @errors = []
+
+    if password.strip.empty? || re_password.strip.empty?
+        @errors << "Password fields cannot be blank."
+    elsif password != re_password
+        @errors << "Password do not match."
+    else
+        profile = DB.execute("SELECT * FROM profiles WHERE reset_token = ?", [reset_token]).first
+        
+        if profile.nil?
+            @errors << "Invalid or expired reset token."
+        else 
+            hashed_password = BCrypt::Password.create(password)
+            DB.execute("UPDATE profiles SET password = ?, reset_token = NULL WHERE id = ?", [hashed_password, profile['id']])
+            session[:success] = "Password reset successfully. Please log in."
+            redirect '/login'
+        end 
+    end 
+
+    @reset_token = reset_token
+    erb :'password/reset_password', layout: :'layouts/sign'
 end 

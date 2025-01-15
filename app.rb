@@ -119,7 +119,7 @@ def validate_photo(photo)
   errors
 end
 
-def editing_profile(name, username, email, age, phone, country, access, editing: false)
+def editing_profile(name, username, email, age, phone, country, editing: false)
     errors = []
     errors << "Username cannot be blank." if username.nil? || username.strip.empty?
     errors << "Name cannot be blank." if name.nil? || name.strip.empty?
@@ -282,11 +282,8 @@ get '/profiles/edit' do
     erb :'admin/edit_admin_profile', layout: :'layouts/admin'
 end 
 
-post '/profiles/edit' do 
-    redirect '/login' unless logged_in?
-
-    editing = true 
-    @errors = editing_profile(params[:name], params[:username], params[:email], params[:age], params[:phone], params[:country], params[:access], editing: editing)
+post '/profiles/:id/edit' do 
+    @errors = editing_profile(params[:name], params[:username], params[:email], params[:age], params[:phone], params[:country], editing: false)
 
     # error photo variable check
     photo = params['photo']
@@ -303,16 +300,9 @@ post '/profiles/edit' do
             end 
         end 
 
-        update_query = "UPDATE profiles SET name = ?, username = ?, email = ?, age = ?, phone = ?, country = ?, photo = COALSCENE(?, photo) " 
-        params_array = [params[:name], params[:username], params[:email], params[:age], params[:phone], params[:country], photo_filename]
-
         # Flash message 
         session[:success] = "Your Profile has been successfully updated"
-
-        update_query += "WHERE id = ?"
-        params_array << session[:profile_id]
-
-        DB.execute(update_query, params_array)
+        DB.execute("UPDATE profiles SET name = ?, username = ?, email = ?, age = ?, country = ?, photo = COALESCE(?, photo) WHERE id = ?", [params[:name], params[:username], params[:email], params[:age], params[:country], photo_filename, params[:id]])
         redirect '/admin_profile'
     else 
         # Handle validation errors and re-render the edit form
@@ -324,6 +314,7 @@ post '/profiles/edit' do
             'name' => params[:name] || original_profile['name'],
             'username' => params[:username] || original_profile['username'] ,
             'email' => params[:email] || original_profile['email'],
+            'phone' => params[:phone] || original_profile['phone'],
             'age' => params[:age] || original_profile['age'],
             'country' => params[:country] || original_profile['country'],
             'photo' => photo_filename || original_profile['photo']

@@ -15,7 +15,7 @@
       </div>
     </div>
 
-    <form action="/profiles/<%= @profile['id']%> edit" method="post" enctype="multipart/form-data">
+    <form action="/profiles/<%= @profile['id']%>/edit" method="post" enctype="multipart/form-data">
       <div class="mb-3">
         <input type="hidden" name="_method" value="post" />
       </div>
@@ -41,7 +41,25 @@
       </div>
       <div class="mb-3">
         <label for="country" class="form-label">Country</label>
-        <input type="text" class="form-control" id="country" name="country" value="<%= @profile['country'] %>" />
+        <select class="form-control" id="country" name="country">
+          <option selected value="<%= @profile['country'] %>"><%= @profile['country'] %></option>
+          <option value="Indonesia">Indonesia</option>
+          <option value="Malaysia">Malaysia</option>
+          <option value="Singapore">Singapore</option>
+          <option value="Thailand">Thailand</option>
+          <option value="Brunei Darussalam">Brunei Darussalam</option>
+          <option value="Philipine">Philipine</option>
+          <option value="Cambodia">Cambodia</option>
+          <option value="Vietnam">Vietnam</option>
+          <option value="Japan">Japan</option>
+          <option value="Laos">Laos</option>
+          <option value="South Korea">South Korea</option>
+          <option value="China">China</option>
+          <option value="Australia">Australia</option>
+          <option value="England">England</option>
+          <option value="France">France</option>
+          <option value="Canada">Canada</option>
+        </select>
       </div>
       <div class="mb-3">
         <label for="photo" class="form-label">Photo</label>

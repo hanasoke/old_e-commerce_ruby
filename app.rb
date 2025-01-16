@@ -132,7 +132,7 @@ def editing_profile(name, username, email, age, phone, country, editing: false)
     errors
 end 
 
-def validate_car(name, type, brand, transmission, seat, machine, power, price, stock, manufacture id = nil)
+def validate_car(name, type, brand, transmission, seat, machine, power, price, stock, manufacture, id = nil)
     errors = []
     # check for empty fields
     errors << "Name cannot be blank." if name.nil? || name.strip.empty?
@@ -149,7 +149,7 @@ def validate_car(name, type, brand, transmission, seat, machine, power, price, s
     errors << "brand cannot be blank." if brand.nil? || brand.strip.empty?
 
     # transmission validation
-    errors << "transmission cannot be blank." if transactions.nil? || transactions.strip.empty?
+    errors << "transmission cannot be blank." if transmission.nil? || transmission.strip.empty?
 
     # seat validation
     if seat.nil? || seat.to_i < 1 || seat.to_i > 10
@@ -454,5 +454,31 @@ get '/add_car' do
 end 
 
 # Create a new car
-# post '/add' do 
-#     @errors = validate_car()
+post '/add_car' do 
+    @errors = validate_car(params[:name], params[:type], params[:brand], params[:transmission], params[:seat], params[:machine], params[:power], params[:price], params[:stock], params[:manufacture])
+
+    photo = params['photo']
+    # Add photo validation errors
+    @errors += validate_photo(photo)
+
+    photo_filename = nil
+
+    if @errors.empty?
+        # Handle file upload
+        if photo && photo[:tempfile]
+            photo_filename = "#{Time.now.to_i}_#{photo[:filename]}"
+            File.open("./public/uploads/#{photo_filename}", 'wb') do |f|
+                f.write(photo[:tempfile].read)
+            end 
+        end
+        
+        # Flash message
+        session[:success] = "The Car has been successfully added."
+
+        # Insert car details, including the photo, into the database
+        DB.execute("INSERT INTO cars(name, type, brand, transmission, seat, machine, power, photo, price, stock, manufacture) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", [params[:name], params[:type], params[:brand], params[:transmission], params[:seat], params[:machine], params[:power], photo_filename, params[:price], params[:stock], params[:manufacture]])
+        redirect '/car_lists'
+    else 
+        erb :'admin/cars/add', layout: :'layouts/admin'
+    end 
+end 

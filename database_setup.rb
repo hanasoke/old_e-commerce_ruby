@@ -48,8 +48,8 @@ SQL
 #     puts "Column 'stock' already exists or another error occured: #{e.message}"
 # end
 
-begin 
-    DB.execute("ALTER TABLE cars ADD COLUMN manufacture TEXT;")
-rescue SQLite3::SQLException => e 
-    puts "Column 'manufacture' already exists or another error occured: #{e.message}"
-end
+# begin 
+#     DB.execute("ALTER TABLE cars ADD COLUMN manufacture TEXT;")
+# rescue SQLite3::SQLException => e 
+#     puts "Column 'manufacture' already exists or another error occured: #{e.message}"
+# end

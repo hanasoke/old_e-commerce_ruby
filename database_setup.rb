@@ -40,3 +40,10 @@ DB.execute <<-SQL
         price INTEGER
     );
 SQL
+
+# Add the `stock` column if it doesn't exist
+begin 
+    DB.execute("ALTER TABLE cars ADD COLUMN stock INTEGER;")
+rescue SQLite3::SQLException => e 
+    puts "Column 'stock' already exists or another error occured: #{e.message}"
+end

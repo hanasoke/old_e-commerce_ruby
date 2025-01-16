@@ -251,13 +251,6 @@ get '/logout' do
     redirect '/login'
 end 
 
-# Read all cars 
-get '/car_lists' do 
-    @title = "Car List"
-    # @cars = DB.execute("SELECT * FROM cars")
-    erb :'admin/cars/views', layout: :'layouts/admin'
-end 
-
 get '/payment_lists' do 
     @title = "Payment Lists"
     erb :'admin/payments', layout: :'layouts/admin'
@@ -392,4 +385,17 @@ post '/reset_password' do
 
     @reset_token = reset_token
     erb :'password/reset_password', layout: :'layouts/sign'
+end 
+
+# Read all cars 
+get '/car_lists' do 
+    @title = "Car List"
+    @cars = DB.execute("SELECT * FROM cars")
+    erb :'admin/cars/views', layout: :'layouts/admin'
+end 
+
+get '/add_car' do 
+    @title = "Adding A Car"
+    @errors = []
+    erb :'admin/cars/add', layout: :'layouts/admin'
 end 

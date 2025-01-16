@@ -184,6 +184,10 @@ def validate_car(name, type, brand, transmission, seat, machine, power, price, s
     errors
 end 
 
+def format_rupiah(number) 
+    "Rp #{number.to_i.to_s.reverse.gsub(/(\d{3})(?=\d)/,'\\1.').reverse}"
+end 
+
 # Routes 
 get '/' do 
     @title = "Homepage"
@@ -482,3 +486,4 @@ post '/add_car' do
         erb :'admin/cars/add', layout: :'layouts/admin'
     end 
 end 
+

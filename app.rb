@@ -132,6 +132,58 @@ def editing_profile(name, username, email, age, phone, country, editing: false)
     errors
 end 
 
+def validate_car(name, type, brand, transmission, seat, machine, power, price, stock, manufacture id = nil)
+    errors = []
+    # check for empty fields
+    errors << "Name cannot be blank." if name.nil? || name.strip.empty?
+
+    # Check for unique name
+    query = id ? "SELECT id FROM cars WHERE LOWER(name) = ? AND id != ?" : "SELECT id FROM cars WHERE LOWER(name) = ?"
+    existing_car = DB.execute(query, id ? [name.downcase, id] : [name.downcase]).first
+    errors << "Name already exist. Please choose a different name." if existing_car
+
+    # Other Validation 
+    errors << "type cannot be blank." if type.nil? || type.strip.empty?
+
+    # brand validation
+    errors << "brand cannot be blank." if brand.nil? || brand.strip.empty?
+
+    # transmission validation
+    errors << "transmission cannot be blank." if transactions.nil? || transactions.strip.empty?
+
+    # seat validation
+    if seat.nil? || seat.to_i < 1 || seat.to_i > 10
+        errors << "Seat must be a number between 1 to 10."
+    end
+
+    # machine validation
+    errors << "machine cannot be blank." if machine.nil? || machine.strip.empty?
+
+    # power validation
+    errors << "power cannot be blank." if power.nil? || power.strip.empty?    
+
+    # price validation
+    if price.nil? || price.strip.empty?
+        errors << "price cannot be blank."
+    
+    elsif price.to_f <= 0
+        errors << "Price must be a positive number" 
+
+    elsif price.to_s !~ /\A\d+(\.\d{1,2})?\z/
+        errors << "Price must be a valid number"
+    end 
+
+    # power validation
+    errors << "stock cannot be blank." if stock.nil? || stock.strip.empty?
+
+    # Validate manufacture date
+    if manufacture.nil? || manufacture.strip.empty? || !manufacture.match(/^\d{4}-\d{2}-\d{2}$/)
+        errors << "Manufacture date must be a valid date (YYYY-MM-DD)."
+    end 
+
+    errors
+end 
+
 # Routes 
 get '/' do 
     @title = "Homepage"
@@ -194,7 +246,8 @@ end
 helpers do 
     def flash(type) 
         message = session[type]
-        session[type] = nil #clear flash message after displaying
+        #clear flash message after displaying
+        session[type] = nil 
         message
     end 
 end 
@@ -399,3 +452,7 @@ get '/add_car' do
     @errors = []
     erb :'admin/cars/add', layout: :'layouts/admin'
 end 
+
+# Create a new car
+# post '/add' do 
+#     @errors = validate_car()

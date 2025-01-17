@@ -80,17 +80,7 @@
       <div class="mb-3 row">
         <label for="photo" class="col-sm-2 col-form-label">Photo</label>
         <div class="col-sm-10">
-          <input type="file" class="form-control" name="photo" id="photo"  />
-          <% if @current_photo %>
-            <input type="hidden" name="current_photo" value="<%= @current_photo %>" />
-            <p class="mt-2">
-              Current Photo: 
-              <img 
-                src="<%= @current_photo.gsub('./public/', '') %>" 
-                alt="Uploaded Photo" 
-                style="max-width: 100px" />
-            </p>
-          <% end %>
+          <input type="file" class="form-control" name="photo" id="photo" />
         </div>
       </div>
 

@@ -99,28 +99,24 @@ def validate_photo(photo)
   else
     # Check file type
     valid_types = ["image/jpeg", "image/png", "image/gif"]
-    max_size = 4 * 1024 * 1024 #4MB
-    min_size = 40 * 1024       #40KB
+    if !photo[:type] || !valid_types.include?(photo[:type])
+      errors << "Photo must be a JPG, PNG, or GIF file."
+    end
 
-    # check file type
-    unless valid_types.include?(photo[:type])
-        errors << "Photo must be a JPG, PNG, or GIF file."
-    end 
+    # Check file size (5MB max, 40KB min)
+    max_size = 4 * 1024 * 1024 # 4MB in bytes
+    min_size = 40 * 1024       # 40KB in bytes
+    file_size = photo[:tempfile].size if photo[:tempfile] && photo[:tempfile].respond_to?(:size)
 
-    # Check file size 
-    if photo[:tempfile] && photo[:tempfile].respond_to?(:size)
-        file_size = photo[:tempfile].size 
-        if file_size > max_size 
-            errors << "Photo size must be less than 4MB."
-        elsif file_size < min_size 
-            errors << "Photo size must be greater than 40KB."
-        end 
-    else 
-        errors << "Photo size could not be determinaed"
-    end 
-  end 
+    if file_size.nil?
+      errors << "Photo file size could not be determined."
+    elsif file_size > max_size
+      errors << "Photo size must be less than 4MB."
+    elsif file_size < min_size
+      errors << "Photo size must be greater than 40KB."
+    end
+  end
 
-  #always return an array
   errors
 end
 
@@ -157,8 +153,10 @@ def validate_car(name, color, brand, transmission, seat, machine, power, price, 
     errors << "transmission cannot be blank." if transmission.nil? || transmission.strip.empty?
 
     # seat validation
-    if seat.nil? || seat.to_i < 1 || seat.to_i > 10 || seat.to_s !~ /\A\d+(\.\d{1,2})?\z/
+    if seat.nil? || seat.to_i < 1 || seat.to_i > 10
         errors << "Seat must be a number between 1 to 10."
+    elsif seat.to_s !~ /\A\d+(\.\d{1,2})?\z/
+        errors <<"Seat must be a valid number"
     end
 
     # machine validation
@@ -496,32 +494,29 @@ post '/add_car' do
     @errors = validate_car(params[:name], params[:color], params[:brand], params[:transmission], params[:seat], params[:machine], params[:power], params[:price], params[:stock], params[:manufacture])
 
     photo = params['photo']
-    current_photo = params['current_photo']
+
+
+    # Add photo validation errors
     @errors += validate_photo(photo)
 
-    if photo && photo[:tempfile]
-        # save the photo temporary
-        photo_path = "./public/uploads/temporary/#{Time.now.to_i}_#{photo[:filename]}"
-        File.open(photo_path, 'wb') { |f| f.write(photo[:tempfile].read) }
-        @current_photo = photo_path
-    elsif 
-        # Use existing photto
-        @current_photo = current_photo
-    end  
+    photo_filename = nil
 
     if @errors.empty?
-        # If validation passes, move the photo to its final location
-        final_photo_path = "./public/uploads/cars/#{File.basename(@current_photo)}"
-        File.rename(@current_photo, final_photo_path)
-
-        # Save to Database
-        # Insert car details, including the photo, into the database
-        DB.execute("INSERT INTO cars(name, color, brand, transmission, seat, machine, power, photo, price, stock, manufacture) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", [params[:name], params[:color], params[:brand], params[:transmission], params[:seat], params[:machine], params[:power], final_photo_path, params[:price], params[:stock], params[:manufacture]])
+        # Handle file upload
+        if photo && photo[:tempfile]
+            photo_filename = "#{Time.now.to_i}_#{photo[:filename]}"
+            File.open("./public/uploads/cars/#{photo_filename}", 'wb') do |f|
+                f.write(photo[:tempfile].read)
+            end 
+        end
+        
         # Flash message
         session[:success] = "The Car has been successfully added."
+
+        # Insert car details, including the photo, into the database
+        DB.execute("INSERT INTO cars(name, color, brand, transmission, seat, machine, power, photo, price, stock, manufacture) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", [params[:name], params[:color], params[:brand], params[:transmission], params[:seat], params[:machine], params[:power], photo_filename, params[:price], params[:stock], params[:manufacture]])
         redirect '/car_lists'
     else 
-        # back to add a car page
         erb :'admin/cars/add', layout: :'layouts/admin'
     end 
 end 

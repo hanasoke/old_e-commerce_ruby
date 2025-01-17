@@ -43,9 +43,9 @@
             <td><%= car['type'] %></td>
             <td><%= car['brand'] %></td>
             <td><%= car['transmission'] %></td>
-            <td><%= car['seat'] %></td>
-            <td><%= car['machine'] %></td>
-            <td><%= car['power'] %></td>
+            <td><%= seat(car['seat'] ) %></td>
+            <td><%= machine(car['machine']) %></td>
+            <td><%= power(car['power']) %></td>
             <td>
               <% if car['photo'] %>
               <img src="/uploads/<%= car['photo'] %>" alt="<%= car['name'] %>" style="max-width: 300px" />
@@ -54,6 +54,12 @@
             <td><%= format_rupiah((car['price'])) %></td>
             <td><%= car['stock'] %></td>
             <td><%= car['manufacture'] %></td>
+            <td>
+              <div class="btn-group" role="group">
+                <a href="#" class="btn btn-info">Edit</a>
+                <button type="submit" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="">Delete</button>
+              </div>
+            </td>
           </tr>
           <% end %>
         </tbody>

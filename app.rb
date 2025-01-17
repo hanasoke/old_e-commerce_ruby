@@ -188,6 +188,18 @@ def format_rupiah(number)
     "Rp #{number.to_i.to_s.reverse.gsub(/(\d{3})(?=\d)/,'\\1.').reverse}"
 end 
 
+def machine(number)
+    "#{number} cc"
+end 
+
+def seat(number)
+    "#{number} seat"
+end 
+
+def power(number)
+    "#{number} hp"
+end 
+
 # Routes 
 get '/' do 
     @title = "Homepage"

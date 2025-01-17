@@ -132,7 +132,7 @@ def editing_profile(name, username, email, age, phone, country, editing: false)
     errors
 end 
 
-def validate_car(name, type, brand, transmission, seat, machine, power, price, stock, manufacture, id = nil)
+def validate_car(name, color, brand, transmission, seat, machine, power, price, stock, manufacture, id = nil)
     errors = []
     # check for empty fields
     errors << "Name cannot be blank." if name.nil? || name.strip.empty?
@@ -143,7 +143,7 @@ def validate_car(name, type, brand, transmission, seat, machine, power, price, s
     errors << "Name already exist. Please choose a different name." if existing_car
 
     # Other Validation 
-    errors << "type cannot be blank." if type.nil? || type.strip.empty?
+    errors << "color cannot be blank." if color.nil? || color.strip.empty?
 
     # brand validation
     errors << "brand cannot be blank." if brand.nil? || brand.strip.empty?
@@ -152,29 +152,46 @@ def validate_car(name, type, brand, transmission, seat, machine, power, price, s
     errors << "transmission cannot be blank." if transmission.nil? || transmission.strip.empty?
 
     # seat validation
-    if seat.nil? || seat.to_i < 1 || seat.to_i > 10
+    if seat.nil? || seat.to_i < 1 || seat.to_i > 10 || seat.to_s !~ /\A\d+(\.\d{1,2})?\z/
         errors << "Seat must be a number between 1 to 10."
     end
 
     # machine validation
-    errors << "machine cannot be blank." if machine.nil? || machine.strip.empty?
+    if machine.nil? || machine.strip.empty?
+        errors << "machine cannot be blank."
+    elsif machine.to_f <= 0
+        errors << "machine must be a positive number." 
+    elsif machine.to_s !~ /\A\d+(\.\d{1,2})?\z/
+        errors << "machine must be a valid number."
+    end 
 
     # power validation
-    errors << "power cannot be blank." if power.nil? || power.strip.empty?    
+    if power.nil? || power.strip.empty?
+        errors << "power cannot be blank."
+    elsif power.to_f <= 0
+        errors << "power must be a positive number." 
+    elsif power.to_s !~ /\A\d+(\.\d{1,2})?\z/
+        errors << "power must be a valid number."
+    end    
 
     # price validation
     if price.nil? || price.strip.empty?
         errors << "price cannot be blank."
-    
     elsif price.to_f <= 0
-        errors << "Price must be a positive number" 
-
+        errors << "Price must be a positive number." 
     elsif price.to_s !~ /\A\d+(\.\d{1,2})?\z/
-        errors << "Price must be a valid number"
+        errors << "Price must be a valid number."
     end 
 
     # power validation
-    errors << "stock cannot be blank." if stock.nil? || stock.strip.empty?
+    if stock.nil? || stock.strip.empty?
+        errors << "stock cannot be blank."
+    elsif stock.to_f <= 0
+        errors << "stock must be a positive number."
+    elsif !(stock =~ /\A[+-]?\d+(\.\d+)?\z/)
+        errors << "Stock must be a number."
+    end 
+
 
     # Validate manufacture date
     if manufacture.nil? || manufacture.strip.empty? || !manufacture.match(/^\d{4}-\d{2}-\d{2}$/)
@@ -471,7 +488,7 @@ end
 
 # Create a new car
 post '/add_car' do 
-    @errors = validate_car(params[:name], params[:type], params[:brand], params[:transmission], params[:seat], params[:machine], params[:power], params[:price], params[:stock], params[:manufacture])
+    @errors = validate_car(params[:name], params[:color], params[:brand], params[:transmission], params[:seat], params[:machine], params[:power], params[:price], params[:stock], params[:manufacture])
 
     photo = params['photo']
     # Add photo validation errors
@@ -483,7 +500,7 @@ post '/add_car' do
         # Handle file upload
         if photo && photo[:tempfile]
             photo_filename = "#{Time.now.to_i}_#{photo[:filename]}"
-            File.open("./public/uploads/#{photo_filename}", 'wb') do |f|
+            File.open("./public/uploads/cars/#{photo_filename}", 'wb') do |f|
                 f.write(photo[:tempfile].read)
             end 
         end
@@ -492,10 +509,36 @@ post '/add_car' do
         session[:success] = "The Car has been successfully added."
 
         # Insert car details, including the photo, into the database
-        DB.execute("INSERT INTO cars(name, type, brand, transmission, seat, machine, power, photo, price, stock, manufacture) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", [params[:name], params[:type], params[:brand], params[:transmission], params[:seat], params[:machine], params[:power], photo_filename, params[:price], params[:stock], params[:manufacture]])
+        DB.execute("INSERT INTO cars(name, color, brand, transmission, seat, machine, power, photo, price, stock, manufacture) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", [params[:name], params[:color], params[:brand], params[:transmission], params[:seat], params[:machine], params[:power], photo_filename, params[:price], params[:stock], params[:manufacture]])
         redirect '/car_lists'
     else 
         erb :'admin/cars/add', layout: :'layouts/admin'
     end 
 end 
 
+# Render the edit form for a car
+get '/edit_car/:id' do 
+    @title = "Edit A Car"
+
+    # Fetch the tree data by ID
+    @car = DB.get_first_row("SELECT * FROM cars WHERE id = ?", [params[:id]]).first
+    @errors = []
+    erb :'admin/cars/edit', layout: :'layouts/admin'
+end 
+
+# Update a car
+post '/edit_car/:id' do
+    
+    @errors = validate_car(params[:name])
+end 
+
+# Delete a car 
+post '/cars/:id/delete' do 
+    # Flash message
+    session[:success] = "The Car has been successfully deleted."
+
+    # Delete logic
+    DB.execute("DELETE FROM cars WHERE id = ?", [params[:id]])
+
+    redirect '/car_lists'
+end 

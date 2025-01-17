@@ -1,0 +1,111 @@
+<div class="card shadow mb-4">
+  <div class="card-header py-3">
+    <h3 class="m-0 font-weight-bold text-danger float-left">Edit A Car</h3>
+  </div>
+  <div class="card-body">
+    <div class="row">
+      <div class="col">
+        <!-- Success Alert -->
+        <% if @errors.any? %> <% @errors.each do |error| %>
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+          <div><%= error %></div>
+          <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <% end %> <% end %>
+      </div>
+    </div>
+
+    <form action="#" method="post" enctype="multipart/form-data">
+      <div class="mb-3 row">
+        <label for="name" class="col-sm-2 col-form-label">Name</label>
+        <div class="col-sm-10">
+          <input type="text" class="form-control" id="name" name="name" value="#" />
+        </div>
+      </div>
+      <div class="mb-3 row">
+        <label for="type" class="col-sm-2 col-form-label">Type</label>
+        <div class="col-sm-10">
+          <select class="form-control" id="type" name="type">
+            <option selected value="#">Select the Color</option>
+            <option value="Black">Black</option>
+            <option value="White">White</option>
+            <option value="Red">Red</option>
+            <option value="Blue">Blue</option>
+          </select>
+        </div>
+      </div>
+      <div class="mb-3 row">
+        <label for="brand" class="col-sm-2 col-form-label">Brand</label>
+        <div class="col-sm-10">
+          <select class="form-control" id="type" name="brand">
+            <option selected value="#">Select the Brand</option>
+            <option value="BWD">BWD</option>
+            <option value="Honda">Honda</option>
+            <option value="Daihatsu">Daihatsu</option>
+            <option value="Mitsubishi">Mitsubishi</option>
+            <option value="Tesla">Tesla</option>
+            <option value="Chevrolet">Chevrolet</option>
+            <option value="Ferrari">Ferrari</option>
+            <option value="BMW">BMW</option>
+          </select>
+        </div>
+      </div>
+      <div class="mb-3 row">
+        <label for="transmission" class="col-sm-2 col-form-label">Transmission</label>
+        <div class="col-sm-10">
+          <input type="text" class="form-control" name="transmission" id="transmission" />
+        </div>
+      </div>
+      <div class="mb-3 row">
+        <label for="seat" class="col-sm-2 col-form-label">Seat</label>
+        <div class="col-sm-10">
+          <input class="form-control" type="number" name="seat" id="seat" />
+        </div>
+      </div>
+      <div class="mb-3 row">
+        <label for="machine" class="col-sm-2 col-form-label">Machine</label>
+        <div class="col-sm-10">
+          <input type="number" class="form-control" name="machine" id="machine" />
+        </div>
+      </div>
+      <div class="mb-3 row">
+        <label for="power" class="col-sm-2 col-form-label">Power</label>
+        <div class="col-sm-10">
+          <input type="number" class="form-control" name="power" id="power" />
+        </div>
+      </div>
+      <div class="mb-3 row">
+        <label for="photo" class="col-sm-2 col-form-label">Photo</label>
+        <div class="col-sm-10">
+          <input type="file" class="form-control" name="photo" id="photo" />
+        </div>
+      </div>
+
+      <div class="mb-3 row">
+        <label for="price" class="col-sm-2 col-form-label">Price</label>
+        <div class="col-sm-10">
+          <input type="number" class="form-control" name="price" id="price" />
+        </div>
+      </div>
+
+      <div class="mb-3 row">
+        <label for="stock" class="col-sm-2 col-form-label">Stock</label>
+        <div class="col-sm-10">
+          <input type="number" class="form-control" name="stock" id="stock" />
+        </div>
+      </div>
+
+      <div class="mb-3 row">
+        <label for="manufacture" class="col-sm-2 col-form-label">Manufacture</label>
+        <div class="col-sm-10">
+          <input type="date" class="form-control" name="manufacture" id="manufacture" />
+        </div>
+      </div>
+
+      <button type="submit" class="btn btn-primary float-right">Submit</button>
+    </form>
+    <a href="/car_lists" class="btn btn-secondary float-left">Back</a>
+  </div>
+</div>

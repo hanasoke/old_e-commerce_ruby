@@ -495,7 +495,6 @@ post '/add_car' do
 
     photo = params['photo']
 
-
     # Add photo validation errors
     @errors += validate_photo(photo)
 
@@ -526,15 +525,59 @@ get '/edit_car/:id' do
     @title = "Edit A Car"
 
     # Fetch the tree data by ID
-    @car = DB.get_first_row("SELECT * FROM cars WHERE id = ?", [params[:id]]).first
+    @car = DB.execute("SELECT * FROM cars WHERE id = ?", [params[:id]]).first
     @errors = []
     erb :'admin/cars/edit', layout: :'layouts/admin'
 end 
 
 # Update a car
 post '/edit_car/:id' do
-    
-    @errors = validate_car(params[:name])
+    @errors = validate_car(params[:name], params[:color], params[:brand], params[:transmission], params[:seat], params[:machine], params[:power], params[:price], params[:stock], params[:manufacture], params[:id])
+
+    # photo 
+    photo = params['photo']
+
+    # Validate only if a new photo is provided
+    @errors += validate_photo(photo) if photo && photo [:tempfile] 
+    photo_filename = nil 
+
+    if @errors.empty? 
+        # Handle file image upload
+        if photo && photo[:tempfile]
+            photo_filename = "#{Time.now.to_i}_#{photo[:filename]}"
+            File.open("./public/uploads/cars/#{photo_filename}", 'wb') do |f|
+                f.write(photo[:tempfile].read)
+            end 
+        end
+
+        # Flash message
+        session[:success] = "A Car has been successfully updated."
+
+        # Update the car in the database
+        DB.execute("UPDATE cars SET name = ?, color = ?, brand = ?, transmission = ?, seat = ?, machine = ?, power = ?, photo = COALESCE(?, photo), price = ?, stock = ?, manufacture = ? WHERE id = ?", 
+            [params[:name], params[:color], params[:brand], params[:transmission], params[:seat], params[:machine], params[:power], photo_filename, params[:price], params[:stock], params[:manufacture], params[:id]])
+        redirect '/car_lists'
+    else 
+        # Handle validation errors and re-render the edit form
+        original_car = DB.execute("SELECT * FROM cars WHERE id = ?", [params[:id]]).first
+
+        # Merge validation errors and re-render the edit form
+        @car = {
+            'id' => params[:id],
+            'name' => params[:name] || original_car['name'],
+            'color' => params[:color] || original_car['color'],
+            'brand' => params[:brand] || original_car['brand'],
+            'transmission' => params[:transmission] || original_car['transmission'],
+            'seat' => params[:seat] || original_car['seat'],
+            'machine' => params[:machine] || original_car['machine'],
+            'power' => params[:power] || original_car['power'],
+            'photo' => photo_filename || original_car['photo'],
+            'price' => params[:price] || original_car['price'],
+            'stock' => params[:stock] || original_car['stock'],
+            'manufacture' => params[:manufacture] || original_car['manufacture'],
+        }
+        erb :'admin/cars/edit', layout: :'layouts/admin'
+    end  
 end 
 
 # Delete a car 

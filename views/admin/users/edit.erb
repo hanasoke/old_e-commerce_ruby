@@ -1,0 +1,19 @@
+<div class="card shadow mb-4">
+  <div class="card-header py-3">
+    <h3 class="m-0 font-weight-bold text-danger float-left">Edit A User</h3>
+  </div>
+  <div class="card-body">
+    <div class="row">
+      <div class="col">
+        <!-- Success Alert -->
+        <% if @errors.any? %> <% @errors.each do |error| %>
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+          <div><%= error %></div>
+          <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span>&times;</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -100,3 +100,39 @@ DB.execute <<-SQL
         manufacture TEXT
     );
 SQL
+
+# DB.execute <<-SQL 
+#     CREATE TABLE IF NOT EXISTS transactions (
+#         id INTEGER PRIMARY KEY AUTOINCREMENT,
+#         profile_id INTEGER,
+#         car_id INTEGER, 
+#         quantity INTEGER,
+#         total_price INTEGER,
+#         transaction_date TEXT,
+#         FOREIGN KEY(profile_id) REFERENCES profiles(id),
+#         FOREIGN KEY(car_id) REFERENCES cars(id) 
+#     );
+# SQL
+
+# DB.execute <<-SQL 
+#     CREATE TABLE IF NOT EXISTS payments (
+#         id INTEGER PRIMARY KEY AUTOINCREMENT,
+#         transaction_id INTEGER,
+#         payment_method TEXT,
+#         payment_status TEXT,
+#         payment_date TEXT,
+#         FOREIGN KEY(transaction_id) REFERENCES transactions(id)
+#     );
+# SQL
+
+# DB.execute <<-SQL 
+#     CREATE TABLE IF NOT EXISTS wishlists (
+#         id INTEGER PRIMARY KEY AUTOINCREMENT,
+#         profile_id INTEGER, 
+#         car_id INTEGER,
+#         added_date TEXT, 
+#         FOREIGN KEY(profile_id) REFERENCES profiles(id),
+#         FOREIGN KEY(car_id) REFERENCES cars(id)
+#     );
+# SQL
+

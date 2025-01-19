@@ -38,7 +38,29 @@
               </div>
             </div>
             <div class="form-group">
-              <input type="text" class="form-control form-control-user" id="country" name="country" placeholder="Country" value="<%= params[:country]%>" />
+              <select class="form-control" id="country" name="country" value="<%= params[:country]%>">
+                <option selected value="<%= params['country'] %>">Select The Country</option>
+                <option value="Indonesia">Indonesia</option>
+                <option value="Malaysia">Malaysia</option>
+                <option value="Singapore">Singapore</option>
+                <option value="Thailand">Thailand</option>
+                <option value="Brunei Darussalam">Brunei Darussalam</option>
+                <option value="Philipine">Philipine</option>
+                <option value="Cambodia">Cambodia</option>
+                <option value="Vietnam">Vietnam</option>
+                <option value="Japan">Japan</option>
+                <option value="Laos">Laos</option>
+                <option value="South Korea">South Korea</option>
+                <option value="China">China</option>
+                <option value="Australia">Australia</option>
+                <option value="England">England</option>
+                <option value="France">France</option>
+                <option value="Canada">Canada</option>
+                <option value="Nepal">Nepal</option>
+                <option value="Bangladesh">Bangladesh</option>
+                <option value="India">India</option>
+                <option value="Qatar">Qatar</option>
+              </select>
             </div>
             <div class="mb-3">
               <label for="photo" class="form-label">The Image</label>

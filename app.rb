@@ -47,11 +47,6 @@ def validate_profile(username, name, email, password, re_password, age, phone, c
     # name validation
     errors << "Name cannot be blank." if name.nil? || name.strip.empty?
 
-    # Check for unique name 
-    query = id ? "SELECT id FROM profiles WHERE LOWER(name) = ? AND id != ?" : "SELECT id FROM profiles WHERE LOWER(name) = ?"
-    existing_name = DB.execute(query, id ? [name.downcase, id] : [name.downcase]).first
-    errors << "Name already exist. Please choose a different name." if existing_name
-
     # password validation
     errors << "Password cannot be blank." if password.nil? || password.strip.empty?
 
@@ -63,11 +58,6 @@ def validate_profile(username, name, email, password, re_password, age, phone, c
     elsif phone.to_i <= 0
         errors << "Phone must be a positive number."
     end
-
-    # Check for unique phone number 
-    number = id ? "SELECT id FROM profiles WHERE LOWER(phone) = ? AND id != ?" : "SELECT id FROM profiles WHERE LOWER(phone) = ?"
-    existing_phone = DB.execute(number, id ? [phone.downcase, id] : [phone.downcase]).first
-    errors << "Phone already exist. Please choose a different name." if existing_phone
 
     # age validation
     if age.nil? || age.strip.empty?
@@ -173,24 +163,15 @@ def validate_photo(photo)
   errors
 end
 
-def editing_profile(name, username, email, age, phone, country, access, editing: true)
+def editing_profile(name, username, email, age, phone, country, access, id = nil)
+
     errors = []
+
     errors << "Username cannot be blank." if username.nil? || username.strip.empty?
     errors << "Name cannot be blank." if name.nil? || name.strip.empty?
 
-    # Check for unique name 
-    query = id ? "SELECT id FROM profiles WHERE LOWER(name) = ? AND id != ?" : "SELECT id FROM profiles WHERE LOWER(name) = ?"
-    existing_name = DB.execute(query, id ? [name.downcase, id] : [name.downcase]).first
-    errors << "Name already exist. Please choose a different name." if existing_name
-
     errors << "Age cannot be blank." if age.nil? || age.strip.empty?
     errors << "Phone cannot be blank." if phone.nil? || phone.strip.empty?
-
-    # Check for unique phone number 
-    number = id ? "SELECT id FROM profiles WHERE LOWER(phone) = ? AND id != ?" : "SELECT id FROM profiles WHERE LOWER(phone) = ?"
-    existing_phone = DB.execute(number, id ? [phone.downcase, id] : [phone.downcase]).first
-    errors << "Phone already exist. Please choose a different name." if existing_phone
-
 
     errors << "Country cannot be blank." if country.nil? || country.strip.empty?
     errors << "Access cannot be blank." if access.nil? || access.strip.empty?
@@ -435,7 +416,7 @@ get '/profiles/edit' do
 end 
 
 post '/profiles/:id/edit' do 
-    @errors = editing_profile(params[:name], params[:username], params[:email], params[:age], params[:phone], params[:country], params[:access], editing: true)
+    @errors = editing_profile(params[:name], params[:username], params[:email], params[:age], params[:phone], params[:country], params[:access], editing: false)
 
     # error photo variable check
     photo = params['photo']

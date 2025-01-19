@@ -10,6 +10,7 @@ DB.execute <<-SQL
         username TEXT UNIQUE,
         name TEXT UNIQUE,
         email TEXT UNIQUE,
+        age TEXT,
         password TEXT,
         phone INTEGER,
         country TEXT,

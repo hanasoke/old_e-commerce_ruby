@@ -10,9 +10,107 @@
         <div class="alert alert-danger alert-dismissible fade show" role="alert">
           <div><%= error %></div>
           <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-            <span>&times;</span>
+            <span aria-hidden="true">&times;</span>
           </button>
         </div>
+        <% end %> <% end %>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col">
+        <form action="/users/<%= @user['id'] %>" method="post" enctype="multipart/form-data">
+          <!-- Hidden Method Fields -->
+          <div class="mb-3">
+            <input type="hidden" name="_hidden" value="post" />
+          </div>
+
+          <!-- Name Field -->
+          <div class="mb-3 row">
+            <label for="name" class="col-sm-2 col-form-label">name</label>
+            <div class="col-sm-10">
+              <input type="text" name="name" id="name" value="<%= @user['name'] %>" class="form-control" />
+            </div>
+          </div>
+
+          <div class="mb-3 row">
+            <label class="col-sm-2 col-form-label" for="username">username</label>
+            <div class="col-sm-10">
+              <input type="text" name="username" class="form-control" id="username" value="<%= @user['username'] %>" />
+            </div>
+          </div>
+
+          <div class="mb-3 row">
+            <label class="col-sm-2 col-form-label" for="email">Email</label>
+            <div class="col-sm-10">
+              <input type="text" name="email" class="form-control" id="email" value="<%= @user['email'] %>" />
+            </div>
+          </div>
+
+          <div class="mb-3 row">
+            <label class="col-sm-2 col-form-label" for="age">Age</label>
+            <div class="col-sm-10">
+              <input type="text" name="age" class="form-control" id="age" value="<%= @user['age'] %>" />
+            </div>
+          </div>
+
+          <div class="mb-3 row">
+            <label class="col-sm-2 col-form-label" for="phone">Phone</label>
+            <div class="col-sm-10">
+              <input type="text" name="phone" class="form-control" id="phone" value="<%= @user['phone'] %>" />
+            </div>
+          </div>
+
+          <div class="mb-3 row">
+            <label class="col-sm-2 col-form-label" for="email">Country</label>
+            <div class="col-sm-10">
+              <select name="country" class="form-control" id="country">
+                <option selected value="<%= @user['country'] %>"><%= @user['country'] %></option>
+                <option value="Indonesia">Indonesia</option>
+                <option value="Malaysia">Malaysia</option>
+                <option value="Singapore">Singapore</option>
+                <option value="Thailand">Thailand</option>
+                <option value="Brunei Darussalam">Brunei Darussalam</option>
+                <option value="Philipine">Philipine</option>
+                <option value="Cambodia">Cambodia</option>
+                <option value="Vietnam">Vietnam</option>
+                <option value="Japan">Japan</option>
+                <option value="Laos">Laos</option>
+                <option value="South Korea">South Korea</option>
+                <option value="China">China</option>
+                <option value="Australia">Australia</option>
+                <option value="England">England</option>
+                <option value="France">France</option>
+                <option value="Canada">Canada</option>
+                <option value="Nepal">Nepal</option>
+                <option value="Bangladesh">Bangladesh</option>
+                <option value="India">India</option>
+                <option value="Qatar">Qatar</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="mb-3 row">
+            <label class="col-sm-2 col-form-label" for="photo">Photo</label>
+            <div class="col-sm-10">
+              <% if @user['photo'] %>
+              <img src="/uploads/<%= @user['photo'] %>" class="img-thumbnail mb-2" alt="<%= @user['photo'] %>" style="max-width: 200px" />
+              <% end %>
+              <input type="file" class="form-control" name="photo" id="photo" />
+            </div>
+          </div>
+
+          <div class="mb-3 row">
+            <label class="col-sm-2 col-form-label" for="email">Access</label>
+            <div class="col-sm-10">
+              <input type="text" name="access" class="form-control" id="access" value="<%= @user['access'] %>" />
+            </div>
+          </div>
+
+          <!-- Submit Button -->
+          <button type="submit" class="btn btn-primary float-right">Update</button>
+        </form>
+        <a class="btn btn-light" href="/admin_page">Back</a>
       </div>
     </div>
   </div>

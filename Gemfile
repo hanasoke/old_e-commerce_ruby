@@ -5,4 +5,5 @@ source "https://rubygems.org"
 # gem "rails"
 gem 'sinatra'
 gem 'sqlite3'
-gem 'bcrypt' # For password hasing
+gem 'sinatra-flash'
+gem 'bcrypt' # For password hashing

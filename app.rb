@@ -1,8 +1,10 @@
 require 'sinatra'
+require 'sinatra/flash'
 require 'bcrypt'
 require_relative 'database_setup'
 
 enable :sessions
+register Sinatra::Flash
 
 # Helper methods
 def logged_in?
@@ -81,6 +83,47 @@ def validate_profile(username, name, email, password, re_password, age, phone, c
     errors
 end 
 
+# validate user
+def validate_user(username, name, email, age, phone, country, access, id = nil)
+    errors = []
+
+    # username validation
+    errors << "Username cannot be blank." if username.nil? || username.strip.empty?
+
+    # name validation
+    errors << "Name cannot be blank." if name.nil? || name.strip.empty?
+
+    # phone validation
+    if phone.nil? || phone.strip.empty?
+        errors << "Phone Cannot be Blank."
+    elsif phone.to_s !~ /\A\d+(\.\d{1,2})?\z/
+        errors << "Phone must be a valid number."
+    elsif phone.to_i <= 0
+        errors << "Phone must be a positive number."
+    end
+
+    # age validation
+    if age.nil? || age.strip.empty?
+        errors << "Age Cannot be Blank."
+    elsif age.to_s !~ /\A\d+(\.\d{1,2})?\z/
+        errors << "Age must be a valid number."
+    elsif age.to_i <= 0
+        errors << "Age must be a positive number."
+    end
+
+    # country validation
+    errors << "Country cannot be blank." if country.nil? || country.strip.empty?
+
+    # access validation
+    errors << "Access cannot be blank." if access.nil? || access.strip.empty?
+
+    # validate email
+    email_errors = validate_email(email)
+    errors.concat(email_errors)
+
+    errors
+end 
+
 def validate_profile_login(email, password)
     errors = []
     errors << "Password cannot be blank." if password.nil? || password.strip.empty?
@@ -120,13 +163,14 @@ def validate_photo(photo)
   errors
 end
 
-def editing_profile(name, username, email, age, phone, country, editing: false)
+def editing_profile(name, username, email, age, phone, country, access, editing: false)
     errors = []
     errors << "Username cannot be blank." if username.nil? || username.strip.empty?
     errors << "Name cannot be blank." if name.nil? || name.strip.empty?
     errors << "Age cannot be blank." if age.nil? || age.strip.empty?
     errors << "Phone cannot be blank." if phone.nil? || phone.strip.empty?
     errors << "Country cannot be blank." if country.nil? || country.strip.empty?
+    errors << "Access cannot be blank." if access.nil? || access.strip.empty?
 
     # Validate email
     errors.concat(validate_email(email))
@@ -241,6 +285,9 @@ post '/register' do
     # Validate inputs
     @errors = validate_profile(params[:name], params[:username], params[:email], params[:password], params[:'re-password'], params[:age], params[:phone], params[:country], params[:access])
 
+    # Flash message
+    session[:success] = "Your Account has been registered."
+
     photo = params['photo']
     @errors += validate_photo(photo) if photo # Add photo validation errors
 
@@ -255,9 +302,6 @@ post '/register' do
             end 
         end 
 
-        # Flash message
-        session[:success] = "Your Account has been registered."
-
         name = params[:name]
         username = params[:username]
         email = params[:email]
@@ -269,6 +313,7 @@ post '/register' do
 
         begin 
             DB.execute("INSERT INTO profiles (name, username, email, password, age, phone, country, photo, access) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?)", [name, username, email, password, age, phone, country, photo_filename, access])
+
             redirect '/login'
         
         rescue SQLite3::ConstraintException
@@ -336,7 +381,9 @@ end
 
 # logout
 get '/logout' do 
+    success_message = "You have been logged out successfully."
     session.clear
+    session[:success] = success_message
     redirect '/login'
 end 
 
@@ -365,7 +412,7 @@ get '/profiles/edit' do
 end 
 
 post '/profiles/:id/edit' do 
-    @errors = editing_profile(params[:name], params[:username], params[:email], params[:age], params[:phone], params[:country], editing: false)
+    @errors = editing_profile(params[:name], params[:username], params[:email], params[:age], params[:phone], params[:country], params[:access], editing: true)
 
     # error photo variable check
     photo = params['photo']
@@ -384,8 +431,24 @@ post '/profiles/:id/edit' do
 
         # Flash message 
         session[:success] = "Your Profile has been successfully updated"
-        DB.execute("UPDATE profiles SET name = ?, username = ?, email = ?, age = ?, country = ?, photo = COALESCE(?, photo) WHERE id = ?", [params[:name], params[:username], params[:email], params[:age], params[:country], photo_filename, params[:id]])
-        redirect '/admin_profile'
+        DB.execute("UPDATE profiles SET name = ?, username = ?, email = ?, phone = ?, age = ?, country = ?, photo = COALESCE(?, photo), access = ? WHERE id = ?", [params[:name], params[:username], params[:email], params[:phone], params[:age], params[:country], photo_filename, params[:access], params[:id]])
+
+        profile = DB.execute("SELECT * FROM profiles WHERE email = ?", [params[:email]]).first
+        session[:profile_id] = profile['id']
+
+        # Redirect based on access level
+        case profile['access']
+        when 0
+            # Flash message 
+            session[:success] = "Your Are Customer Now"
+            redirect '/login'
+        when 1
+            # Flash message 
+            session[:success] = "Your Profile has been successfully updated"
+            redirect '/admin_profile'
+        else 
+            @errors << "Invalid access level"
+        end 
     else 
         # Handle validation errors and re-render the edit form
         original_profile = DB.execute("SELECT * FROM profiles WHERE id = ?", [params[:id]]).first
@@ -399,9 +462,10 @@ post '/profiles/:id/edit' do
             'phone' => params[:phone] || original_profile['phone'],
             'age' => params[:age] || original_profile['age'],
             'country' => params[:country] || original_profile['country'],
-            'photo' => photo_filename || original_profile['photo']
+            'photo' => photo_filename || original_profile['photo'],
+            'access' => params[:access] || original_profile['access']
         }
-        erb :'admin/edit_admin_profile', layout: :'layouts/sign'
+        erb :'admin/edit_admin_profile', layout: :'layouts/admin'
     end
 end 
 
@@ -532,7 +596,7 @@ end
 
 # Update a car
 post '/edit_car/:id' do
-    @errors = validate_car(params[:name], params[:color], params[:brand], params[:transmission], params[:seat], params[:machine], params[:power], params[:price], params[:stock], params[:manufacture], params[:id])
+    @errors = validate_car(params[:name], params[:color], params[:brand], params[:transmission], params[:seat], params[:machine], params[:power], params[:price], params[:stock], params[:manufacture], editing: false)
 
     # photo 
     photo = params['photo']
@@ -589,4 +653,73 @@ post '/cars/:id/delete' do
     DB.execute("DELETE FROM cars WHERE id = ?", [params[:id]])
 
     redirect '/car_lists'
+end 
+
+get '/users/:id/edit' do 
+    redirect '/login' unless logged_in?
+
+    @title = "View the User Profile"
+    @user = DB.execute("SELECT * FROM profiles WHERE id = ?", [params[:id]]).first
+    @errors = []
+    erb :'admin/users/edit', layout: :'layouts/admin'
+end 
+
+# Update a user
+post '/users/:id' do 
+    @errors = validate_user(params[:username] ,params[:name], params[:email], params[:age], params[:phone], params[:country], params[:access], params[:id])
+
+    # error photo variable check
+    photo = params['photo']
+
+    # Validate only if a new photo is provided
+    @errors += validate_photo(photo) if photo && photo[:tempfile]
+
+    photo_filename = nil 
+
+    if @errors.empty? 
+        # Handle file image upload
+        if photo && photo[:tempfile]
+            photo_filename = "#{Time.now.to_i}_#{photo[:filename]}"
+            # Uploaded image to uploads folder
+            File.open("./public/uploads/#{photo_filename}", 'wb') do |f|
+                f.write(photo[:tempfile].read)
+            end 
+        end 
+
+        # Flash Message
+        session[:success] = "A User has been successfully updated."
+
+        # Update the car in the database
+        DB.execute("UPDATE profiles SET username = ?, name = ?, email = ?, age = ?, country = ?, phone = ?, photo = COALESCE(?, photo), access = ? WHERE id = ?",
+        [params[:username], params[:name], params[:email], params[:age], params[:country], params[:phone], photo_filename, params[:access], params[:id]])
+
+        redirect '/admin_page'
+
+    else 
+        # Handle validation errors and re-render the edit form
+        original_user = DB.execute("SELECT * FROM profiles WHERE id = ?", [params[:id]]).first
+
+        # Merge user input with original data to retain user edits
+        @user = {
+            'id' => params[:id],
+            'username' => params[:username] || original_user['username'],
+            'name' => params[:name] || original_user['name'],
+            'email' => params[:email] || original_user['email'],
+            'age' => params[:age] || original_user['age'],
+            'country' => params[:country] || original_user['country'],
+            'phone' => params[:phone] || original_user['phone'],
+            'photo' => photo_filename || original_user['photo'],
+            'access' => params[:access] || original_user['access']
+        }
+        erb :'admin/users/edit', layout: :'layouts/admin'
+    end 
+end 
+
+# DELETE a user
+post'/users/:id/delete' do 
+    # Flash message
+    session[:success] = "A User has been successfully deleted."
+
+    DB.execute("DELETE FROM profiles WHERE id = ?", [params[:id]])
+    redirect '/admin_page'
 end 

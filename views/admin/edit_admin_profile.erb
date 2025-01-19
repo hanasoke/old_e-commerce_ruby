@@ -59,6 +59,10 @@
           <option value="England">England</option>
           <option value="France">France</option>
           <option value="Canada">Canada</option>
+          <option value="Nepal">Nepal</option>
+          <option value="Bangladesh">Bangladesh</option>
+          <option value="India">India</option>
+          <option value="Qatar">Qatar</option>
         </select>
       </div>
       <div class="mb-3">
@@ -67,6 +71,10 @@
         <img src="/uploads/<%= @profile['photo'] %>" class="img-thumbnail" alt="<%= @profile['name'] %>" style="max-width: 200px" />
         <% end %>
         <input type="file" class="form-control" id="photo" name="photo" />
+      </div>
+      <div class="mb-3">
+        <label for="access" class="form-label">Access</label>
+        <input type="number" class="form-control" id="access" name="access" value="<%= @profile['access'] %>" />
       </div>
       <button type="submit" class="btn btn-primary float-right">Submit</button>
       <a class="btn btn-secondary float-left" href="/admin_profile">Back</a>

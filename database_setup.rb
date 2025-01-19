@@ -126,7 +126,7 @@ SQL
 # SQL
 
 # DB.execute <<-SQL 
-#     CREATE TABLE IF NOT EXISTS wishlists (
+#     CREATE TABLE IF NOT EXISTS wishlist (
 #         id INTEGER PRIMARY KEY AUTOINCREMENT,
 #         profile_id INTEGER, 
 #         car_id INTEGER,
@@ -136,3 +136,20 @@ SQL
 #     );
 # SQL
 
+
+# DB.execute <<-SQL 
+#     CREATE TABLE IF NOT EXISTS wishlists (
+#         id INTEGER PRIMARY KEY AUTOINCREMENT,
+#         profile_id INTEGER, -- Reference to the user who created the wishlist
+#         car_id INTEGER, -- Reference to the car in the wishlist
+#         quantity INTEGER DEFAULT 1, -- Quantity of the car the user wants
+#         status TEXT DEFAULT 'pending', -- Status: 'pending', 'purchased', or 'paid'
+#         transaction_id INTEGER, -- Link to a transaction (if moved to purchase)
+#         payment_id INTEGER, -- Link to a payment (if payment is made)
+#         added_date TEXT, -- Date the car was added to the wishlist
+#         FOREIGN KEY(profile_id) REFERENCES profiles(id),
+#         FOREIGN KEY(car_id) REFERENCES cars(id),
+#         FOREIGN KEY(transaction_id) REFERENCES transactions(id),
+#         FOREIGN KEY(payment_id) REFERENCES payments(id)
+#     );
+# SQL

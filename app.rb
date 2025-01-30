@@ -373,6 +373,7 @@ end
 
 get '/user_page' do 
     @title = "User Page"
+    @cars = DB.execute("SELECT * FROM cars")
     erb :'user/index', layout: :'layouts/main'
 end 
 

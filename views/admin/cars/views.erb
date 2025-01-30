@@ -51,7 +51,7 @@
               <img src="/uploads/cars/<%= car['photo'] %>" alt="<%= car['name'] %>" style="max-width: 300px" />
               <% else %> <% end %>
             </td>
-            <td><%= format_rupiah((car['price'])) %></td>
+            <td><%= format_rupiah(car['price']) %></td>
             <td><%= car['stock'] %></td>
             <td><%= car['manufacture'] %></td>
             <td>

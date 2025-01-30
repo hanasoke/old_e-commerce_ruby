@@ -728,3 +728,12 @@ post'/users/:id/delete' do
     DB.execute("DELETE FROM profiles WHERE id = ?", [params[:id]])
     redirect '/admin_page'
 end 
+
+get '/user_profile' do 
+    redirect '/login' unless logged_in?
+
+    @title = "User Profile"
+    @profile = current_profile
+    @errors = []
+    erb :'user/user_profile', layout: :'layouts/main'
+end 

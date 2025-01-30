@@ -36,49 +36,49 @@
         </thead>
         <tbody>
           <% @cars.each_with_index do |car, index| %>
-          <tr>
-            <!-- Iteration number starts from 1 -->
-            <td><%= index + 1 %></td>
-            <td><%= car['name'] %></td>
-            <td><%= car['color'] %></td>
-            <td><%= car['brand'] %></td>
-            <td><%= car['transmission'] %></td>
-            <td><%= seat(car['seat'] ) %></td>
-            <td><%= machine(car['machine']) %></td>
-            <td><%= power(car['power']) %></td>
-            <td>
-              <% if car['photo'] %>
-              <img src="/uploads/cars/<%= car['photo'] %>" alt="<%= car['name'] %>" style="max-width: 300px" />
-              <% else %> <% end %>
-            </td>
-            <td><%= format_rupiah(car['price']) %></td>
-            <td><%= car['stock'] %></td>
-            <td><%= car['manufacture'] %></td>
-            <td>
-              <div class="btn-group" role="group">
-                <a href="/edit_car/<%= car['id'] %>" class="btn btn-info">Edit</a>
-                <button type="submit" class="btn btn-danger" data-toggle="modal" data-target="#deleteModal<%= car['id']%>">Delete</button>
-              </div>
-              <!-- Delete Confirmation Modal -->
-              <div class="modal fade" id="deleteModal<%= car['id']%>" aria-labelledby="deleteModalLabel<%= car['id']%>" aria-hidden="true">
-                <div class="modal-dialog">
-                  <div class="modal-content">
-                    <div class="modal-header">
-                      <h1 class="modal-title fs-5" id="deleteModalLabel<%= car['id']%>">Confirm Deletion</h1>
-                      <button type="button" class="close" data-dismiss="modal" aria-label="Close">x</button>
-                    </div>
-                    <div class="modal-body mb-3">Are you sure want to delete this Car ?</div>
-                    <div class="modal-footer">
-                      <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                      <form action="/cars/<%= car['id'] %>/delete" method="POST">
-                        <button class="btn btn-primary" type="submit">Delete</button>
-                      </form>
+            <tr>
+              <!-- Iteration number starts from 1 -->
+              <td><%= index + 1 %></td>
+              <td><%= car['name'] %></td>
+              <td><%= car['color'] %></td>
+              <td><%= car['brand'] %></td>
+              <td><%= car['transmission'] %></td>
+              <td><%= seat(car['seat'] ) %></td>
+              <td><%= machine(car['machine']) %></td>
+              <td><%= power(car['power']) %></td>
+              <td>
+                <% if car['photo'] %>
+                <img src="/uploads/cars/<%= car['photo'] %>" alt="<%= car['name'] %>" style="max-width: 300px" />
+                <% else %> <% end %>
+              </td>
+              <td><%= format_rupiah(car['price']) %></td>
+              <td><%= car['stock'] %></td>
+              <td><%= car['manufacture'] %></td>
+              <td>
+                <div class="btn-group" role="group">
+                  <a href="/edit_car/<%= car['id'] %>" class="btn btn-info">Edit</a>
+                  <button type="submit" class="btn btn-danger" data-toggle="modal" data-target="#deleteModal<%= car['id']%>">Delete</button>
+                </div>
+                <!-- Delete Confirmation Modal -->
+                <div class="modal fade" id="deleteModal<%= car['id']%>" aria-labelledby="deleteModalLabel<%= car['id']%>" aria-hidden="true">
+                  <div class="modal-dialog">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <h1 class="modal-title fs-5" id="deleteModalLabel<%= car['id']%>">Confirm Deletion</h1>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">x</button>
+                      </div>
+                      <div class="modal-body mb-3">Are you sure want to delete this Car ?</div>
+                      <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <form action="/cars/<%= car['id'] %>/delete" method="POST">
+                          <button class="btn btn-primary" type="submit">Delete</button>
+                        </form>
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
-            </td>
-          </tr>
+              </td>
+            </tr>
           <% end %>
         </tbody>
       </table>

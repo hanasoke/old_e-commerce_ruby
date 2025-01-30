@@ -6,6 +6,12 @@ require_relative 'database_setup'
 enable :sessions
 register Sinatra::Flash
 
+# Allow access from any IP
+set :bind, '127.0.0.1'
+
+# Different server port
+set :port, 4000 
+
 # Helper methods
 def logged_in?
     session[:profile_id] != nil 

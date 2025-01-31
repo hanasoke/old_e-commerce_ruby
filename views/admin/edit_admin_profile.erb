@@ -6,12 +6,14 @@
   <div class="card-body">
     <div class="row">
       <div class="col">
-        <% if @errors&.any? %> <% @errors.each do |error| %>
-        <div class="alert alert-danger alert-dismissible fade show" role="alert">
-          <div><%= error %></div>
-          <button type="button" class="close" data-dismiss="alert" aria-label="Close">&times;</button>
-        </div>
-        <% end %> <% end %>
+        <% if @errors&.any? %> 
+          <% @errors.each do |error| %>
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+              <div><%= error %></div>
+              <button type="button" class="close" data-dismiss="alert" aria-label="Close">&times;</button>
+            </div>
+          <% end %> 
+        <% end %>
       </div>
     </div>
 
@@ -68,7 +70,7 @@
       <div class="mb-3">
         <label for="photo" class="form-label">Photo</label>
         <% if @profile['photo'] %>
-        <img src="/uploads/<%= @profile['photo'] %>" class="img-thumbnail" alt="<%= @profile['name'] %>" style="max-width: 200px" />
+          <img src="/uploads/<%= @profile['photo'] %>" class="img-thumbnail" alt="<%= @profile['name'] %>" style="max-width: 200px" />
         <% end %>
         <input type="file" class="form-control" id="photo" name="photo" />
       </div>

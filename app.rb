@@ -770,13 +770,11 @@ get '/edit_profile/:id' do
 end 
 
 post '/edit_profile/:id' do 
-    redirect '/login' unless logged_in?
 
     @errors = editing_user(params[:username], params[:name], params[:email], params[:age], params[:phone], params[:country], params[:id])
 
     # error photo variable check
     photo = params['photo']
-
     # Validate only if a new photo is provided
     @errors += validate_photo(photo) if photo && photo[:tempfile]
     
@@ -793,7 +791,6 @@ post '/edit_profile/:id' do
 
         # Flash message
         session[:success] = "Your Profile has been successfully updated"
-
         # Update the car in the database
         DB.execute("UPDATE profiles SET username = ?, name = ?, email = ?, age = ?, phone = ?, country = ?, photo = COALESCE(?, photo) WHERE id = ?",
         [params[:username], params[:name], params[:email], params[:age], params[:phone], params[:country], photo_filename, params[:id]])
@@ -811,7 +808,7 @@ post '/edit_profile/:id' do
             'age' => params[:age] || original_profile['age'],
             'phone' => params[:phone] || original_profile['phone'],
             'country' => params[:country] || original_profile['country'],
-            'photo' => photo_filename || original_profile['photo'],
+            'photo' =>  photo_filename || original_profile['photo']
         }
         erb :'user/edit_profile', layout: :'layouts/main'
     end 

@@ -1,0 +1,61 @@
+<div class="container">
+  <div class="row">
+    <div class="col mt-5">
+      <h1>Edit <%= current_profile['username']; %> <b>Profile</b></h1>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col">
+      <div class="card">
+        <div class="card-body">
+          <form action="/edit_profile" method="post" enctype="multipart/form-data">
+            <div class="mb-3 row">
+              <label for="username" class="col-sm-2 col-form-label">Username</label>
+              <div class="col-sm-10">
+                <input type="text" class="form-control" id="username" value="<%= current_profile['username']; %>" />
+              </div>
+            </div>
+            <div class="mb-3 row">
+              <label for="name" class="col-sm-2 col-form-label">Name</label>
+              <div class="col-sm-10">
+                <input type="text" class="form-control" id="name" placeholder="Input Your Name" value="<%= current_profile['name']; %>" />
+              </div>
+            </div>
+            <div class="mb-3 row">
+              <label for="staticEmail" class="col-sm-2 col-form-label">Email</label>
+              <div class="col-sm-10">
+                <input type="text" readonly class="form-control" id="staticEmail" placeholder="Input Your Email" value="<%= current_profile['email']; %>" />
+              </div>
+            </div>
+            <div class="mb-3 row">
+              <label for="Age" class="col-sm-2 col-form-label">Age</label>
+              <div class="col-sm-10">
+                <input type="text" class="form-control" id="Age" placeholder="Input Your Age" value="<%= current_profile['age']; %>" />
+              </div>
+            </div>
+            <div class="mb-3 row">
+              <label for="country" class="col-sm-2 col-form-label">Country</label>
+              <div class="col-sm-10">
+                <input type="text" class="form-control" id="country" placeholder="Input Your Country" value="<%= current_profile['country']; %>" />
+              </div>
+            </div>
+            <div class="mb-3 row">
+              <label for="photo" class="col-sm-2 col-form-label">Photo Profile</label>
+              <div class="col-sm-10">
+                <img class="mb-3" src="/uploads/<%= current_profile['photo']; %>" alt="<%= current_profile['name']; %>" style="width: 100px" />
+                <input type="file" class="form-control" id="photo" />
+              </div>
+            </div>
+            <div class="mb-3 row">
+              <label for="phone" class="col-sm-2 col-form-label">Phone Number</label>
+              <div class="col-sm-10">
+                <input type="text" class="form-control" id="phone" placeholder="Input Your Country" value="<%= current_profile['phone']; %>" />
+              </div>
+            </div>
+          </form>
+          <a href="/user_profile" class="btn btn-outline-dark">Back</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

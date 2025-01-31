@@ -740,6 +740,14 @@ get '/user_profile' do
 
     @title = "User Profile"
     @profile = current_profile
-    @errors = []
     erb :'user/user_profile', layout: :'layouts/main'
+end 
+
+get '/edit_profile' do 
+    redirect '/login' unless logged_in?
+
+    @title = "Edit Profile"
+    @profile = current_profile
+    @errors = []
+    erb :'user/edit_profile', layout: :'layouts/main'
 end 

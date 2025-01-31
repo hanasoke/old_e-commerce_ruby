@@ -4,7 +4,7 @@
       <h1><%= current_profile['username']; %> <b>Profile</b></h1>
     </div>
     <div class="col mt-5">
-      <a href="/edit_profile" class="btn btn-info float-end">Edit My Profile</a>
+      <a href="/edit_profile/<%= current_profile['id'] %>" class="btn btn-info float-end">Edit My Profile</a>
     </div>
   </div>
   <div class="row">

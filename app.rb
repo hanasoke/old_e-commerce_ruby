@@ -187,6 +187,23 @@ def editing_profile(name, username, email, age, phone, country, access, id = nil
     errors
 end 
 
+def editing_user(username, name, email, age, phone, country, editing = false)
+
+    errors = []
+
+    errors << "Username cannot be blank." if username.nil? || username.strip.empty?
+    errors << "Name cannot be blank." if name.nil? || name.strip.empty?
+
+    errors << "Age cannot be blank." if age.nil? || age.strip.empty?
+    errors << "Phone cannot be blank." if phone.nil? || phone.strip.empty?
+
+    errors << "Country cannot be blank." if country.nil? || country.strip.empty?
+
+    # Validate email
+    errors.concat(validate_email(email))
+    errors
+end 
+
 def validate_car(name, color, brand, transmission, seat, machine, power, price, stock, manufacture, id = nil)
     errors = []
     # check for empty fields
@@ -423,7 +440,7 @@ get '/profiles/edit' do
 end 
 
 post '/profiles/:id/edit' do 
-    @errors = editing_profile(params[:name], params[:username], params[:email], params[:age], params[:phone], params[:country], params[:access], editing: false)
+    @errors = editing_profile(params[:name], params[:username], params[:email], params[:age], params[:phone], params[:country], params[:access], params[:id])
 
     # error photo variable check
     photo = params['photo']
@@ -743,11 +760,59 @@ get '/user_profile' do
     erb :'user/user_profile', layout: :'layouts/main'
 end 
 
-get '/edit_profile' do 
+get '/edit_profile/:id' do 
     redirect '/login' unless logged_in?
 
     @title = "Edit Profile"
-    @profile = current_profile
+    @profile = DB.execute("SELECT * FROM profiles WHERE id = ?", [params[:id]]).first
     @errors = []
     erb :'user/edit_profile', layout: :'layouts/main'
+end 
+
+post '/edit_profile/:id' do 
+    redirect '/login' unless logged_in?
+
+    @errors = editing_user(params[:username], params[:name], params[:email], params[:age], params[:phone], params[:country], params[:id])
+
+    # error photo variable check
+    photo = params['photo']
+
+    # Validate only if a new photo is provided
+    @errors += validate_photo(photo) if photo && photo[:tempfile]
+    
+    photo_filename = nil 
+
+    if @errors.empty? 
+        # Handle file upload
+        if photo && photo[:tempfile]
+            photo_filename = "#{Time.now.to_i}_#{photo[:filename]}"
+            File.open("./public/uploads/#{photo_filename}", 'wb') do |f|
+                f.write(photo[:tempfile].read)
+            end 
+        end 
+
+        # Flash message
+        session[:success] = "Your Profile has been successfully updated"
+
+        # Update the car in the database
+        DB.execute("UPDATE profiles SET username = ?, name = ?, email = ?, age = ?, phone = ?, country = ?, photo = COALESCE(?, photo) WHERE id = ?",
+        [params[:username], params[:name], params[:email], params[:age], params[:phone], params[:country], photo_filename, params[:id]])
+        redirect '/user_profile'
+    else 
+        # Handle validation errors and re-render the edit form
+        original_profile = DB.execute("SELECT * FROM profiles WHERE id = ?", [params[:id]]).first
+
+        # Merge user input with original data to retain user edit
+        @profile = {
+            'id' => params[:id],
+            'username' => params[:username] || original_profile['username'],
+            'name' => params[:name] || original_profile['name'],
+            'email' => params[:email] || original_profile['email'],
+            'age' => params[:age] || original_profile['age'],
+            'phone' => params[:phone] || original_profile['phone'],
+            'country' => params[:country] || original_profile['country'],
+            'photo' => photo_filename || original_profile['photo'],
+        }
+        erb :'user/edit_profile', layout: :'layouts/main'
+    end 
 end 

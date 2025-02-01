@@ -813,3 +813,13 @@ post '/edit_profile/:id' do
         erb :'user/edit_profile', layout: :'layouts/main'
     end 
 end 
+
+def user_count
+    result = DB.get_first_value("SELECT COUNT(*) FROM profiles")
+    result.to_i
+end 
+
+def car_count 
+    result = DB.get_first_value("SELECT COUNT(*) FROM cars")
+    result.to_i
+end 

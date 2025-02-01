@@ -823,3 +823,12 @@ def car_count
     result = DB.get_first_value("SELECT COUNT(*) FROM cars")
     result.to_i
 end 
+
+get '/detail_car/:id' do 
+    redirect '/login' unless logged_in?
+
+    @car = DB.execute("SELECT * FROM cars WHERE id = ?", [params[:id]]).first
+    @errors = []
+    @title = "Car Detail"
+    erb :'user/cars/detail', layout: :'layouts/main'
+end 

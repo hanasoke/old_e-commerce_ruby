@@ -1,7 +1,36 @@
 <div class="container">
-  <div class="row">
+  <div class="row my-5">
     <div class="col">
       <h1>Checkout</h1>
+      <% if @errors.any? %>
+      <div class="alert alert-danger">
+        <ul>
+          <% @errors.each do |error| %>
+          <li><%= error %></li>
+          <% end %>
+        </ul>
+      </div>
+      <% end %>
+
+      <div class="card">
+        <img src="/uploads/cars/<%= @car['photo'] %>" class="card-img-top" alt="<%= @car['name'] %>" />
+        <div class="card-body">
+          <h5 class="card-title"><%= @car['name'] %></h5>
+          <p class="card-text">Brand : <%= @car['brand'] %></p>
+          <p class="card-text">Color : <%= @car['color'] %></p>
+          <p class="card-text">Transmission : <%= @car['transmission']%></p>
+          <p class="card-text">Price per unit : <%= format_rupiah(@car['price']) %></p>
+          <p class="card-text">Quantity : <%= params[:quantity] %></p>
+          <p class="card-text">
+            <b>Total Price : <%= format_rupiah(@car['price'].to_i * params[:quantity].to_i) %></b>
+          </p>
+
+          <form action="/checkout/<%= @car['id'] %>" method="post">
+            <input type="hidden" name="quantity" value="<%= params[:quantity] %>" />
+            <button type="submit" class="btn btn-success">Confirm Purchase</button>
+          </form>
+        </div>
+      </div>
     </div>
   </div>
 </div>

@@ -1,0 +1,24 @@
+<div class="container">
+  <h1>Your Order</h1>
+  <div class="row">
+    <div class="col">
+      <% @transactions.each do |transaction|%>
+      <div class="col-md-4">
+        <div class="card mb-3">
+          <img src="/uploads/cars/<%= transaction['photo'] %>" alt="<%= transaction['name'] %>" />
+          <div class="card-body">
+            <h5 class="card-title"><%= transaction['name'] %></h5>
+            <p class="card-text">Quantity : <%= transaction['quantity'] %></p>
+            <p class="card-text">
+              <b>Total Price : <%= format_rupiah(transaction['total_price']) %></b>
+            </p>
+            <p class="card-text">
+              <small class="text-muted">Transaction Date : <%= transaction['transaction_date'] %></small>
+            </p>
+          </div>
+        </div>
+      </div>
+      <% end %>
+    </div>
+  </div>
+</div>

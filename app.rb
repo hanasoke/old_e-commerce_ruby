@@ -841,3 +841,37 @@ get '/checkout/:id' do
     @title = "Car Checkout"
     erb :'user/cars/checkout', layout: :'layouts/main'
 end 
+
+post '/checkout/:id' do 
+    redirect '/login' unless logged_in?
+
+    car = DB.execute("SELECT * FROM cars WHERE id = ?", [params[:id]]).first
+    quantity = params[:quantity].to_i
+    total_price = car['price'].to_i * quantity
+    transaction_date = Time.now.strftime("%Y-%m-%d %H:%M:%S")
+
+    if quantity > car['stock']
+        @errors = ["Not enough stock available."]
+        @car = car 
+        return erb :'user/cars/checkout', layout: :'layouts/main'
+    end
+
+    # Insert transaction into the database
+    DB.execute("INSERT INTO transactions (profile_id, car_id, quantity, total_price, transaction_date) VALUES (?, ?, ?, ?, ?)",
+                [current_profile['id'], car['id'], quantity, total_price, transaction_date])
+    
+    # Reduce stock of the car
+    DB.execute("UPDATE cars SET stock = stock - ? WHERE id = ?", [quantity, car['id']])
+    
+    redirect '/orders'
+end 
+
+get '/orders' do 
+    redirect '/login' unless logged_in?
+
+    @transactions = DB.execute("SELECT transactions.*, cars.name, cars.photo FROM transactions
+                                JOIN cars ON transactions.car_id = cars.id
+                                WHERE profile_id = ?", [current_profile['id']])
+
+    erb :'user/cars/orders', layout: :'layouts/main'
+end 

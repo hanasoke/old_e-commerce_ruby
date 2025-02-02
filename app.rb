@@ -832,3 +832,12 @@ get '/detail_car/:id' do
     @title = "Car Detail"
     erb :'user/cars/detail', layout: :'layouts/main'
 end 
+
+get '/checkout/:id' do 
+    redirect '/login' unless logged_in?
+
+    @car = DB.execute("SELECT * FROM cars WHERE id = ?", [params[:id]]).first 
+    @errors = []
+    @title = "Car Checkout"
+    erb :'user/cars/checkout', layout: :'layouts/main'
+end 

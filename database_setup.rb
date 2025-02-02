@@ -101,18 +101,18 @@ DB.execute <<-SQL
     );
 SQL
 
-# DB.execute <<-SQL 
-#     CREATE TABLE IF NOT EXISTS transactions (
-#         id INTEGER PRIMARY KEY AUTOINCREMENT,
-#         profile_id INTEGER,
-#         car_id INTEGER, 
-#         quantity INTEGER,
-#         total_price INTEGER,
-#         transaction_date TEXT,
-#         FOREIGN KEY(profile_id) REFERENCES profiles(id),
-#         FOREIGN KEY(car_id) REFERENCES cars(id) 
-#     );
-# SQL
+DB.execute <<-SQL 
+    CREATE TABLE IF NOT EXISTS transactions (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        profile_id INTEGER,
+        car_id INTEGER, 
+        quantity INTEGER,
+        total_price INTEGER,
+        transaction_date TEXT,
+        FOREIGN KEY(profile_id) REFERENCES profiles(id),
+        FOREIGN KEY(car_id) REFERENCES cars(id) 
+    );
+SQL
 
 # DB.execute <<-SQL 
 #     CREATE TABLE IF NOT EXISTS payments (

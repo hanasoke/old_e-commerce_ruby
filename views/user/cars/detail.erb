@@ -52,15 +52,7 @@
               <input type="text" class="form-control-plaintext" id="seat" value="<%= @car['seat'] %>" />
             </div>
           </div>
-          <div class="mb-3 row">
-            <label for="checkout" class="col-sm-2 col-form-label">Checkout</label>
-            <div class="col-sm-2">
-              <input type="number" class="form-control" id="checkout" value="<%= @car['seat'] %>" />
-            </div>
-            <div class="col-sm-1">
-              <button class="btn btn-secondary">Submit</button>
-            </div>
-          </div>
+          <a href="/checkout/<%= @car['id']%> " class="btn btn-primary float-end">Checkout</a>
         </div>
       </div>
     </div>

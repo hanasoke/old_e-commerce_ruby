@@ -1,26 +1,64 @@
 <div class="container">
-  <h1>Your Order</h1>
+  <h1 class="my-4">Your Order</h1>
   <div class="row">
-    <% @transactions.each_with_index do |transaction, index|%> 
-    <% if index % 3 == 0 && index != 0 %>
-      </div>
-      <div class="row">
-    <% end %>
-    <div class="col-md-4">
-        <div class="card mb-4">
-          <img src="/uploads/cars/<%= transaction['photo'] %>" alt="<%= transaction['name'] %>" />
-          <div class="card-body">
-            <h5 class="card-title"><%= transaction['name'] %></h5>
-            <p class="card-text">Quantity : <%= transaction['quantity'] %></p>
-            <p class="card-text">
-              <b>Total Price : <%= format_rupiah(transaction['total_price']) %></b>
-            </p>
-            <p class="card-text">
-              <small class="text-muted">Transaction Date : <%= transaction['transaction_date'] %></small>
-            </p>
+    <div class="col">
+      <ul class="list-group">
+        <% @transactions.each_with_index do |transaction, index| %>
+        <li class="list-group-item"><% if index % 3 == 0 && index != 0 %></li>
+        <li class="list-group-item">
+          <% end %>
+          <p><%= transaction['name']%></p>
+          <div class="card mb-3">
+            <div class="row g-0">
+              <div class="col-md-4">
+                <img src="/uploads/cars/<%= transaction['photo'] %>" class="img-fluid rounded-start" alt="<%= transaction['name'] %>" />
+              </div>
+              <div class="col-md-8">
+                <div class="card-body">
+                  <h5 class="card-title"><%= transaction['name'] %></h5>
+                  <p class="card-text">Quantity : <%= transaction['quantity'] %></p>
+                  <p class="card-text">
+                    <b>Total Price : <%= format_rupiah(transaction['total_price']) %></b>
+                  </p>
+                  <p class="card-text"><small class="text-body-secondary"><%= transaction['transaction_date'] %></small></p>
+                </div>
+              </div>
+            </div>
+          </div>
+          <% end %>
+        </li>
+        <li class="list-group-item">
+          <div class="mb-3">
+            <label for="payment" class="form-label">Payment</label>
+            <select class="form-select" id="payment" name="payment">
+              <option selected>Select Your Payment</option>
+              <option value="Ovo">Ovo</option>
+              <option value="Dana">Dana</option>
+              <option value="Gopay">Gopay</option>
+              <option value="Shopee Pay">Shopee Pay</option>
+              <option value="BRI">BRI</option>
+              <option value="BNI">BNI</option>
+              <option value="Mandiri">Mandiri</option>
+              <option value="BCA">BCA</option>
+            </select>
+          </div>
+        </li>
+        <div class="list-group-item">
+          <div class="mb-3">
+            <label for="account_number" class="form-label">Account Number</label>
+            <input type="text" class="form-control" name="account_number" id="account_number" />
           </div>
         </div>
-      </div>
-    <% end %>
+        <div class="list-group-item">
+          <div class="mb-3">
+            <label for="photo" class="form-label">Payment Proof</label>
+            <input type="file" class="form-control" id="photo" />
+          </div>
+        </div>
+        <li class="list-group-item">
+          <button type="button" class="btn btn-success float-end">Payment</button>
+        </li>
+      </ul>
+    </div>
   </div>
 </div>

@@ -869,7 +869,7 @@ end
 
 get '/orders' do 
     redirect '/login' unless logged_in?
-
+    @title = "Orders Page"
     @transactions = DB.execute("SELECT transactions.*, cars.name, cars.photo FROM transactions JOIN cars ON transactions.car_id = cars.id WHERE profile_id = ?", [current_profile['id']])
 
     erb :'user/cars/orders', layout: :'layouts/main'

@@ -422,6 +422,7 @@ end
 
 get '/transactions_lists' do 
     @title = "Transactions Lists"
+    @transactions = DB.execute("SELECT * FROM transactions")
     erb :'admin/transactions', layout: :'layouts/admin'
 end 
 
@@ -869,9 +870,7 @@ end
 get '/orders' do 
     redirect '/login' unless logged_in?
 
-    @transactions = DB.execute("SELECT transactions.*, cars.name, cars.photo FROM transactions
-                                JOIN cars ON transactions.car_id = cars.id
-                                WHERE profile_id = ?", [current_profile['id']])
+    @transactions = DB.execute("SELECT transactions.*, cars.name, cars.photo FROM transactions JOIN cars ON transactions.car_id = cars.id WHERE profile_id = ?", [current_profile['id']])
 
     erb :'user/cars/orders', layout: :'layouts/main'
 end 

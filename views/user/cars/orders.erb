@@ -38,28 +38,27 @@
                     <div class="btn-group" role="group">
                       <button type="button" class="btn btn-info">Edit</button>
                       <button type="submit" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteTransaction<%= transaction['id'] %>">Delete</button>
+                    </div>
 
-                      <!-- Modal -->
-                      <div class="modal fade" id="deleteTransaction<%= transaction['id'] %>" tabindex="-1" aria-labelledby="deleteModalLabel<%= transaction['id'] %>" aria-hidden="true">
-                        <div class="modal-dialog">
-                          <div class="modal-content">
-                            <div class="modal-header">
-                              <h1 class="modal-title fs-5" id="deleteModalLabel<%= transaction['id'] %>">Confirm Deletion</h1>
-                              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                            </div>
-                            <div class="modal-body">
-                              Are you sure want to delete this transaction ?
-                            </div>
-                            <div class="modal-footer">
-                              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                              <form action="/transactions/<%= transaction['id'] %>/delete" method="POST">
-                                <button type="submit" class="btn btn-primary">Delete</button>
-                              </form>
-                            </div>
+                    <!-- Modal -->
+                    <div class="modal fade" id="deleteTransaction<%= transaction['id'] %>" tabindex="-1" aria-labelledby="deleteModalLabel<%= transaction['id'] %>" aria-hidden="true">
+                      <div class="modal-dialog">
+                        <div class="modal-content">
+                          <div class="modal-header">
+                            <h1 class="modal-title fs-5" id="deleteModalLabel<%= transaction['id'] %>">Confirm Deletion</h1>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                          </div>
+                          <div class="modal-body">
+                            Are you sure want to delete this transaction ?
+                          </div>
+                          <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                            <form action="/transactions/<%= transaction['id'] %>/delete" method="POST">
+                              <button type="submit" class="btn btn-primary">Delete</button>
+                            </form>
                           </div>
                         </div>
                       </div>
-
                     </div>
                   </p>
                   <p class="card-text"><small class="text-body-secondary"><%= transaction['transaction_date'] %></small></p>
@@ -72,37 +71,6 @@
         <% else %>
           <p>No Transactions found</p>
         <% end %>
-        <li class="list-group-item">
-          <div class="mb-3">
-            <label for="payment" class="form-label">Payment Method</label>
-            <select class="form-select" id="payment" name="payment_method">
-              <option selected>Select Your Payment</option>
-              <option value="Ovo">Ovo</option>
-              <option value="Dana">Dana</option>
-              <option value="Gopay">Gopay</option>
-              <option value="Shopee Pay">Shopee Pay</option>
-              <option value="BRI">BRI</option>
-              <option value="BNI">BNI</option>
-              <option value="Mandiri">Mandiri</option>
-              <option value="BCA">BCA</option>
-            </select>
-          </div>
-        </li>
-        <div class="list-group-item">
-          <div class="mb-3">
-            <label for="account_number" class="form-label">Account Number</label>
-            <input type="number" class="form-control" name="account_number" id="account_number" />
-          </div>
-        </div>
-        <div class="list-group-item">
-          <div class="mb-3">
-            <label for="photo" class="form-label">Payment Proof</label>
-            <input type="file" class="form-control" id="photo" name="photo" />
-          </div>
-        </div>
-        <li class="list-group-item">
-          <button type="submit" class="btn btn-success float-end">Payment</button>
-        </li>
       </ul>
     </div>
   </div>

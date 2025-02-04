@@ -4,59 +4,13 @@
       <div class="card">
         <img src="/uploads/cars/<%= @car['photo'] %>" class="card-img-top" alt="<%= @car['name'] %>" />
         <div class="card-body">
-          <form action="/checkout/<%= @car['id'] %>" method="post">
-            <input type="hidden" name="car_id" value="<%= @car['id']%>" />
-            <input type="hidden" name="price" value="<%= @car['price']%>" />
-            <div class="mb-3 row">
-              <label for="name" class="col-sm-2 col-form-label">Name</label>
-              <div class="col-sm-10">
-                <input type="text" readonly class="form-control-plaintext" id="name" value="<%= @car['name'] %>" />
-              </div>
-            </div>
-            <div class="mb-3 row">
-              <label for="brand" class="col-sm-2 col-form-label">Brand</label>
-              <div class="col-sm-10">
-                <input type="text" class="form-control-plaintext" id="brand" value="<%= @car['brand'] %>" />
-              </div>
-            </div>
-            <div class="mb-3 row">
-              <label for="color" class="col-sm-2 col-form-label">Color</label>
-              <div class="col-sm-10">
-                <input type="text" class="form-control-plaintext" id="color" value="<%= @car['color'] %>" />
-              </div>
-            </div>
-            <div class="mb-3 row">
-              <label for="transmission" class="col-sm-2 col-form-label">Transmission</label>
-              <div class="col-sm-10">
-                <input type="text" class="form-control-plaintext" id="transmission" value="<%= @car['transmission'] %>" />
-              </div>
-            </div>
-            <div class="mb-3 row">
-              <label for="price" class="col-sm-2 col-form-label">Price</label>
-              <div class="col-sm-10">
-                <input type="text" class="form-control-plaintext" id="price" value="<%= format_rupiah(@car['price']) %>" />
-              </div>
-            </div>
-            <div class="mb-3 row">
-              <label for="manufacture" class="col-sm-2 col-form-label">Manufacture</label>
-              <div class="col-sm-10">
-                <input type="text" class="form-control-plaintext" id="manufacture" value="<%= @car['manufacture'] %>" />
-              </div>
-            </div>
-            <div class="mb-3 row">
-              <label for="seat" class="col-sm-2 col-form-label">Seat</label>
-              <div class="col-sm-10">
-                <input type="text" class="form-control-plaintext" id="seat" value="<%= @car['seat'] %>" />
-              </div>
-            </div>
-            <div class="mb-3 row">
-              <label for="stock" class="col-sm-2 col-form-label">Quantity</label>
-              <div class="col-sm-10">
-                <input type="number" class="form-control" name="quantity" id="quantity" min="1" max="<%= @car['stock'] %>" required />
-              </div>
-            </div>
-            <button type="submit" class="btn btn-primary float-end">Checkout</button>
-          </form>
+          <h5 class="card-title"><%= @car['name'] %></h5>
+          <p class="card-text">Brand : <%= @car['brand'] %></p>
+          <p class="card-text">Color : <%= @car['color']%></p>
+          <p class="card-text">Transmission : <%= @car['transmission'] %></p>
+          <p class="card-text">Price Per Unit : <%= @car['price'] %></p>
+          <p class="card-text">Quantity : <%= @car['stock'] %></p>
+          <p class="card-text"><b>Total Price: <%= format_rupiah(@car['price'].to_i * params[:quantity].to_i) %></b></p>
         </div>
       </div>
     </div>

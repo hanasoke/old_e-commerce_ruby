@@ -625,7 +625,7 @@ end
 
 # Update a car
 post '/edit_car/:id' do
-    @errors = validate_car(params[:name], params[:color], params[:brand], params[:transmission], params[:seat], params[:machine], params[:power], params[:price], params[:stock], params[:manufacture], editing: false)
+    @errors = validate_car(params[:name], params[:color], params[:brand], params[:transmission], params[:seat], params[:machine], params[:power], params[:price], params[:stock], params[:manufacture], params[:id])
 
     # photo 
     photo = params['photo']
@@ -852,19 +852,20 @@ post '/checkout/:id' do
     transaction_date = Time.now.strftime("%Y-%m-%d %H:%M:%S")
 
     if quantity > car['stock']
-        @errors = ["Not enough stock available."]
+        @errors = ["Not Enoght stock available."]
         @car = car 
         return erb :'user/cars/checkout', layout: :'layouts/main'
-    end
+    end 
 
     # Insert transaction into the database
     DB.execute("INSERT INTO transactions (profile_id, car_id, quantity, total_price, transaction_date) VALUES (?, ?, ?, ?, ?)",
-                [current_profile['id'], car['id'], quantity, total_price, transaction_date])
-    
-    # Reduce stock of the car
-    DB.execute("UPDATE cars SET stock = stock - ? WHERE id = ?", [quantity, car['id']])
-    
+                                        [current_profile['id'], car['id'], quantity, total_price, transaction_date])
+
+    # Reduce Stock of the car
+    DB.execute("UPDATE cars SET stock = stock - ? WHERE id = ?", [quantity, car['id']]) 
+
     redirect '/orders'
+
 end 
 
 get '/orders' do 
@@ -907,16 +908,16 @@ post '/transactions/:id/delete' do
     erb :'user/cars/orders', layout: :'layouts/main'
 end 
 
-post '/payment/:id' do 
+get '/waiting/:transaction_id' do 
     redirect '/login' unless logged_in?
 
-    transaction = DB.execute("SELECT * FROM transactions WHERE car_id = ? AND profile_id = ? ORDER BY id DESC LIMIT 1", [params[:id], current_profile['id']]).first
+    @payment = DB.execute("SELECT * FROM payments WHERE transaction_id = ?", [params[:transaction_id]]).first
 
-    if transaction.nil?
-        @errors = ["Transaction not found."]
-        redirect "/checkout/#{params[:id]}"
+    if @payment.nil?
+        session[:error] = "Payment record not found."
+        redirect '/orders'
     end 
 
-    payment_method = params[:payment_method]
-    account_number = params[:account_number]
+    @title = "Waiting for Payment Verification"
+    erb :'user/cars/waiting', layout: :'layouts/main'
 end 

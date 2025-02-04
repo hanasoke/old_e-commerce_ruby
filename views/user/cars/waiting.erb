@@ -1,5 +1,19 @@
 <div class="container">
-  <div class="row">
-    <div class="col"></div>
+  <div class="row my-5">
+    <div class="col text-center">
+      <h2>Payment in Progress</h2>
+      <p>Your Payment is being verified. Please wait...</p>
+      <p><strong>Payment Method : </strong> <%= @payment['payment_method'] %></p>
+      <p><strong>Account Number : </strong> <%= @payment['account_number'] %></p>
+
+      <p><strong>Status : </strong> <span class="badge bg-warning text-dark"> <%= @payment['payment_status'] %></span></p>
+
+      <% if @payment['photo'] %>
+      <p><strong>Payment Proof : </strong></p>
+      <img src="/uploads/payments/ <%= @payment['photo']%>" class="img-fluid" alt="Payment Proof" />
+      <% end %>
+
+      <a href="/orders" class="btn btn-primary mt-3">Back to Orders</a>
+    </div>
   </div>
 </div>

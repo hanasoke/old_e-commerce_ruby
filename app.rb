@@ -520,7 +520,7 @@ post '/forgot_password' do
         DB.execute("UPDATE profiles SET reset_token = ? WHERE email = ?", [reset_token, email])
 
         # Semulate sending an email (in production, send a real email)
-        reset_url = "http://localhost:4567/reset_password/#{reset_token}"
+        reset_url = "http://localhost:4000/reset_password/#{reset_token}"
         puts "Reset password link: #{reset_url}" # Replace with email sending logic
         redirect '/login'
     end 

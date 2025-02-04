@@ -1,6 +1,18 @@
 <div class="container">
   <div class="row my-5">
     <div class="col">
+      <h1>Checkout</h1>
+      <% if @errors.any? %>
+      <div class="alert alert-danger">
+        <ul>
+          <% @errors.each do |error| %>
+          <li>
+            <%= error %>
+          </li>
+          <% end %>
+        </ul>
+      </div>
+      <% end %>
       <div class="card">
         <img src="/uploads/cars/<%= @car['photo'] %>" class="card-img-top" alt="<%= @car['name'] %>" />
         <div class="card-body">

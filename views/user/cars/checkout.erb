@@ -21,7 +21,7 @@
           <p class="card-text">Color : <%= @car['color']%></p>
           <p class="card-text">Transmission : <%= @car['transmission'] %></p>
           <p class="card-text">Price Per Unit : <%= @car['price'] %></p>
-          <p class="card-text">Quantity : <%= @car['stock'] %></p>
+          <p class="card-text">Quantity : <%= params[:quantity]</p>
           <p class="card-text"><b>Total Price: <%= format_rupiah(@car['price'].to_i * params[:quantity].to_i) %></b></p>
         </div>
       </div>

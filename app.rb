@@ -870,6 +870,7 @@ end
 
 get '/orders' do 
     redirect '/login' unless logged_in?
+    @car = DB.execute("SELECT * FROM cars WHERE id = ?", [params[:id]]).first
     @title = "Orders Page"
     @transactions = DB.execute("SELECT transactions.*, cars.name, cars.photo FROM transactions JOIN cars ON transactions.car_id = cars.id WHERE profile_id = ?", [current_profile['id']])
 
@@ -900,8 +901,10 @@ post '/transactions/:id/delete' do
 
         # Flash message
         session[:success] = "The transaction has been successfully deleted."
+
+        redirect '/transactions'
     else 
-        session[:error] = "Transaction not found.."
+        session[:error] = "Transaction not found"
     end 
 
     # Redirect to refresh the transactions page

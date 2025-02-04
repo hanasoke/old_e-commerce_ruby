@@ -837,9 +837,9 @@ end
 get '/checkout/:id' do 
     redirect '/login' unless logged_in?
 
-    @car = DB.execute("SELECT * FROM cars WHERE id = ?", [params[:id]]).first 
+    @car = DB.execute("SELECT * FROM cars WHERE id = ?", [params[:id]]).first
     @errors = []
-    @title = "Car Checkout"
+    @title = "Car Detail"
     erb :'user/cars/checkout', layout: :'layouts/main'
 end 
 
@@ -873,4 +873,50 @@ get '/orders' do
     @transactions = DB.execute("SELECT transactions.*, cars.name, cars.photo FROM transactions JOIN cars ON transactions.car_id = cars.id WHERE profile_id = ?", [current_profile['id']])
 
     erb :'user/cars/orders', layout: :'layouts/main'
+end 
+
+get '/transactions' do 
+    redirect '/login' unless logged_in?
+    @title = "Your Transactions"
+    @transactions = DB.execute("SELECT transactions.*, cars.name, cars.photo FROM transactions JOIN cars ON transactions.car_id = cars.id WHERE profile_id = ?", [current_profile['id']])
+
+    # Ensure @transactions is always an array
+    @transactions ||= []
+
+    erb :'user/cars/orders', layout: :'layouts/main'
+end 
+
+post '/transactions/:id/delete' do 
+    # Flash message
+    session[:success] = "The Car has been successfully deleted."
+
+    # Delete logic
+    transaction = DB.execute("SELECT * FROM transactions WHERE id = ?", [params[:id]]).first
+
+    if transaction
+        # Delete the transaction
+        DB.execute("DELETE FROM transactions WHERE id = ?", [params[:id]])
+
+        # Flash message
+        session[:success] = "The transaction has been successfully deleted."
+    else 
+        session[:error] = "Transaction not found.."
+    end 
+
+    # Redirect to refresh the transactions page
+    erb :'user/cars/orders', layout: :'layouts/main'
+end 
+
+post '/payment/:id' do 
+    redirect '/login' unless logged_in?
+
+    transaction = DB.execute("SELECT * FROM transactions WHERE car_id = ? AND profile_id = ? ORDER BY id DESC LIMIT 1", [params[:id], current_profile['id']]).first
+
+    if transaction.nil?
+        @errors = ["Transaction not found."]
+        redirect "/checkout/#{params[:id]}"
+    end 
+
+    payment_method = params[:payment_method]
+    account_number = params[:account_number]
 end 

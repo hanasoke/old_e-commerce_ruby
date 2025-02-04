@@ -52,11 +52,12 @@
             <div class="mb-3 row">
               <label for="stock" class="col-sm-2 col-form-label">Quantity</label>
               <div class="col-sm-10">
-                <input type="number" class="form-control" name="quantity" id="quantity" min="1" max="<%= @car['stock'] %>" required />
+                <input type="text" class="form-control-plaintext" name="quantity" id="quantity" min="1" value="<%= @car['stock'] %>" />
               </div>
             </div>
-            <button type="submit" class="btn btn-primary float-end">Checkout</button>
+            <a href="/checkout/<%= @car['id']%>" class="btn btn-success float-end">Checkout</a>
           </form>
+          <a href="/user_page" class="btn btn-outline-secondary float-start">Back</a>
         </div>
       </div>
     </div>

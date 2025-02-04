@@ -114,20 +114,20 @@ DB.execute <<-SQL
     );
 SQL
 
-# DB.execute <<-SQL 
-#     CREATE TABLE IF NOT EXISTS payments (
-#         id INTEGER PRIMARY KEY AUTOINCREMENT,
-#         transaction_id INTEGER,
-#         profile_id INTEGER,
-#         payment_method TEXT,
-#         account_number TEXT,
-#         payment_status TEXT,
-#         photo TEXT,
-#         payment_date TEXT,
-#         FOREIGN KEY(transaction_id) REFERENCES transactions(id)
-#         FOREIGN KEY(profile_id) REFERENCES profiles(id)
-#     );
-# SQL
+DB.execute <<-SQL 
+    CREATE TABLE IF NOT EXISTS payments (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        transaction_id INTEGER,
+        profile_id INTEGER,
+        payment_method TEXT,
+        account_number TEXT,
+        payment_status TEXT,
+        photo TEXT,
+        payment_date TEXT,
+        FOREIGN KEY(transaction_id) REFERENCES transactions(id)
+        FOREIGN KEY(profile_id) REFERENCES profiles(id)
+    );
+SQL
 
 # DB.execute <<-SQL 
 #     CREATE TABLE IF NOT EXISTS wishlist (

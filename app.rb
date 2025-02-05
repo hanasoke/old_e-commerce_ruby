@@ -130,6 +130,34 @@ def validate_user(username, name, email, age, phone, country, access, id = nil)
     errors
 end 
 
+# Validate transaction 
+def validate_transaction(payment_method, quantity, account_number, id = nil)
+    errors = []
+
+    # payment method validation
+    errors << "Payment Method cannot be blank." if payment_method.nil? || payment_method.strip.empty?
+
+    # quantity validation
+    if quantity.nil? || quantity.strip.empty?
+        errors << "Quantity Cannot be Blank."
+    elsif quantity.to_s !~ /\A\d+(\.\d{1,2})?\z/
+        errors << "Quantity must be a valid number."
+    elsif quantity.to_i <= 0
+        errors << "Quantity must be a positive number."
+    end
+
+    # Account Number validation
+    if account_number.nil? || account_number.strip.empty?
+        errors << "Account Number Cannot be Blank."
+    elsif account_number.to_s !~ /\A\d+(\.\d{1,2})?\z/
+        errors << "Account Number must be a valid number."
+    elsif account_number.to_i <= 0
+        errors << "Account Number must be a positive number."
+    end
+
+    errors 
+end 
+
 def validate_profile_login(email, password)
     errors = []
     errors << "Password cannot be blank." if password.nil? || password.strip.empty?
@@ -859,7 +887,7 @@ post '/checkout/:id' do
 
     # Insert transaction into the database
     DB.execute("INSERT INTO transactions (profile_id, car_id, quantity, total_price, transaction_date) VALUES (?, ?, ?, ?, ?)",
-                                        [current_profile['id'], car['id'], quantity, total_price, transaction_date])
+    [current_profile['id'], car['id'], quantity, total_price, transaction_date])
 
     # Reduce Stock of the car
     DB.execute("UPDATE cars SET stock = stock - ? WHERE id = ?", [quantity, car['id']]) 

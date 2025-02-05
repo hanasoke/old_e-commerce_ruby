@@ -117,3 +117,9 @@ DB.execute <<-SQL
         FOREIGN KEY(car_id) REFERENCES cars(id) 
     );
 SQL
+
+# begin 
+#     DB.execute("ALTER TABLE transactions ADD COLUMN admin_approved BOOLEAN DEFAULT 0;")
+# rescue SQLite3::SQLException => e 
+#     puts "Column 'transactions' already exists or another error occured: #{e.message}"
+# end

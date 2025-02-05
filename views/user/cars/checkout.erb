@@ -1,54 +1,88 @@
 <div class="container">
   <div class="row my-5">
     <div class="col">
-      <h1>Checkout</h1>
-      <% if @errors.any? %>
-      <div class="alert alert-danger">
-        <ul>
-          <% @errors.each do |error| %>
-          <li><%= error %></li>
-          <% end %>
-        </ul>
-      </div>
-      <% end %>
       <div class="card">
         <img src="/uploads/cars/<%= @car['photo'] %>" class="card-img-top" alt="<%= @car['name'] %>" />
         <div class="card-body">
-          <h5 class="card-title"><%= @car['name'] %></h5>
-          <p class="card-text">Brand : <%= @car['brand'] %></p>
-          <p class="card-text">Color : <%= @car['color']%></p>
-          <p class="card-text">Transmission : <%= @car['transmission'] %></p>
-          <p class="card-text">Price Per Unit : <%= @car['price'] %></p>
-          <p class="card-text">Quantity : <%= params[:quantity] %></p>
-          <p class="card-text">
-            <b>Total Price: <%= format_rupiah(@car['price'].to_i * params[:quantity].to_i) %></b>
-          </p>
-
-          <!-- Payment Form -->
-          <form action="/payment/<%= @car['id'] %>" method="post" enctype="multipart/form-data">
-            <input type="hidden" name="quantity" value="<%= params[:quantity] %>" />
-            <div class="mb-3">
-              <label for="payment_method" class="form-label">Payment Method</label>
-              <select name="form-control" name="payment_method" required>
-                <option selected>Select the Payment</option>
-                <option value="Credit Card">Credit Card</option>
-                <option value="Bank Transfer">Bank Transfer</option>
-                <option value="E-Wallet">E-Wallet</option>
-              </select>
+          <div class="mb-3 row">
+            <label for="name" class="col-sm-2 col-form-label">Name</label>
+            <div class="col-sm-10">
+              <input type="text" readonly class="form-control-plaintext" id="name" value="<%= @car['name'] %>" />
             </div>
-
-            <div class="mb-3">
-              <label class="form-label" for="account_number">Account Number</label>
-              <input type="text" class="form-control" name="account_number" id="account_number" required />
+          </div>
+          <div class="mb-3 row">
+            <label for="brand" class="col-sm-2 col-form-label">Brand</label>
+            <div class="col-sm-10">
+              <input type="text" class="form-control-plaintext" id="brand" value="<%= @car['brand'] %>" />
             </div>
-
-            <div class="mb-3">
-              <label for="photo" class="form-label">Upload Payment Proof</label>
-              <input type="file" class="form-control" name="photo" id="photo" accept="image/*" required />
+          </div>
+          <div class="mb-3 row">
+            <label for="color" class="col-sm-2 col-form-label">Color</label>
+            <div class="col-sm-10">
+              <input type="text" class="form-control-plaintext" id="color" value="<%= @car['color'] %>" />
             </div>
+          </div>
+          <div class="mb-3 row">
+            <label for="transmission" class="col-sm-2 col-form-label">Transmission</label>
+            <div class="col-sm-10">
+              <input type="text" class="form-control-plaintext" id="transmission" value="<%= @car['transmission'] %>" />
+            </div>
+          </div>
+          <div class="mb-3 row">
+            <label for="price" class="col-sm-2 col-form-label">Price</label>
+            <div class="col-sm-10">
+              <input type="text" class="form-control-plaintext" id="price" value="<%= format_rupiah(@car['price']) %>" />
+            </div>
+          </div>
+          <div class="mb-3 row">
+            <label for="manufacture" class="col-sm-2 col-form-label">Manufacture</label>
+            <div class="col-sm-10">
+              <input type="text" class="form-control-plaintext" id="manufacture" value="<%= @car['manufacture'] %>" />
+            </div>
+          </div>
+          <div class="mb-3 row">
+            <label for="seat" class="col-sm-2 col-form-label">Seat</label>
+            <div class="col-sm-10">
+              <input type="text" class="form-control-plaintext" id="seat" value="<%= @car['seat'] %>" />
+            </div>
+          </div>
+          <div class="mb-3 row">
+            <label for="stock" class="col-sm-2 col-form-label">Stock</label>
+            <div class="col-sm-10">
+              <input type="text" class="form-control-plaintext" id="stock" value="<%= @car['stock'] %>" />
+            </div>
+          </div>
+          <div class="mb-3">
+            <label for="payment_method" class="form-label">Payment Method</label>
+            <select type="text" class="form-select" name="payment_method" id="payment_method">
+              <option selected>Select the Payment</option>
+              <option value="Ovo">Ovo</option>
+              <option value="Dana">Dana</option>
+              <option value="Shopee Pay">Shopee Pay</option>
+              <option value="Link Aja">Link Aja</option>
+              <option value="Gopay">Gopay</option>
+            </select>
+          </div>
 
-            <button type="submit" class="btn btn-success">Submit Payment</button>
-          </form>
+          <div class="mb-3">
+            <label for="quantity">Quantity Order</label>
+            <input type="text" class="form-control" name="quantity" id="quantity" min="1" max="<%= @car['stock'] %>" />
+          </div>
+
+          <div class="mb-3">
+            <label for="account_number">Account Number</label>
+            <input type="text" class="form-control" name="account_number" id="account_number" />
+          </div>
+
+          <div class="mb-3">
+            <label for="payment_photo">Payment Proof</label>
+            <input type="file" class="form-control" name="payment_photo" id="payment_photo" />
+          </div>
+
+          <!-- Button trigger modal -->
+          <button type="submit" class="btn btn-success float-end">Order Now</button>
+
+          <a href="/detail_car/<%= @car['id'] %>" class="btn btn-outline-secondary float-start">Back</a>
         </div>
       </div>
     </div>

@@ -928,7 +928,7 @@ post '/payment/:id' do
     payment_statuss = "Pending"
 
     # Handle file upload
-    if params[:photo] && params[:photo][:filename]\
+    if params[:photo] && params[:photo][:filename]
         filename = "#{Time.now.to_i}_#{paramss[:photo][:filename]}"
         file = params[:photo][:tempfile]
 

@@ -6,9 +6,7 @@
       <div class="alert alert-danger">
         <ul>
           <% @errors.each do |error| %>
-          <li>
-            <%= error %>
-          </li>
+          <li><%= error %></li>
           <% end %>
         </ul>
       </div>
@@ -21,8 +19,36 @@
           <p class="card-text">Color : <%= @car['color']%></p>
           <p class="card-text">Transmission : <%= @car['transmission'] %></p>
           <p class="card-text">Price Per Unit : <%= @car['price'] %></p>
-          <p class="card-text">Quantity : <%= params[:quantity]</p>
-          <p class="card-text"><b>Total Price: <%= format_rupiah(@car['price'].to_i * params[:quantity].to_i) %></b></p>
+          <p class="card-text">Quantity : <%= params[:quantity] %></p>
+          <p class="card-text">
+            <b>Total Price: <%= format_rupiah(@car['price'].to_i * params[:quantity].to_i) %></b>
+          </p>
+
+          <!-- Payment Form -->
+          <form action="/payment/<%= @car['id'] %>" method="post" enctype="multipart/form-data">
+            <input type="hidden" name="quantity" value="<%= params[:quantity] %>" />
+            <div class="mb-3">
+              <label for="payment_method" class="form-label">Payment Method</label>
+              <select name="form-control" name="payment_method" required>
+                <option selected>Select the Payment</option>
+                <option value="Credit Card">Credit Card</option>
+                <option value="Bank Transfer">Bank Transfer</option>
+                <option value="E-Wallet">E-Wallet</option>
+              </select>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label" for="account_number">Account Number</label>
+              <input type="text" class="form-control" name="account_number" id="account_number" required />
+            </div>
+
+            <div class="mb-3">
+              <label for="photo" class="form-label">Upload Payment Proof</label>
+              <input type="text" class="form-control" name="photo" id="photo" accept="image/*" required />
+            </div>
+
+            <button type="submit" class="btn btn-success">Submit Payment</button>
+          </form>
         </div>
       </div>
     </div>

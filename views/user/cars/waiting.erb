@@ -1,19 +1,26 @@
 <div class="container">
   <div class="row my-5">
-    <div class="col text-center">
-      <h2>Payment in Progress</h2>
-      <p>Your Payment is being verified. Please wait...</p>
-      <p><strong>Payment Method : </strong> <%= @payment['payment_method'] %></p>
-      <p><strong>Account Number : </strong> <%= @payment['account_number'] %></p>
+    <div class="col">
+      <h1>Payment Confirmation</h1>
 
-      <p><strong>Status : </strong> <span class="badge bg-warning text-dark"> <%= @payment['payment_status'] %></span></p>
+      <div class="card">
+        <div class="card-body">
+          <h5>Transaction ID : <%= @transaction['id'] %></h5>
+          <p class="card-text">Car Name : <%= @transaction['name'] %></p>
+          <p class="card-text">Total Price : <%= format_rupiah(@transaction['total_price']) %></p>
+          <p class="card-text">Payment Method : <%= @transaction['payment_method'] %></p>
+          <p class="card-text">Account Number : <%= @transaction['account_number'] %></p>
+          <p class="card-text">
+            <b>Status : <span class="text-warning"><%= @transaction['payment_status'] %></span></b>
+          </p>
+        </div>
 
-      <% if @payment['photo'] %>
-      <p><strong>Payment Proof : </strong></p>
-      <img src="/uploads/payments/ <%= @payment['photo']%>" class="img-fluid" alt="Payment Proof" />
-      <% end %>
-
-      <a href="/orders" class="btn btn-primary mt-3">Back to Orders</a>
+        <div>
+          <p>Payment Proof :</p>
+          <img src="/uploads/payments/ <%= @transaction['photo'] %>" alt="Payment Proof" class="img-fluid" />
+        </div>
+        <p class="mt-3 text-muted">Please wait while your payment is being verified.</p>
+      </div>
     </div>
   </div>
 </div>

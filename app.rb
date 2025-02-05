@@ -911,15 +911,53 @@ post '/transactions/:id/delete' do
     erb :'user/cars/orders', layout: :'layouts/main'
 end 
 
+post '/payment/:id' do 
+    redirect '/login' unless logged_in?
+
+    transaction = DB.execute("SELECT * FROM transactions WHERE car_id = ? AND profile_id = ? ORDER BY id DESC LIMIT 1",
+                              [params[:id], current_profile['id']]).first
+    
+    if transaction.nil?
+        @errors = ["Transaction not found."]
+        redirect "/checkout/#{params[:id]}" 
+    end 
+
+    payment_method = params[:payment_method]
+    account_number = params[:account_number]
+    payment_date = Time.now.strftime("%Y-%m-%d %H:%M:%S")
+    payment_statuss = "Pending"
+
+    # Handle file upload
+    if params[:photo] && params[:photo][:filename]\
+        filename = "#{Time.now.to_i}_#{paramss[:photo][:filename]}"
+        file = params[:photo][:tempfile]
+
+        File.open("./public/uploads/payments/#{filename}", 'wb') do |f|
+            f.write(file.read)
+        end 
+
+        photo_path filename
+    else 
+        @errors = ["Please upload a valid payment proof."]
+        redirect '/checkout/#{params[:id]}'
+    end 
+
+    # Insert payment into the database
+    DB.execute("INSERT INTO payments (transaction_id, profile_id, payment_method, account_number, payment_status, photo, payment_date)
+        VALUES (?, ?, ?, ?, ?, ?, ?)",
+                [transaction['id'], current_profile['id'], payment_method, account_number, payment_status, photo_path, payment_date])
+
+    redirect "/waiting/#{transaction['id']}"
+end 
+
 get '/waiting/:transaction_id' do 
     redirect '/login' unless logged_in?
 
-    @payment = DB.execute("SELECT * FROM payments WHERE transaction_id = ?", [params[:transaction_id]]).first
-
-    if @payment.nil?
-        session[:error] = "Payment record not found."
-        redirect '/orders'
-    end 
+    @transaction = DB.execute("SELECT transactions.*, payments.payment_status, payments.photo 
+                                FROM transactions 
+                                JOIN payments ON transactions.id = payments.transaction_id
+                                WHERE transactions.id = ? AND transactions.profile_id = ?", 
+                                [params[:transaction_id], current_profile['id']]).first
 
     @title = "Waiting for Payment Verification"
     erb :'user/cars/waiting', layout: :'layouts/main'

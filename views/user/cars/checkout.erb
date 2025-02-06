@@ -63,6 +63,8 @@
             </div>
           </div>
           <form action="/checkout/<%= @car['id'] %>" method="post" enctype="multipart/form-data">
+            <input type="hidden" name="car_id" value="<%= @car['id'] %>" />
+            <input type="hidden" name="price" value="<%= @car['price'] %>" />
             <div class="mb-3 row">
               <label for="payment_method" class="col-sm-2 col-form-label">Payment Method</label>
               <div class="col-sm-10">
@@ -85,7 +87,7 @@
             <div class="mb-3 row">
               <label for="account_number" class="col-sm-2 col-form-label">Account Number</label>
               <div class="col-sm-10">
-                <input type="text" class="form-control" name="account_number" id="account_number" value="<%= params[:account_number] %>"  />
+                <input type="text" class="form-control" name="account_number" id="account_number" value="<%= params[:account_number] %>" />
               </div>
             </div>
             <div class="mb-3 row">

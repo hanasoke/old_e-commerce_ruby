@@ -4,83 +4,81 @@
       <div class="card">
         <img src="/uploads/cars/<%= @car['photo'] %>" class="card-img-top" alt="<%= @car['name'] %>" />
         <div class="card-body">
-          <div class="mb-3 row">
-            <label for="name" class="col-sm-2 col-form-label">Name</label>
-            <div class="col-sm-10">
-              <input type="text" readonly class="form-control-plaintext" id="name" value="<%= @car['name'] %>" />
+            <div class="mb-3 row">
+              <label for="name" class="col-sm-2 col-form-label">Name</label>
+              <div class="col-sm-10">
+                <input type="text" readonly class="form-control-plaintext" id="name" value="<%= @car['name'] %>" />
+              </div>
             </div>
-          </div>
-          <div class="mb-3 row">
-            <label for="brand" class="col-sm-2 col-form-label">Brand</label>
-            <div class="col-sm-10">
-              <input type="text" class="form-control-plaintext" id="brand" value="<%= @car['brand'] %>" />
+            <div class="mb-3 row">
+              <label for="brand" class="col-sm-2 col-form-label">Brand</label>
+              <div class="col-sm-10">
+                <input type="text" class="form-control-plaintext" id="brand" value="<%= @car['brand'] %>" />
+              </div>
             </div>
-          </div>
-          <div class="mb-3 row">
-            <label for="color" class="col-sm-2 col-form-label">Color</label>
-            <div class="col-sm-10">
-              <input type="text" class="form-control-plaintext" id="color" value="<%= @car['color'] %>" />
+            <div class="mb-3 row">
+              <label for="color" class="col-sm-2 col-form-label">Color</label>
+              <div class="col-sm-10">
+                <input type="text" class="form-control-plaintext" id="color" value="<%= @car['color'] %>" />
+              </div>
             </div>
-          </div>
-          <div class="mb-3 row">
-            <label for="transmission" class="col-sm-2 col-form-label">Transmission</label>
-            <div class="col-sm-10">
-              <input type="text" class="form-control-plaintext" id="transmission" value="<%= @car['transmission'] %>" />
+            <div class="mb-3 row">
+              <label for="transmission" class="col-sm-2 col-form-label">Transmission</label>
+              <div class="col-sm-10">
+                <input type="text" class="form-control-plaintext" id="transmission" value="<%= @car['transmission'] %>" />
+              </div>
             </div>
-          </div>
-          <div class="mb-3 row">
-            <label for="price" class="col-sm-2 col-form-label">Price</label>
-            <div class="col-sm-10">
-              <input type="text" class="form-control-plaintext" id="price" value="<%= format_rupiah(@car['price']) %>" />
+            <div class="mb-3 row">
+              <label for="price" class="col-sm-2 col-form-label">Price</label>
+              <div class="col-sm-10">
+                <input type="text" class="form-control-plaintext" id="price" value="<%= format_rupiah(@car['price']) %>" />
+              </div>
             </div>
-          </div>
-          <div class="mb-3 row">
-            <label for="manufacture" class="col-sm-2 col-form-label">Manufacture</label>
-            <div class="col-sm-10">
-              <input type="text" class="form-control-plaintext" id="manufacture" value="<%= @car['manufacture'] %>" />
+            <div class="mb-3 row">
+              <label for="manufacture" class="col-sm-2 col-form-label">Manufacture</label>
+              <div class="col-sm-10">
+                <input type="text" class="form-control-plaintext" id="manufacture" value="<%= @car['manufacture'] %>" />
+              </div>
             </div>
-          </div>
-          <div class="mb-3 row">
-            <label for="seat" class="col-sm-2 col-form-label">Seat</label>
-            <div class="col-sm-10">
-              <input type="text" class="form-control-plaintext" id="seat" value="<%= @car['seat'] %>" />
+            <div class="mb-3 row">
+              <label for="seat" class="col-sm-2 col-form-label">Seat</label>
+              <div class="col-sm-10">
+                <input type="text" class="form-control-plaintext" id="seat" value="<%= @car['seat'] %>" />
+              </div>
             </div>
-          </div>
-          <div class="mb-3 row">
-            <label for="stock" class="col-sm-2 col-form-label">Stock</label>
-            <div class="col-sm-10">
-              <input type="text" class="form-control-plaintext" id="stock" value="<%= @car['stock'] %>" />
+            <div class="mb-3 row">
+              <label for="stock" class="col-sm-2 col-form-label">Stock</label>
+              <div class="col-sm-10">
+                <input type="text" class="form-control-plaintext" id="stock" value="<%= @car['stock'] %>" />
+              </div>
             </div>
-          </div>
-          <div class="mb-3">
-            <label for="payment_method" class="form-label">Payment Method</label>
-            <select type="text" class="form-select" name="payment_method" id="payment_method">
-              <option selected>Select the Payment</option>
-              <option value="Ovo">Ovo</option>
-              <option value="Dana">Dana</option>
-              <option value="Shopee Pay">Shopee Pay</option>
-              <option value="Link Aja">Link Aja</option>
-              <option value="Gopay">Gopay</option>
-            </select>
-          </div>
-
-          <div class="mb-3">
-            <label for="quantity">Quantity Order</label>
-            <input type="text" class="form-control" name="quantity" id="quantity" min="1" max="<%= @car['stock'] %>" />
-          </div>
-
-          <div class="mb-3">
-            <label for="account_number">Account Number</label>
-            <input type="text" class="form-control" name="account_number" id="account_number" />
-          </div>
-
-          <div class="mb-3">
-            <label for="payment_photo">Payment Proof</label>
-            <input type="file" class="form-control" name="payment_photo" id="payment_photo" />
-          </div>
-
-          <!-- Button trigger modal -->
-          <button type="submit" class="btn btn-success float-end">Order Now</button>
+            <form action="/checkout/<%= @car['id'] %>" method="post" enctype="multipart/form-data">
+              <div class="mb-3">
+                <label for="payment_method" class="form-label">Payment Method</label>
+                <select type="text" class="form-select" name="payment_method" id="payment_method" required>
+                  <option selected disabled>Select the Payment</option>
+                  <option value="Ovo">Ovo</option>
+                  <option value="Dana">Dana</option>
+                  <option value="Shopee Pay">Shopee Pay</option>
+                  <option value="Link Aja">Link Aja</option>
+                  <option value="Gopay">Gopay</option>
+                </select>
+              </div>
+              <div class="mb-3">
+                <label for="quantity">Quantity Order</label>
+                <input type="text" class="form-control" name="quantity" id="quantity" min="1" max="<%= @car['stock'] %>" required />
+              </div>
+              <div class="mb-3">
+                <label for="account_number">Account Number</label>
+                <input type="text" class="form-control" name="account_number" id="account_number" required />
+              </div>
+              <div class="mb-3">
+                <label for="payment_photo">Payment Proof</label>
+                <input type="file" class="form-control" name="payment_photo" id="payment_photo" accept="image/*" required />
+              </div>
+              <!-- Button trigger modal -->
+              <button type="submit" class="btn btn-success float-end">Order Now</button>
+          </form>
 
           <a href="/detail_car/<%= @car['id'] %>" class="btn btn-outline-secondary float-start">Back</a>
         </div>

@@ -886,13 +886,13 @@ post '/checkout/:id' do
     end 
 
     # Insert transaction into the database
-    DB.execute("INSERT INTO transactions (profile_id, car_id, quantity, total_price, transaction_date) VALUES (?, ?, ?, ?, ?)",
-    [current_profile['id'], car['id'], quantity, total_price, transaction_date])
+    DB.execute("INSERT INTO transactions (profile_id, car_id, quantity, total_price, transaction_date, payment_method, account_number, payment_photo, payment_status, admin_approved) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 0)",
+    [current_profile['id'], car['id'], quantity, total_price, transaction_date, params[:account_number], params[:payment_photo], "Pending"])
 
     # Reduce Stock of the car
     DB.execute("UPDATE cars SET stock = stock - ? WHERE id = ?", [quantity, car['id']]) 
 
-    redirect '/orders'
+    redirect '/waiting'
 
 end 
 
@@ -937,4 +937,9 @@ post '/transactions/:id/delete' do
 
     # Redirect to refresh the transactions page
     erb :'user/cars/orders', layout: :'layouts/main'
+end 
+
+get '/waiting' do 
+    redirect '/login' unless logged_in?
+    erb :'user/cars/waiting', layout: :'layouts/main'
 end 

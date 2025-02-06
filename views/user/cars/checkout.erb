@@ -1,16 +1,12 @@
 <div class="container">
   <div class="row mt-3">
     <div class="col">
-      <% if @errors.any? %>
-        <% @errors.each do |error| %>
-        <div class="alert alert-warning alert-dismissible fade show" role="alert">
-          <strong>
-            <%= error %>
-          </strong>
-          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
-        <% end %>
-      <% end %>
+      <% if @errors.any? %> <% @errors.each do |error| %>
+      <div class="alert alert-warning alert-dismissible fade show" role="alert">
+        <strong> <%= error %> </strong>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+      </div>
+      <% end %> <% end %>
     </div>
   </div>
   <div class="row my-5">
@@ -67,8 +63,9 @@
             </div>
           </div>
           <form action="/checkout/<%= @car['id'] %>" method="post" enctype="multipart/form-data">
-            <!-- <div class="mb-3">
-                <label for="payment_method" class="form-label">Payment Method</label>
+            <div class="mb-3 row">
+              <label for="payment_method" class="col-sm-2 col-form-label">Payment Method</label>
+              <div class="col-sm-10">
                 <select type="text" class="form-select" name="payment_method" id="payment_method" required>
                   <option selected disabled>Select the Payment</option>
                   <option value="Ovo">Ovo</option>
@@ -77,19 +74,26 @@
                   <option value="Link Aja">Link Aja</option>
                   <option value="Gopay">Gopay</option>
                 </select>
-              </div> -->
-            <div class="mb-3">
-              <label for="quantity">Quantity Order</label>
-              <input type="number" class="form-control" name="quantity" id="quantity" min="1" max="<%= @car['stock'] %>" required />
-            </div>
-            <!-- <div class="mb-3">
-                <label for="account_number">Account Number</label>
-                <input type="text" class="form-control" name="account_number" id="account_number" required />
               </div>
-              <div class="mb-3">
-                <label for="payment_photo">Payment Proof</label>
-                <input type="file" class="form-control" name="payment_photo" id="payment_photo" accept="image/*" required />
-              </div> -->
+            </div>
+            <div class="mb-3 row">
+              <label for="quantity" class="col-sm-2 col-form-label">Quantity Order</label>
+              <div class="col-sm-10">
+                <input type="number" class="form-control" name="quantity" id="quantity" min="1" max="<%= @car['stock'] %>" value="<%= params[:quantity] %>" />
+              </div>
+            </div>
+            <div class="mb-3 row">
+              <label for="account_number" class="col-sm-2 col-form-label">Account Number</label>
+              <div class="col-sm-10">
+                <input type="text" class="form-control" name="account_number" id="account_number" value="<%= params[:account_number] %>"  />
+              </div>
+            </div>
+            <div class="mb-3 row">
+              <label for="payment_photo" class="col-sm-2 col-form-label">Payment Proof</label>
+              <div class="col-sm-10">
+                <input type="file" class="form-control" name="payment_photo" id="payment_photo" />
+              </div>
+            </div>
             <!-- Button trigger modal -->
             <button type="submit" class="btn btn-success float-end">Order Now</button>
           </form>

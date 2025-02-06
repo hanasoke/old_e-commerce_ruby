@@ -879,20 +879,42 @@ post '/checkout/:id' do
     total_price = car['price'].to_i * quantity
     transaction_date = Time.now.strftime("%Y-%m-%d %H:%M:%S")
 
-    if quantity > car['stock']
-        @errors = ["Not Enoght stock available."]
-        @car = car 
-        return erb :'user/cars/checkout', layout: :'layouts/main'
+    @errors = validate_transaction(params[:payment_method], params[:quantity], params[:account_number])
+
+    photo = params['payment_photo']
+
+    # Add photo validation errors 
+    @errors += validate_photo(photo)
+
+    photo_filename = nil 
+
+    if @errors.empty?
+        # Handle file upload
+        if photo && photo[:tempfile]
+            photo_filename = "#{Time.now.to_i}_#{photo[:filename]}"
+            File.open("./public/uploads/payments/#{photo_filename}", 'wb') do |f|
+                f.write(photo[:tempfile].read)
+            end 
+        end 
+
+        # Flash Message
+        session[:success] = "The Transaction has been successfully added."
+
+        # Insert transaction into the database
+        DB.execute("INSERT INTO transactions (profile_id, car_id, quantity, total_price, payment_method, account_number, payment_photo, payment_status, transaction_date, admin_approved) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 0)",
+        [current_profile['id'], car['id'], quantity, total_price, params[:payment_method], params[:account_number], photo_filename, "Pending", transaction_date])
+
+        # Reduce Stock of the car
+        DB.execute("UPDATE cars SET stock = stock - ? WHERE id = ?", [quantity, car['id']])
+        redirect '/orders'
+    else   
+        # if quantity > car['stock']
+        #     @errors = ["Not Enoght stock available."]
+        #     @car = car 
+        #     return erb :'user/cars/checkout', layout: :'layouts/main'
+        # end  
+        erb :'user/cars/checkout', layout: :'layouts/main'
     end 
-
-    # Insert transaction into the database
-    DB.execute("INSERT INTO transactions (profile_id, car_id, quantity, total_price, transaction_date) VALUES (?, ?, ?, ?, ?)",
-    [current_profile['id'], car['id'], quantity, total_price, transaction_date])
-
-    # Reduce Stock of the car
-    DB.execute("UPDATE cars SET stock = stock - ? WHERE id = ?", [quantity, car['id']]) 
-
-    redirect '/orders'
 
 end 
 

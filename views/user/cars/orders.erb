@@ -21,7 +21,7 @@
           </li>
         <li class="list-group-item">
           <% end %>
-          <p><%= transaction['name']%></p>
+          <h3><%= transaction['name']%></h3>
           <div class="card mb-3">
             <div class="row g-0">
               <div class="col-md-4">
@@ -34,6 +34,9 @@
                   <p class="card-text">
                     <b>Total Price : <%= format_rupiah(transaction['total_price']) %></b>
                   </p>
+                  <p class="card-text">Payment Method : <%= transaction['payment_method'] %></p>
+                  <p class="card-text">Account Number : <%= transaction['account_number'] %></p>
+                  <p class="card-text">Account Number : <%= transaction['payment_status'] %></p>
                   <p class="card-text">
                     <div class="btn-group" role="group">
                       <button type="button" class="btn btn-info">Edit</button>

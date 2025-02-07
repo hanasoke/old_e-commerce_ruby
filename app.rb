@@ -992,3 +992,8 @@ get '/transaction_edit/:id' do
     erb :'admin/transactions/edit', layout: :'layouts/admin' 
 
 end 
+
+# Render the transaction form for database
+post '/transaction_edit/:id' do 
+
+end

@@ -35,6 +35,11 @@
                     <b>Total Price : <%= format_rupiah(transaction['total_price']) %></b>
                   </p>
                   <p class="card-text">Payment Method : <%= transaction['payment_method'] %></p>
+                  <p class="card-text">Payment Proof : 
+                    <br>
+                    <img src="/uploads/payments/<%= transaction['payment_photo'] %>" class="img-fluid rounded-start" alt="<%= transaction['name'] %>" />
+                  </p> 
+                  
                   <p class="card-text">Account Number : <%= transaction['account_number'] %></p>
                   <p class="card-text">Account Number : <%= transaction['payment_status'] %></p>
                   <p class="card-text">Admin Approved  : <%= transaction['admin_approved'] %></p>

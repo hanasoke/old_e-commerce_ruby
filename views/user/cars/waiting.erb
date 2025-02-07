@@ -1,7 +1,87 @@
 <div class="container">
-  <div class="row my-5">
+  <h1 class="my-4">Waiting Lists</h1>
+  <div class="row">
     <div class="col">
-      <h1>Waiting List</h1>
+      <!-- Success Alert -->
+      <%if session[:success] %>
+      <div class="alert alert-success alert-dismissible fade show" role="alert">
+        <div><%= session[:success] %></div>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+      </div>
+      <!-- Clear the flash message -->
+      <% session[:success] = nil %> <% end %>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col">
+      <ul class="list-group">
+        <% if @transactions && @transactions.any? %> <% @transactions.each_with_index do |transaction, index| %> 
+        <li class="list-group-item">
+          <% if index % 3 == 0 && index != 0 %>
+          </li>
+        <li class="list-group-item">
+          <% end %>
+          <h3><%= transaction['name']%></h3>
+          <div class="card mb-3">
+            <div class="row g-0">
+              <div class="col-md-4">
+                <img src="/uploads/cars/<%= transaction['photo'] %>" class="img-fluid rounded-start" alt="<%= transaction['name'] %>" />
+              </div>
+              <div class="col-md-8">
+                <div class="card-body">
+                  <h5 class="card-title"><%= transaction['name'] %></h5>
+                  <p class="card-text">Quantity : <%= transaction['quantity'] %></p>
+                  <p class="card-text">
+                    <b>Total Price : <%= format_rupiah(transaction['total_price']) %></b>
+                  </p>
+                  <p class="card-text">Payment Method : <%= transaction['payment_method'] %></p>
+                  <p class="card-text">Payment Proof : 
+                    <br>
+                    <img src="/uploads/payments/<%= transaction['payment_photo'] %>" class="img-fluid rounded-start" alt="<%= transaction['name'] %>" />
+                  </p> 
+                  
+                  <p class="card-text">Account Number : <%= transaction['account_number'] %></p>
+                  <p class="card-text">Account Number : <%= transaction['payment_status'] %></p>
+                  <p class="card-text">Admin Approved  : <%= transaction['admin_approved'] %></p>
+                  <p class="card-text">
+                    <div class="btn-group" role="group">
+                      <button type="button" class="btn btn-info">Edit</button>
+                      <button type="submit" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteTransaction<%= transaction['id'] %>">Delete</button>
+                    </div>
+
+                    <!-- Modal -->
+                    <div class="modal fade" id="deleteTransaction<%= transaction['id'] %>" tabindex="-1" aria-labelledby="deleteModalLabel<%= transaction['id'] %>" aria-hidden="true">
+                      <div class="modal-dialog">
+                        <div class="modal-content">
+                          <div class="modal-header">
+                            <h1 class="modal-title fs-5" id="deleteModalLabel<%= transaction['id'] %>">Confirm Deletion</h1>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                          </div>
+                          <div class="modal-body">
+                            Are you sure want to delete this transaction ?
+                          </div>
+                          <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                            <form action="/transactions/<%= transaction['id'] %>/delete" method="POST">
+                              <button type="submit" class="btn btn-primary">Delete</button>
+                            </form>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </p>
+                  <p class="card-text"><small class="text-body-secondary"><%= transaction['transaction_date'] %></small></p>
+                </div>
+              </div>
+            </div>
+          </div>
+          <% end %>
+        </li>
+        <% else %>
+          <p>No Transactions found</p>
+        <% end %>
+      </ul>
     </div>
   </div>
 </div>
+

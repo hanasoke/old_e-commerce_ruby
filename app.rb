@@ -915,7 +915,7 @@ post '/checkout/:id' do
 
         # Reduce Stock of the car
         DB.execute("UPDATE cars SET stock = stock - ? WHERE id = ?", [quantity, @car['id']])
-        redirect '/orders'
+        redirect '/waiting'
     else   
         if quantity > @car['stock']
             @errors = ["Not Enoght stock available."]
@@ -923,6 +923,15 @@ post '/checkout/:id' do
         end  
         erb :'user/cars/checkout', layout: :'layouts/main'
     end 
+end 
+
+get '/waiting' do 
+    redirect '/login' unless logged_in?
+    @car = DB.execute("SELECT * FROM cars WHERE id = ?", [params[:id]]).first
+    @title = "Waiting Page"
+    @transactions = DB.execute("SELECT transactions.*, cars.name, cars.photo FROM transactions JOIN cars ON transactions.car_id = cars.id WHERE profile_id = ?", [current_profile['id']])
+
+    erb :'user/cars/orders', layout: :'layouts/main'
 end 
 
 get '/orders' do 

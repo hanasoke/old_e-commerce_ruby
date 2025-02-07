@@ -867,7 +867,7 @@ get '/checkout/:id' do
 
     @car = DB.execute("SELECT * FROM cars WHERE id = ?", [params[:id]]).first
     @errors = []
-    @title = "Car Detail"
+    @title = "Car Checkout"
     erb :'user/cars/checkout', layout: :'layouts/main'
 end 
 

@@ -23,11 +23,9 @@
           <% end %>
           <h3><%= transaction['name']%></h3>
           <div class="card mb-3">
-            <div class="row g-0">
-              <div class="col-md-4">
+            <div class="row">
+              <div class="col">
                 <img src="/uploads/cars/<%= transaction['photo'] %>" class="img-fluid rounded-start" alt="<%= transaction['name'] %>" />
-              </div>
-              <div class="col-md-8">
                 <div class="card-body">
                   <h5 class="card-title"><%= transaction['name'] %></h5>
                   <p class="card-text">Quantity : <%= transaction['quantity'] %></p>
@@ -37,7 +35,7 @@
                   <p class="card-text">Payment Method : <%= transaction['payment_method'] %></p>
                   <p class="card-text">Payment Proof : 
                     <br>
-                    <img src="/uploads/payments/<%= transaction['payment_photo'] %>" class="img-fluid rounded-start" alt="<%= transaction['name'] %>" />
+                    <img src="/uploads/payments/<%= transaction['payment_photo'] %>" class="img-thumbnail" alt="<%= transaction['name'] %>" style="width: 40%;" />
                   </p> 
                   
                   <p class="card-text">Account Number : <%= transaction['account_number'] %></p>

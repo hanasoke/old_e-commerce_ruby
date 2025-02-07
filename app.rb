@@ -981,3 +981,14 @@ get '/waiting' do
     redirect '/login' unless logged_in?
     erb :'user/cars/waiting', layout: :'layouts/main'
 end 
+
+# Render the edit form for a car
+get '/transaction_edit/:id' do 
+    @title = "Edit A Transaction"
+
+    # Fetch the tree data by ID
+    @transaction = DB.execute("SELECT * FROM transactions WHERE id = ?", [params[:id]]).first
+    @errors = []
+    erb :'admin/transactions/edit', layout: :'layouts/admin' 
+
+end 

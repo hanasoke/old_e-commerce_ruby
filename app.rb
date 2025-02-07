@@ -874,9 +874,18 @@ end
 post '/checkout/:id' do 
     redirect '/login' unless logged_in?
 
-    car = DB.execute("SELECT * FROM cars WHERE id = ?", [params[:id]]).first
+    @car = DB.execute("SELECT * FROM cars WHERE id = ?", [params[:id]]).first
+
+    # Check if the car exist
+    if @car.nil? 
+        session[:error] = "Car not found."
+
+        # Redirect user back to main page listing or another relevant page
+        redirect '/user_page'
+    end 
+
     quantity = params[:quantity].to_i
-    total_price = car['price'].to_i * quantity
+    total_price = @car['price'].to_i * quantity
     transaction_date = Time.now.strftime("%Y-%m-%d %H:%M:%S")
 
     @errors = validate_transaction(params[:payment_method], params[:quantity], params[:account_number])
@@ -902,20 +911,18 @@ post '/checkout/:id' do
 
         # Insert transaction into the database
         DB.execute("INSERT INTO transactions (profile_id, car_id, quantity, total_price, payment_method, account_number, payment_photo, payment_status, transaction_date, admin_approved) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 0)",
-        [current_profile['id'], car['id'], quantity, total_price, params[:payment_method], params[:account_number], photo_filename, "Pending", transaction_date])
+        [current_profile['id'], @car['id'], quantity, total_price, params[:payment_method], params[:account_number], photo_filename, "Pending", transaction_date])
 
         # Reduce Stock of the car
-        DB.execute("UPDATE cars SET stock = stock - ? WHERE id = ?", [quantity, car['id']])
+        DB.execute("UPDATE cars SET stock = stock - ? WHERE id = ?", [quantity, @car['id']])
         redirect '/orders'
     else   
-        # if quantity > car['stock']
-        #     @errors = ["Not Enoght stock available."]
-        #     @car = car 
-        #     return erb :'user/cars/checkout', layout: :'layouts/main'
-        # end  
+        if quantity > @car['stock']
+            @errors = ["Not Enoght stock available."]
+            return erb :'user/cars/checkout', layout: :'layouts/main'
+        end  
         erb :'user/cars/checkout', layout: :'layouts/main'
     end 
-
 end 
 
 get '/orders' do 

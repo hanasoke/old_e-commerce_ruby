@@ -9,7 +9,7 @@
       <% end %> <% end %>
     </div>
   </div>
-  <div class="row my-5">
+  <div class="row mb-5 mt-3">
     <div class="col">
       <div class="card">
         <img src="/uploads/cars/<%= @car['photo'] %>" class="card-img-top" alt="<%= @car['name'] %>" />
@@ -87,7 +87,7 @@
             <div class="mb-3 row">
               <label for="account_number" class="col-sm-2 col-form-label">Account Number</label>
               <div class="col-sm-10">
-                <input type="text" class="form-control" name="account_number" id="account_number" value="<%= params[:account_number] %>" />
+                <input type="number" class="form-control" name="account_number" id="account_number" value="<%= params[:account_number] %>" />
               </div>
             </div>
             <div class="mb-3 row">

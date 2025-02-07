@@ -931,7 +931,7 @@ get '/waiting' do
     @title = "Waiting Page"
     @transactions = DB.execute("SELECT transactions.*, cars.name, cars.photo FROM transactions JOIN cars ON transactions.car_id = cars.id WHERE profile_id = ?", [current_profile['id']])
 
-    erb :'user/cars/orders', layout: :'layouts/main'
+    erb :'user/cars/waiting', layout: :'layouts/main'
 end 
 
 get '/orders' do 
@@ -951,7 +951,7 @@ get '/transactions' do
     # Ensure @transactions is always an array
     @transactions ||= []
 
-    erb :'user/cars/orders', layout: :'layouts/main'
+    erb :'user/cars/waiting', layout: :'layouts/main'
 end 
 
 post '/transactions/:id/delete' do 
@@ -974,7 +974,7 @@ post '/transactions/:id/delete' do
     end 
 
     # Redirect to refresh the transactions page
-    erb :'user/cars/orders', layout: :'layouts/main'
+    erb :'user/cars/waiting', layout: :'layouts/main'
 end 
 
 get '/waiting' do 

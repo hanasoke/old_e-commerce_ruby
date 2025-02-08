@@ -982,18 +982,52 @@ get '/waiting' do
     erb :'user/cars/waiting', layout: :'layouts/main'
 end 
 
-# Render the edit form for a car
+# Render the edit form for a transaction
 get '/transaction_edit/:id' do 
     @title = "Edit A Transaction"
 
     # Fetch the tree data by ID
-    @transaction = DB.execute("SELECT * FROM transactions WHERE id = ?", [params[:id]]).first
-    @errors = []
-    erb :'admin/transactions/edit', layout: :'layouts/admin' 
+    @transaction = DB.execute("
+        SELECT transactions.*, 
+                cars.name AS car_name, 
+                cars.photo, 
+                profiles.name AS buyer_name
+            FROM transactions
+            JOIN cars ON transactions.car_id = cars.id
+            JOIN profiles ON transactions.profile_id = profiles.id
+            WHERE transactions.id = ?", [params[:id]]).first
 
+    # Handle case where transaction does not exist
+    if @transaction.nil? 
+        session[:error] = "Transaction not found!"
+        redirect '/transactions_lists'
+    end 
+
+    @errors = []
+    erb :'admin/transactions/edit', layout: :'layouts/admin'
 end 
 
 # Render the transaction form for database
 post '/transaction_edit/:id' do 
+    transaction_id = params[:id]
+    payment_method = params[:payment_method]
+    payment_status = params[:payment_status]
+    admin_approved = params[:admin_approved].to_i
 
+    # Validate required fields
+    @errors = []
+    @errors << "Payment method is required." if payment_method.nil? || payment_method.empty?
+    @errors << "Payment Status is required." if payment_method.nil? || payment_method.empty?
+    @errors << "Admin approval status is required." if admin_approved.nil?
+
+    if @errors.any?
+        @transaction = DB.get_first_row("SELECT * FROM transactions WHERE id = ?", [transaction_id])
+        erb :'admin/transactions/edit', layout: :'layouts/admin'
+    else 
+        DB.execute("UPDATE transactions SET payment_method = ?, payment_status = ?, admin_approved = ? WHERE id = ?",  
+            [payment_method, payment_status, admin_approved, transaction_id])
+
+        session[:session] = "Transaction updated successfully!"
+        redirect '/transactions_lists'
+    end 
 end

@@ -38,15 +38,20 @@
           <tr>
             <!-- Iteration number starts from 1 -->
             <td><%= index + 1 %></td>
-            <td><% profile = DB.get_first_row("SELECT name FROM profiles WHERE id = ?", [transaction['profile_id']]) %> <%= profile ? profile['name'] : 'No profile found' %></td>
-            <td><% car = DB.get_first_row("SELECT name FROM cars WHERE id = ?", [transaction['car_id']]) %> <%= car ? car['name'] : 'No profile found' %></td>
+            <td>
+              <% profile = DB.get_first_row("SELECT name FROM profiles WHERE id = ?", [transaction['profile_id']]) %> 
+              <%= profile && profile['name'] ? profile['name'] : 'No profile' %></td>
+            <td>
+              <% car = DB.get_first_row("SELECT name FROM cars WHERE id = ?", [transaction['car_id']]) %> 
+              <%= car && car['name'] ? car['name'] : 'No profile found' %>
+            </td>
             <td><%= transaction['quantity'] %></td>
             <td><%= transaction['total_price'] %></td>
             <td><%= transaction['payment_method'] %></td>
             <td><%= transaction['account_number'] %></td>
             <td><%= transaction['payment_status'] %></td>
             <td>
-              <img src="/uploads/payments/<%= transaction['payment_photo'] %>" alt="<%= transaction['name'] %>" style="width: 30%" />
+              <img src="/uploads/payments/<%= transaction['payment_photo'] %>" alt="<%= car['name'] %>" style="width: 30%" />
             </td>
             <td><%= transaction['admin_approved'] %></td>
             <td><%= transaction['transaction_date'] %></td>
@@ -56,17 +61,17 @@
                 <button type="submit" class="btn btn-danger">Delete</button>
               </div>
               <!-- Delete Confirmation Modal -->
-                <div class="modal fade" id="deleteModal<%= car['id']%>" aria-labelledby="deleteModalLabel<%= car['id']%>" aria-hidden="true">
+                <div class="modal fade" id="deleteModal<%= transaction['car_id']%>" aria-labelledby="deleteModalLabel<%= car['id']%>" aria-hidden="true">
                   <div class="modal-dialog">
                     <div class="modal-content">
                       <div class="modal-header">
-                        <h1 class="modal-title fs-5" id="deleteModalLabel<%= car['id']%>">Confirm Deletion</h1>
+                        <h1 class="modal-title fs-5" id="deleteModalLabel<%= transaction['car_id']%>">Confirm Deletion</h1>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">x</button>
                       </div>
                       <div class="modal-body mb-3">Are you sure want to delete this Car ?</div>
                       <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                        <form action="/cars/<%= car['id'] %>/delete" method="POST">
+                        <form action="/transactions/<%= transaction['car_id']%>/delete" method="POST">
                           <button class="btn btn-primary" type="submit">Delete</button>
                         </form>
                       </div>

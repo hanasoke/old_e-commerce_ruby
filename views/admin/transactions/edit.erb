@@ -17,28 +17,22 @@
         <% end %> <% end %>
       </div>
     </div>
-
-    <form action="#" method="post" enctype="multipart/form-data">
-      <!-- Hidden Method Fields -->
-      <div class="mb-3">
-        <input type="hidden" name="_method" value="post" />
-      </div>
       <div class="mb-3 row">
         <label for="buyer_name" class="col-sm-2 col-form-label">Buyer</label>
         <div class="col-sm-10">
-          <input type="text" class="form-control" id="buyer_name" name="buyer_name" value="<%= @transaction['buyer_name'] %>" />
+          <input type="text" class="form-control-plaintext" id="buyer_name" name="buyer_name" value="<%= @transaction['buyer_name'] %>" />
         </div>
       </div>
       <div class="mb-3 row">
         <label for="car_name" class="col-sm-2 col-form-label">Car Name</label>
         <div class="col-sm-10">
-          <input type="text" class="form-control" id="car_name" name="car_name" value="<%= @transaction['car_name'] %>" />
+          <input type="text" class="form-control-plaintext" id="name" name="name" value="<%= @transaction['car_name'] %>" />
         </div>
       </div>
       <div class="mb-3 row">
         <label for="total_price" class="col-sm-2 col-form-label">Total Price</label>
         <div class="col-sm-10">
-          <input type="text" class="form-control" id="total_price" name="total_price" value="<%= @transaction['total_price'] %>" />
+          <input type="text" class="form-control-plaintext" id="total_price" name="total_price" value="<%= @transaction['total_price'] %>" />
         </div>
       </div>
       <div class="mb-3 row">
@@ -47,41 +41,45 @@
           <input type="number" class="form-control" id="quantity" name="quantity" value="<%= @transaction['quantity'] %>" />
         </div>
       </div>
-      <div class="mb-3 row">
-        <label for="payment_method" class="col-sm-2 col-form-label">Payment Method</label>
-        <div class="col-sm-10">
-          <select class="form-control" id="payment_method" name="payment_method">
-            <option selected value="<%= @transaction['payment_method'] %>"><%= @transaction['payment_method'] %></option>
-            <option value="Ovo">Ovo</option>
-            <option value="Dana">Dana</option>
-            <option value="Shopee Pay">Shopee Pay</option>
-            <option value="Link Aja">Link Aja</option>
-            <option value="Gopay">Gopay</option>
-          </select>
+      <form action="transaction_edit/:id" method="post" enctype="multipart/form-data">
+        <!-- Hidden Method Fields -->
+        <div class="mb-3">
+          <input type="hidden" name="_method" value="post" />
         </div>
-      </div>
-      <div class="mb-3 row">
-        <label for="payment_status" class="col-sm-2 col-form-label">
-          Payment Status
-        </label>
-        <div class="col-sm-10">
-          <input type="text" class="form-control" id="payment_status" name="payment_status" value="<%= @transaction['payment_status'] %>" />
+        <div class="mb-3 row">
+          <label for="payment_method" class="col-sm-2 col-form-label">Payment Method</label>
+          <div class="col-sm-10">
+            <select class="form-control" id="payment_method" name="payment_method">
+              <option selected value="<%= @transaction['payment_method'] %>"><%= @transaction['payment_method'] %></option>
+              <option value="Ovo">Ovo</option>
+              <option value="Dana">Dana</option>
+              <option value="Shopee Pay">Shopee Pay</option>
+              <option value="Link Aja">Link Aja</option>
+              <option value="Gopay">Gopay</option>
+            </select>
+          </div>
         </div>
-      </div>
-      <div class="mb-3 row">
-        <label for="admin_approved" class="col-sm-2 col-form-label">Admin Approved</label>
-        <div class="col-sm-10">
-          <select class="form-control" id="type" name="admin_approved">
-            <option selected value="<%= @transaction['admin_approved'] %>"><%= @transaction['admin_approved'] %></option>
-            <option value="0">0</option>
-            <option value="1">1</option>
-          </select>
+        <div class="mb-3 row">
+          <label for="payment_status" class="col-sm-2 col-form-label">
+            Payment Status
+          </label>
+          <div class="col-sm-10">
+            <input type="text" class="form-control" id="payment_status" name="payment_status" value="<%= @transaction['payment_status'] %>" />
+          </div>
         </div>
-      </div>
-
-      <!-- Submit Button -->
-      <button type="submit" class="btn btn-primary float-right">Update</button>
-    </form>
+        <div class="mb-3 row">
+          <label for="admin_approved" class="col-sm-2 col-form-label">Admin Approved</label>
+          <div class="col-sm-10">
+            <select class="form-control" id="type" name="admin_approved">
+              <option selected value="<%= @transaction['admin_approved'] %>"><%= @transaction['admin_approved'] %></option>
+              <option value="0">0</option>
+              <option value="1">1</option>
+            </select>
+          </div>
+        </div>
+        <!-- Submit Button -->
+        <button type="submit" class="btn btn-primary float-right">Update</button>
+      </form>
     <a href="/transactions_lists" class="btn btn-secondary float-left">Back</a>
   </div>
 </div>

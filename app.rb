@@ -158,6 +158,19 @@ def validate_transaction(payment_method, quantity, account_number, id = nil)
     errors 
 end 
 
+# Validate transaction 
+def editing_transaction(payment_status, admin_approved, id = nil)
+    errors = []
+
+    # payment status validation
+    errors << "Payment Status cannot be blank." if payment_status.nil? || payment_status.strip.empty?
+
+    # admin approved validation
+    errors << "Admin Approved cannot be blank." if admin_approved.nil? || admin_approved.strip.empty?
+
+    errors 
+end 
+
 def validate_profile_login(email, password)
     errors = []
     errors << "Password cannot be blank." if password.nil? || password.strip.empty?
@@ -215,7 +228,7 @@ def editing_profile(name, username, email, age, phone, country, access, id = nil
     errors
 end 
 
-def editing_user(username, name, email, age, phone, country, editing = false)
+def editing_user(username, name, email, age, phone, country, id = nil)
 
     errors = []
 

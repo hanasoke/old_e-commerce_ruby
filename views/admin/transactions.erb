@@ -28,7 +28,6 @@
             <th>Account Number</th>
             <th>Payment Status</th>
             <th>Payment Photo</th>
-            <th>Admin Approved</th>
             <th>Transaction Date</th>
             <th>Action</th>
           </tr>
@@ -46,14 +45,13 @@
               <%= car && car['name'] ? car['name'] : 'No profile found' %>
             </td>
             <td><%= transaction['quantity'] %></td>
-            <td><%= transaction['total_price'] %></td>
+            <td><%= format_rupiah(transaction['total_price']) %></td>
             <td><%= transaction['payment_method'] %></td>
             <td><%= transaction['account_number'] %></td>
             <td><%= transaction['payment_status'] %></td>
-            <td>
-              <img src="/uploads/payments/<%= transaction['payment_photo'] %>" alt="<%= car['name'] %>" style="width: 30%" />
+            <td style="width: 10%" >
+              <img src="/uploads/payments/<%= transaction['payment_photo'] %>" alt="<%= car['name'] %>" style="width: 100%" />
             </td>
-            <td><%= transaction['admin_approved'] %></td>
             <td><%= transaction['transaction_date'] %></td>
             <td>
               <div class="btn-group" role="group" aria-label="Basic example">

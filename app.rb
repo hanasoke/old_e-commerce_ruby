@@ -166,7 +166,7 @@ def editing_transaction(payment_status, admin_approved, id = nil)
     errors << "Payment Status cannot be blank." if payment_status.nil? || payment_status.strip.empty?
 
     # admin approved validation
-    errors << "Admin Approved cannot be blank." if admin_approved.nil? || admin_approved.strip.empty?
+    errors << "Admin Approved cannot be blank." if admin_approved.nil?
 
     errors 
 end 
@@ -1023,24 +1023,22 @@ end
 # Render the transaction form for database
 post '/transaction_edit/:id' do 
     transaction_id = params[:id]
-    payment_method = params[:payment_method]
     payment_status = params[:payment_status]
+
+    # Convert to integer
     admin_approved = params[:admin_approved].to_i
 
     # Validate required fields
-    @errors = []
-    @errors << "Payment method is required." if payment_method.nil? || payment_method.empty?
-    @errors << "Payment Status is required." if payment_method.nil? || payment_method.empty?
-    @errors << "Admin approval status is required." if admin_approved.nil?
+    @errors = editing_transaction(payment_status, admin_approved)
 
     if @errors.any?
         @transaction = DB.get_first_row("SELECT * FROM transactions WHERE id = ?", [transaction_id])
         erb :'admin/transactions/edit', layout: :'layouts/admin'
     else 
-        DB.execute("UPDATE transactions SET payment_method = ?, payment_status = ?, admin_approved = ? WHERE id = ?",  
-            [payment_method, payment_status, admin_approved, transaction_id])
+        DB.execute("UPDATE transactions SET payment_status = ?, admin_approved = ? WHERE id = ?",  
+            [payment_status, admin_approved, transaction_id])
 
-        session[:session] = "Transaction updated successfully!"
+        session[:success] = "Transaction updated successfully!"
         redirect '/transactions_lists'
     end 
 end

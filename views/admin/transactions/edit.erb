@@ -55,7 +55,9 @@
         <label for="payment_status" class="col-sm-2 col-form-label"> Payment Status </label>
         <div class="col-sm-10">
           <select class="form-control" id="payment_status" name="payment_status">
-            <option selected value="<%= @transaction['payment_status'] %>"><%= @transaction['payment_status'] %></option>
+            <option selected value="<%= @transaction['payment_status'] %>">
+              <%= @transaction['payment_status'] %>
+            </option>
             <option value="Rejected">Rejected</option>
             <option value="Pending">Pending</option>
             <option value="Approved">Approved</option>
@@ -65,7 +67,7 @@
       <div class="mb-3 row">
         <label for="admin_approved" class="col-sm-2 col-form-label">Admin Approved</label>
         <div class="col-sm-10">
-          <select class="form-control" id="type" name="admin_approved">
+          <select class="form-control" id="admin_approved" name="admin_approved">
             <option selected value="<%= @transaction['admin_approved'] %>"><%= @transaction['admin_approved'] %></option>
             <option value="0">0</option>
             <option value="1">1</option>

@@ -940,18 +940,34 @@ end
 
 get '/waiting' do 
     redirect '/login' unless logged_in?
-    @car = DB.execute("SELECT * FROM cars WHERE id = ?", [params[:id]]).first
     @title = "Waiting Page"
-    @transactions = DB.execute("SELECT transactions.*, cars.name, cars.photo FROM transactions JOIN cars ON transactions.car_id = cars.id WHERE profile_id = ?", [current_profile['id']])
+    
+    # Fetch only transactions waiting for approval
+    @transactions = DB.execute(<<-SQL, [current_profile['id']])
+        SELECT transactions.*,
+                cars.name AS car_name,
+                cars.photo
+        FROM transactions 
+        JOIN cars ON transactions.car_id = cars.id
+        WHERE transactions.profile_id = ?
+        AND transactions.admin_approved = 0
+    SQL
 
     erb :'user/cars/waiting', layout: :'layouts/main'
 end 
 
 get '/orders' do 
     redirect '/login' unless logged_in?
-    @car = DB.execute("SELECT * FROM cars WHERE id = ?", [params[:id]]).first
     @title = "Orders Page"
-    @transactions = DB.execute("SELECT transactions.*, cars.name, cars.photo FROM transactions JOIN cars ON transactions.car_id = cars.id WHERE profile_id = ?", [current_profile['id']])
+    @transactions = DB.execute(<<-SQL)
+                    SELECT transactions.*, 
+                        cars.name AS car_name, 
+                        cars.photo
+                        FROM transactions
+                        JOIN cars ON transactions.car_id = cars.id
+                        WHERE transactions.admin_approved = 1
+                        AND transactions.profile_id = #{current_profile['id']}
+                    SQL
 
     erb :'user/cars/orders', layout: :'layouts/main'
 end 

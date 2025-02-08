@@ -1,5 +1,12 @@
 <div class="container">
-  <h1 class="my-4">Waiting Lists</h1>
+  <div class="row my-4">
+    <div class="col">
+      <h1 class="float-start">Waiting Lists</h1>
+    </div>
+    <div class="col">
+      <a href="/orders" class="btn btn-secondary float-end">Check Your Order Approval</a>
+    </div>
+  </div>
   <div class="row">
     <div class="col">
       <!-- Success Alert -->
@@ -40,7 +47,6 @@
                   
                   <p class="card-text">Account Number : <%= transaction['account_number'] %></p>
                   <p class="card-text">Payment Status : <%= transaction['payment_status'] %></p>
-                  <p class="card-text">Admin Approved  : <%= transaction['admin_approved'] %></p>
                   <p class="card-text">
                     <div class="btn-group" role="group">
                       <button type="button" class="btn btn-info">Edit</button>

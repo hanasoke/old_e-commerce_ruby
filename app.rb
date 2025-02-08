@@ -21,6 +21,11 @@ def current_profile
     @current_profile ||= DB.execute("SELECT * FROM profiles WHERE id = ?", [session[:profile_id]]).first if logged_in?
 end 
 
+before do 
+    # Fetch car brands
+    @cars = DB.execute("SELECT DISTINCT brand FROM cars")
+end 
+
 # validate email 
 def validate_email(email)
     errors = []
@@ -1058,3 +1063,10 @@ post '/transaction_edit/:id' do
         redirect '/transactions_lists'
     end 
 end
+
+# Read all cars 
+get '/car_category' do 
+    @title = "Car Category"
+    @cars = DB.execute("SELECT * FROM cars WHERE id = ?", [params[:id]]).first
+    erb :'admin/cars/views', layout: :'layouts/admin'
+end 

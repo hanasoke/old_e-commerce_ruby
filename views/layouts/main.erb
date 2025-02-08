@@ -22,10 +22,19 @@
             <li class="nav-item dropdown">
               <a class="nav-link dropdown-toggle text-white" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false"> Category </a>
               <ul class="dropdown-menu">
-                <li><a class="dropdown-item" href="#">Hyundai</a></li>
-                <li><a class="dropdown-item" href="#">Paganize</a></li>
-                <li><hr class="dropdown-divider" /></li>
-                <li><a class="dropdown-item" href="#">All of Cars</a></li>
+                <% if @cars && @cars.any? %>
+                  <% @cars.each do |car| %>
+                    <li>
+                      <a class="dropdown-item" href="#">
+                        <%= car['brand'] %>
+                      </a>
+                    </li>
+                  <% end %>
+                <% else %>
+                  <li>
+                    <a class="dropdown-item disabled" href="#">No Cars Available</a>
+                  </li>
+                <% end %>
               </ul>
             </li>
           </ul>

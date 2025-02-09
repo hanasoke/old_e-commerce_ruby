@@ -164,14 +164,11 @@ def validate_transaction(payment_method, quantity, account_number, id = nil)
 end 
 
 # Validate transaction 
-def editing_transaction(payment_status, admin_approved, id = nil)
+def editing_transaction(payment_status, id = nil)
     errors = []
 
     # payment status validation
     errors << "Payment Status cannot be blank." if payment_status.nil? || payment_status.strip.empty?
-
-    # admin approved validation
-    errors << "Admin Approved cannot be blank." if admin_approved.nil?
 
     errors 
 end 
@@ -928,7 +925,7 @@ post '/checkout/:id' do
         session[:success] = "The Transaction has been successfully added."
 
         # Insert transaction into the database
-        DB.execute("INSERT INTO transactions (profile_id, car_id, quantity, total_price, payment_method, account_number, payment_photo, payment_status, transaction_date, admin_approved) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 0)",
+        DB.execute("INSERT INTO transactions (profile_id, car_id, quantity, total_price, payment_method, account_number, payment_photo, payment_status, transaction_date) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
         [current_profile['id'], @car['id'], quantity, total_price, params[:payment_method], params[:account_number], photo_filename, "Pending", transaction_date])
 
         # Reduce Stock of the car
@@ -948,13 +945,13 @@ get '/waiting' do
     @title = "Waiting Page"
     
     # Fetch only transactions waiting for approval
-    @transactions = DB.execute(<<-SQL, [current_profile['id']])
+    @transactions = DB.execute(<<-SQL)
         SELECT transactions.*,
                 cars.name AS car_name,
                 cars.photo
         FROM transactions 
         JOIN cars ON transactions.car_id = cars.id
-        WHERE transactions.profile_id = ?
+        WHERE transactions.payment_status = 'Pending';
         AND transactions.admin_approved = 0
     SQL
 
@@ -970,7 +967,7 @@ get '/orders' do
                         cars.photo
                         FROM transactions
                         JOIN cars ON transactions.car_id = cars.id
-                        WHERE transactions.admin_approved = 1
+                        WHERE transactions.payment_status = 'Approved';
                         AND transactions.profile_id = #{current_profile['id']}
                     SQL
 
@@ -989,26 +986,41 @@ get '/transactions' do
 end 
 
 post '/transactions/:id/delete' do 
-    # Flash message
-    session[:success] = "The Car has been successfully deleted."
+    # Ensure the user is logged in 
+    unless session[:user_id].nil?
+        session[:error] = "You must be logged in to delete transactions."
+        redirect '/login'
+    end 
 
-    # Delete logic
-    transaction = DB.execute("SELECT * FROM transactions WHERE id = ?", [params[:id]]).first
+    # Get transaction & user profile 
+    transaction_id = params[:id].to_i
+    transaction = DB.get_first_row("SELECT * FROM transactions WHERE id = ?", [transaction_id])
+    profile = current_profile
 
-    if transaction
+    if transaction.nil?
+        session[:error] = "Transaction not found."
+    elsif profile.nil?
+        session[:error] = "User not authenticated."
+        redirect '/login'
+    else 
         # Delete the transaction
-        DB.execute("DELETE FROM transactions WHERE id = ?", [params[:id]])
+        DB.execute("DELETE FROM transactions WHERE id = ?", [transaction_id])
 
         # Flash message
         session[:success] = "The transaction has been successfully deleted."
 
-        redirect '/transactions'
-    else 
-        session[:error] = "Transaction not found"
+        # Redirect based on access level
+        case profile['access']
+        
+        # Regular user
+        when 0 then redirect '/waiting'
+        
+        # Admin
+        when 1 then redirect '/transactions_lists'
+        else 
+            session[:error] = "Invalid access level."
+        end 
     end 
-
-    # Redirect to refresh the transactions page
-    erb :'user/cars/waiting', layout: :'layouts/main'
 end 
 
 get '/waiting' do 
@@ -1050,14 +1062,14 @@ post '/transaction_edit/:id' do
     admin_approved = params[:admin_approved].to_i
 
     # Validate required fields
-    @errors = editing_transaction(payment_status, admin_approved)
+    @errors = editing_transaction(payment_status)
 
     if @errors.any?
         @transaction = DB.get_first_row("SELECT * FROM transactions WHERE id = ?", [transaction_id])
         erb :'admin/transactions/edit', layout: :'layouts/admin'
     else 
-        DB.execute("UPDATE transactions SET payment_status = ?, admin_approved = ? WHERE id = ?",  
-            [payment_status, admin_approved, transaction_id])
+        DB.execute("UPDATE transactions SET payment_status = ? WHERE id = ?",  
+            [payment_status, transaction_id])
 
         session[:success] = "Transaction updated successfully!"
         redirect '/transactions_lists'

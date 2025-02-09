@@ -123,3 +123,41 @@ SQL
 # rescue SQLite3::SQLException => e 
 #     puts "Column 'transactions' already exists or another error occured: #{e.message}"
 # end
+
+# Start a transaction to ensure data integrity
+# DB.transaction do 
+#     # Create a new table without the admin_approved column
+#     DB.execute <<-SQL
+#         CREATE TABLE transactions_new (
+#             id INTEGER PRIMARY KEY AUTOINCREMENT,
+#             profile_id INTEGER,
+#             car_id INTEGER,
+#             quantity INTEGER,
+#             total_price INTEGER,
+#             payment_method TEXT,
+#             account_number TEXT,
+#             payment_photo TEXT,
+#             payment_status TEXT,
+#             transaction_date TEXT,
+#             FOREIGN KEY(profile_id) REFERENCES profiles(id),
+#             FOREIGN KEY(car_id) REFERENCES cars(id)
+#         );
+#     SQL
+
+#     # Copy all data except the admin_approved column
+#     DB.execute <<-SQL 
+#         INSERT INTO transactions_new(id, profile_id, car_id, quantity, total_price,
+#                                     payment_method, account_number, payment_photo,
+#                                     payment_status, transaction_date)
+#         SELECT id, profile_id, car_id, quantity, total_price,
+#                 payment_method, account_number, payment_photo,
+#                 payment_status, transaction_date
+#         FROM transactions;
+#     SQL
+
+#     # Drop the old table
+#     DB.execute("DROP TABLE transactions;")
+
+#     # Rename the new table to transactions
+#     DB.execute("ALTER TABLE transactions_new RENAME TO transactions;")
+# end 

@@ -37,45 +37,41 @@
           <tr>
             <!-- Iteration number starts from 1 -->
             <td><%= index + 1 %></td>
-            <td>
-              <% profile = DB.get_first_row("SELECT name FROM profiles WHERE id = ?", [transaction['profile_id']]) %> 
-              <%= profile && profile['name'] ? profile['name'] : 'No profile' %></td>
-            <td>
-              <% car = DB.get_first_row("SELECT name FROM cars WHERE id = ?", [transaction['car_id']]) %> 
-              <%= car && car['name'] ? car['name'] : 'No profile found' %>
-            </td>
+            <td><% profile = DB.get_first_row("SELECT name FROM profiles WHERE id = ?", [transaction['profile_id']]) %> <%= profile && profile['name'] ? profile['name'] : 'No profile' %></td>
+            <td><% car = DB.get_first_row("SELECT name FROM cars WHERE id = ?", [transaction['car_id']]) %> <%= car && car['name'] ? car['name'] : 'No profile found' %></td>
             <td><%= transaction['quantity'] %></td>
             <td><%= format_rupiah(transaction['total_price']) %></td>
             <td><%= transaction['payment_method'] %></td>
             <td><%= transaction['account_number'] %></td>
             <td><%= transaction['payment_status'] %></td>
-            <td style="width: 10%" >
+            <td style="width: 10%">
               <img src="/uploads/payments/<%= transaction['payment_photo'] %>" alt="<%= car['name'] %>" style="width: 100%" />
             </td>
             <td><%= transaction['transaction_date'] %></td>
             <td>
               <div class="btn-group" role="group" aria-label="Basic example">
                 <a href="/transaction_edit/<%= transaction['id'] %>" class="btn btn-info">Edit</a>
-                <button type="submit" class="btn btn-danger">Delete</button>
+                <button type="submit" class="btn btn-danger" data-toggle="modal" data-target="#deleteModal<%= transaction['id'] %>">Delete</button>
               </div>
               <!-- Delete Confirmation Modal -->
-                <div class="modal fade" id="deleteModal<%= transaction['car_id']%>" aria-labelledby="deleteModalLabel<%= car['id']%>" aria-hidden="true">
-                  <div class="modal-dialog">
-                    <div class="modal-content">
-                      <div class="modal-header">
-                        <h1 class="modal-title fs-5" id="deleteModalLabel<%= transaction['car_id']%>">Confirm Deletion</h1>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">x</button>
-                      </div>
-                      <div class="modal-body mb-3">Are you sure want to delete this Car ?</div>
-                      <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                        <form action="/transactions/<%= transaction['car_id']%>/delete" method="POST">
-                          <button class="btn btn-primary" type="submit">Delete</button>
-                        </form>
-                      </div>
+              <div class="modal fade" id="deleteModal<%= transaction['id']%>" aria-labelledby="deleteModalLabel<%= transaction['id']%>" aria-hidden="true">
+                <div class="modal-dialog">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <h1 class="modal-title fs-5" id="deleteModalLabel<%= transaction['id']%>">Confirm Deletion</h1>
+                      <button type="button" class="close" data-dismiss="modal" aria-label="Close">x</button>
+                    </div>
+                    <div class="modal-body mb-3">Are you sure want to delete this Transactions ?</div>
+                    <div class="modal-footer">
+                      <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                      <form action="/transactions/<%= transaction['id']%>/delete" method="POST">
+                        <input type="hidden" name="_method" value="POST" />
+                        <button class="btn btn-primary" type="submit">Delete</button>
+                      </form>
                     </div>
                   </div>
                 </div>
+              </div>
             </td>
           </tr>
           <% end %>

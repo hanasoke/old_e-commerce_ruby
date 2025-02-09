@@ -1098,3 +1098,9 @@ get '/car_category' do
     @cars = DB.execute("SELECT * FROM cars WHERE id = ?", [params[:id]]).first
     erb :'admin/cars/views', layout: :'layouts/admin'
 end 
+
+get '/edit_transaction' do 
+    @title = "Edit A Transaction"
+
+    erb :'user/cars/waiting', layout: :'layouts/main'
+end 

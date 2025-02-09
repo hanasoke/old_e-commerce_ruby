@@ -974,6 +974,22 @@ get '/orders' do
     erb :'user/cars/orders', layout: :'layouts/main'
 end 
 
+get '/rejected' do 
+    redirect '/login' unless logged_in?
+    @title = "Rejected Page"
+    @transactions = DB.execute(<<-SQL)
+                    SELECT transactions.*, 
+                        cars.name AS car_name, 
+                        cars.photo
+                        FROM transactions
+                        JOIN cars ON transactions.car_id = cars.id
+                        WHERE transactions.payment_status = 'Rejected';
+                        AND transactions.profile_id = #{current_profile['id']}
+                    SQL
+
+    erb :'user/cars/rejected', layout: :'layouts/main'
+end 
+
 get '/transactions' do 
     redirect '/login' unless logged_in?
     @title = "Your Transactions"

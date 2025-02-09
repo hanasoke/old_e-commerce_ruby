@@ -52,6 +52,12 @@
         <input type="text" class="form-control-plaintext" id="payment_method" name="payment_method" value="<%= @transaction['payment_method'] %>" readonly />
       </div>
     </div>
+    <div class="mb-3 row">
+      <label for="car_name" class="col-sm-2 col-form-label">Car Photo</label>
+      <div class="col-sm-10">
+        <img src="/uploads/payments/<%= @transaction['payment_photo'] %>" class="img-thumbnail" id="name" name="name" value="<%= @transaction['buyer_name'] %>" style="width: 40%;" />
+      </div>
+    </div>
     <form action="/transaction_edit/<%= @transaction['id'] %>" method="post" enctype="multipart/form-data">
       <!-- Hidden Method Fields -->
       <div class="mb-3">

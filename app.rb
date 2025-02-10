@@ -1107,7 +1107,14 @@ get '/edit_transaction/:id' do
     @transaction = DB.get_first_row(<<-SQL, [transaction_id])
         SELECT transactions.*,
             cars.name AS car_name,
-            cars.photo
+            cars.photo,
+            cars.brand,
+            cars.color,
+            cars.transmission,
+            cars.price,
+            cars.manufacture,
+            cars.seat,
+            cars.stock
         FROM transactions
         JOIN cars ON transactions.car_id = cars.id
         WHERE transactions.id = ?

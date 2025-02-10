@@ -171,7 +171,22 @@ def editing_transaction(payment_status, id = nil)
     errors << "Payment Status cannot be blank." if payment_status.nil? || payment_status.strip.empty?
 
     errors 
-end 
+end
+
+def editing_a_transaction(quantity, payment_method, account_number, id = nil)
+    errors = []
+
+    # quantity method validation
+    errors << "Quantity Method cannot be blank." if quantity.nil? || quantity.strip.empty?
+
+    # payment method validation
+    errors << "Payment Method cannot be blank." if payment_method.nil? || payment_method.strip.empty?
+
+    # account number validation
+    errors << "Account Number cannot be blank." if account_number.nil? || account_number.strip.empty?
+
+    errors 
+end
 
 def validate_profile_login(email, password)
     errors = []
@@ -1074,9 +1089,6 @@ post '/transaction_edit/:id' do
     transaction_id = params[:id]
     payment_status = params[:payment_status]
 
-    # Convert to integer
-    admin_approved = params[:admin_approved].to_i
-
     # Validate required fields
     @errors = editing_transaction(payment_status)
 
@@ -1128,4 +1140,50 @@ get '/edit_transaction/:id' do
 
     @errors = []
     erb :'user/cars/edit_transaction', layout: :'layouts/main'
+end 
+
+post '/edit_transaction/:id' do 
+    transaction_id = params[:id]
+    new_quantity = params[:quantity].to_i
+    new_payment_method = params[:payment_method]
+    new_account_number = params[:account_number]
+
+    # Fetch the transaction from the database
+    transaction = DB.execute("SELECT * FROM transactions WHERE id = ?", [transaction_id]).first
+    car = DB.execute("SELECT * FROM cars WHERE id = ?", [transaction['car_id']]).first
+
+    if transaction.nil? || car.nil?
+        redirect '/error_page'
+    end 
+
+    @errors = editing_a_transaction(new_quantity.to_s, new_payment_method, new_account_number)
+    unless @errors.empty?
+        return erb :'user/cars/edit_transaction', layout: :'layouts/main'
+    end
+
+    previous_quantity = transaction['quantity'].to_i
+    stock = car['stock'].to_i
+
+    # Adjust stock based on quantity change
+    if new_quantity > previous_quantity
+        different = new_quantity - previous_quantity
+        if stock >= different 
+            stock -= different
+        else 
+            @errors = ["Not enough stock available."]
+            return erb :'user/cars/edit_transaction', layout: :'layouts/main'
+        end 
+    elsif new_quantity < previous_quantity
+        different = previous_quantity - new_quantity
+        stock += different
+    end 
+
+    # Update the stock in the database 
+    DB.execute("UPDATE cars SET stock = ? WHERE id = ?", [stock, car['id']])
+
+    # Update transaction detail 
+    DB.execute("UPDATE transactions SET quantity = ?, payment_method = ?, account_number = ? WHERE id = ?",
+        [new_quantity, new_payment_method, new_account_number, transaction_id])
+
+    redirect "/waiting"
 end 

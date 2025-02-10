@@ -1150,19 +1150,23 @@ post '/edit_transaction/:id' do
 
     # Fetch the transaction from the database
     transaction = DB.execute("SELECT * FROM transactions WHERE id = ?", [transaction_id]).first
-    car = DB.execute("SELECT * FROM cars WHERE id = ?", [transaction['car_id']]).first
-
-    if transaction.nil? || car.nil?
+    if transaction.nil?
         redirect '/error_page'
-    end 
-
-    @errors = editing_a_transaction(new_quantity.to_s, new_payment_method, new_account_number)
-    unless @errors.empty?
-        return erb :'user/cars/edit_transaction', layout: :'layouts/main'
     end
+
+    car = DB.execute("SELECT * FROM cars WHERE id = ?", [transaction['car_id']]).first 
+    if transaction.nil?
+        redirect '/error_page'
+    end
+
+    total_price = transaction['price'].to_i * new_quantity
 
     previous_quantity = transaction['quantity'].to_i
     stock = car['stock'].to_i
+    transaction_date = Time.now.strftime("%Y-%m-%d %H:%M:%S")
+
+    # Validate inputs
+    @errors = editing_a_transaction(new_quantity.to_s, new_payment_method, new_account_number)
 
     # Adjust stock based on quantity change
     if new_quantity > previous_quantity
@@ -1178,12 +1182,43 @@ post '/edit_transaction/:id' do
         stock += different
     end 
 
-    # Update the stock in the database 
-    DB.execute("UPDATE cars SET stock = ? WHERE id = ?", [stock, car['id']])
+    photo = params['payment_photo']
 
-    # Update transaction detail 
-    DB.execute("UPDATE transactions SET quantity = ?, payment_method = ?, account_number = ? WHERE id = ?",
-        [new_quantity, new_payment_method, new_account_number, transaction_id])
+    # Add photo validation errors 
+    @errors += validate_photo(photo)
 
-    redirect "/waiting"
+    # Keep existing photo if no new file is uploaded
+    photo_filename = transaction['payment_photo'] 
+
+    if @errors.empty? 
+
+        # Handle file upload
+        if photo && photo[:tempfile]
+            photo_filename = "#{Time.now.to_i}_#{photo[:filename]}"
+            File.open("./public/uploads/payments/#{photo_filename}", 'wb') do |f|
+                f.write(photo[:tempfile].read)
+            end 
+        end 
+
+        # Flash Message
+        session[:success] = "The Transaction has been successfully edited"
+
+        # Update the stock in the database 
+        DB.execute("UPDATE cars SET stock = ? WHERE id = ?", [stock, car['id']])
+    
+        # Update transaction detail 
+        DB.execute("UPDATE transactions SET quantity = ?, total_price = ?, payment_method = ?, account_number = ?, payment_photo = ?, transaction_date = ? WHERE id = ?",
+        [new_quantity, total_price, new_payment_method, new_account_number, photo_filename, transaction_date, transaction_id])
+        redirect '/waiting'
+    else 
+
+        # Handle validation errors and re-render the edit form 
+        @transaction = {
+            'id' => params[:id],
+            'payment_method' => new_payment_method || transaction['payment_method'],
+            'account_number' => new_account_number || transaction['account_number'],
+        }
+
+        erb :'user/cars/edit_transaction', layout: :'layouts/main'
+    end 
 end 

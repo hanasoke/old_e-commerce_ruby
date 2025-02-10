@@ -21,13 +21,13 @@
           </li>
         <li class="list-group-item">
           <% end %>
-          <h3><%= transaction['name']%></h3>
+          <h3><%= transaction['car_name']%></h3>
           <div class="card mb-3">
             <div class="row">
               <div class="col">
                 <img src="/uploads/cars/<%= transaction['photo'] %>" class="img-fluid rounded-start" alt="<%= transaction['name'] %>" />
                 <div class="card-body">
-                  <h5 class="card-title"><%= transaction['name'] %></h5>
+                  <h5 class="card-title"><%= transaction['car_name'] %></h5>
                   <p class="card-text">Quantity : <%= transaction['quantity'] %></p>
                   <p class="card-text">
                     <b>Total Price : <%= format_rupiah(transaction['total_price']) %></b>

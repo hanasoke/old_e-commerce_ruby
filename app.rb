@@ -1048,7 +1048,7 @@ end
 get '/transaction_edit/:id' do 
     @title = "Edit A Transaction"
 
-    # Fetch the tree data by ID
+    # Fetch the transaction data by ID
     @transaction = DB.execute("
         SELECT transactions.*, 
                 cars.name AS car_name, 
@@ -1099,8 +1099,26 @@ get '/car_category' do
     erb :'admin/cars/views', layout: :'layouts/admin'
 end 
 
-get '/edit_transaction' do 
+get '/edit_transaction/:id' do 
     @title = "Edit A Transaction"
+    transaction_id = params[:id]
 
-    erb :'user/cars/waiting', layout: :'layouts/main'
+    # Fetch the transaction data by ID
+    @transaction = DB.get_first_row(<<-SQL, [transaction_id])
+        SELECT transactions.*,
+            cars.name AS car_name,
+            cars.photo
+        FROM transactions
+        JOIN cars ON transactions.car_id = cars.id
+        WHERE transactions.id = ?
+    SQL
+
+    # Handle case where transaction does not exist
+    if @transaction.nil?
+        session[:error] = "Transaction not found!"
+        redirect '/waiting'
+    end
+
+    @errors = []
+    erb :'user/cars/edit_transaction', layout: :'layouts/main'
 end 

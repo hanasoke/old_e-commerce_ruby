@@ -967,7 +967,6 @@ get '/waiting' do
         FROM transactions 
         JOIN cars ON transactions.car_id = cars.id
         WHERE transactions.payment_status = 'Pending';
-        AND transactions.admin_approved = 0
     SQL
 
     erb :'user/cars/waiting', layout: :'layouts/main'
@@ -1173,14 +1172,17 @@ post '/edit_transaction/:id' do
         stock += difference
     end 
 
+    price_per_unit = transaction['price'].to_i
+    total_price = params[:total_price].to_i
+
     session[:success] = "A Transaction Has Been Updated successfully!"
 
     # Update the stock in the database
     DB.execute("UPDATE cars SET stock = ? WHERE id = ?", [stock, car['id']])
 
     # Update transaction details 
-    DB.execute("UPDATE transactions SET quantity = ?, payment_method = ?, account_number = ? WHERE id = ?",
-                [new_quantity, new_payment_method, new_account_number, transaction_id])
+    DB.execute("UPDATE transactions SET quantity = ?, total_price = ?, payment_method = ?, account_number = ? WHERE id = ?",
+                [new_quantity, total_price, new_payment_method, new_account_number, transaction_id])
     
     redirect '/waiting'
 end 

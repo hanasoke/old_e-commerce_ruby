@@ -1173,7 +1173,8 @@ post '/edit_transaction/:id' do
     end 
 
     price_per_unit = transaction['price'].to_i
-    total_price = params[:total_price].to_i
+
+    total_price = price_per_unit * new_quantity
 
     session[:success] = "A Transaction Has Been Updated successfully!"
 

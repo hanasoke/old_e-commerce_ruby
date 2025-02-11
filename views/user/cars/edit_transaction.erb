@@ -65,7 +65,6 @@
           <form action="/edit_transaction/<%= @transaction['id'] %>" method="post" enctype="multipart/form-data">
             <input type="hidden" name="id" value="<%= @transaction['id'] %>" />
             <input type="hidden" name="price" value="<%= @transaction['price'] %>" />
-            <input type="hidden" name="total_price" value="<%= @transaction['price'].to_i * @transaction['quantity'].to_i %>" />
             <div class="mb-3 row">
               <label for="payment_method" class="col-sm-2 col-form-label">Payment Method</label>
               <div class="col-sm-10">
@@ -120,17 +119,14 @@
 <script>
   document.addEventListener("DOMContentLoaded", function() {
     let quantityInput = document.getElementById("quantity");
-    let pricePerUnit = <%= @transaction['price'].to_i %>;
-    let totalPriceInput = document.getElementById("total_price");
+    let totalPriceField = document.getElementById("total_price");
 
+    // Fetch the unit price
+    let pricePerUnit = <%= @transaction['price'].to_i %>;
+    
     quantityInput.addEventListener("input", function() {
-      let quantity = parseInt(quantityInput.value) || 1;
-      let totalPrice = pricePerUnit * quantity;
-      
-      // Format the total price as currency (if needed)
-      totalPriceInput.value = new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(totalPrice);
-      // Ensure this updates in form submission
-      document.getElementById('hidden_total_price').value = totalPrice;
+      let newTotal = pricePerUnit * quantityInput.value;
+      totalPriceField.value = newTotal.toLocaleString("id-ID", { style: 'currency', currency: "IDR"});
     });
   });
 </script>

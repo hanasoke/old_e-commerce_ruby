@@ -177,7 +177,7 @@ def editing_a_transaction(quantity, payment_method, account_number, id = nil)
     errors = []
 
     # quantity method validation
-    errors << "Quantity Method cannot be blank." if quantity.nil? || quantity.strip.empty?
+    errors << "Quantity cannot be blank." if quantity.nil? || quantity.to_s.strip.empty?
 
     # payment method validation
     errors << "Payment Method cannot be blank." if payment_method.nil? || payment_method.strip.empty?
@@ -1143,82 +1143,5 @@ get '/edit_transaction/:id' do
 end 
 
 post '/edit_transaction/:id' do 
-    transaction_id = params[:id]
-    new_quantity = params[:quantity].to_i
-    new_payment_method = params[:payment_method]
-    new_account_number = params[:account_number]
 
-    # Fetch the transaction from the database
-    transaction = DB.execute("SELECT * FROM transactions WHERE id = ?", [transaction_id]).first
-    if transaction.nil?
-        redirect '/error_page'
-    end
-
-    car = DB.execute("SELECT * FROM cars WHERE id = ?", [transaction['car_id']]).first 
-    if transaction.nil?
-        redirect '/error_page'
-    end
-
-    total_price = transaction['price'].to_i * new_quantity
-
-    previous_quantity = transaction['quantity'].to_i
-    stock = car['stock'].to_i
-    transaction_date = Time.now.strftime("%Y-%m-%d %H:%M:%S")
-
-    # Validate inputs
-    @errors = editing_a_transaction(new_quantity.to_s, new_payment_method, new_account_number)
-
-    # Adjust stock based on quantity change
-    if new_quantity > previous_quantity
-        different = new_quantity - previous_quantity
-        if stock >= different 
-            stock -= different
-        else 
-            @errors = ["Not enough stock available."]
-            return erb :'user/cars/edit_transaction', layout: :'layouts/main'
-        end 
-    elsif new_quantity < previous_quantity
-        different = previous_quantity - new_quantity
-        stock += different
-    end 
-
-    photo = params['payment_photo']
-
-    # Add photo validation errors 
-    @errors += validate_photo(photo)
-
-    # Keep existing photo if no new file is uploaded
-    photo_filename = transaction['payment_photo'] 
-
-    if @errors.empty? 
-
-        # Handle file upload
-        if photo && photo[:tempfile]
-            photo_filename = "#{Time.now.to_i}_#{photo[:filename]}"
-            File.open("./public/uploads/payments/#{photo_filename}", 'wb') do |f|
-                f.write(photo[:tempfile].read)
-            end 
-        end 
-
-        # Flash Message
-        session[:success] = "The Transaction has been successfully edited"
-
-        # Update the stock in the database 
-        DB.execute("UPDATE cars SET stock = ? WHERE id = ?", [stock, car['id']])
-    
-        # Update transaction detail 
-        DB.execute("UPDATE transactions SET quantity = ?, total_price = ?, payment_method = ?, account_number = ?, payment_photo = ?, transaction_date = ? WHERE id = ?",
-        [new_quantity, total_price, new_payment_method, new_account_number, photo_filename, transaction_date, transaction_id])
-        redirect '/waiting'
-    else 
-
-        # Handle validation errors and re-render the edit form 
-        @transaction = {
-            'id' => params[:id],
-            'payment_method' => new_payment_method || transaction['payment_method'],
-            'account_number' => new_account_number || transaction['account_number'],
-        }
-
-        erb :'user/cars/edit_transaction', layout: :'layouts/main'
-    end 
 end 

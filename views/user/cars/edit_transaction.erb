@@ -63,7 +63,7 @@
             </div>
           </div>
           <form action="/edit_transaction/<%= @transaction['id'] %>" method="post" enctype="multipart/form-data">
-            <input type="hidden" name="car_id" value="<%= @transaction['id'] %>" />
+            <input type="hidden" name="id" value="<%= @transaction['id'] %>" />
             <input type="hidden" name="price" value="<%= @transaction['price'] %>" />
             <div class="mb-3 row">
               <label for="payment_method" class="col-sm-2 col-form-label">Payment Method</label>

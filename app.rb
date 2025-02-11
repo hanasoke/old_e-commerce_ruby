@@ -1261,14 +1261,28 @@ end
 # Edit a Car Transaction
 post '/edit_checkout/:id' do 
     @errors = editing_a_transaction(params[:car_name], params[:car_brand], params[:car_color], params[:car_transmission], params[:car_price], params[:car_manufacture], params[:car_seat], params[:car_stock], params[:quantity], params[:payment_method], params[:account_number], params[:id]) 
+
+    # photo
+    photo = params['payment_photo']
+
+    # Validate only if a new photo is provided
+    @errors += validate_photo(photo) if photo && photo [:tempfile]
+    photo_filename = nil 
     
     if @errors.empty?
+        # Handle file image upload
+        if photo && photo[:tempfile]
+            photo_filename = "#{Time.now.to_i}_#{photo[:filename]}"
+            File.open("./public/uploads/payments/#{photo_filename}", 'wb') do |f|
+                f.write(photo[:tempfile].read)
+            end 
+        end 
 
         # Flash Message
         session[:success] = "A Car Transaction has been successfully updated." 
 
         # Update the car in the database
-        DB.execute("UPDATE transactions SET quantity = ?, payment_method = ?, account_number = ? WHERE id = ?", [params[:quantity], params[:payment_method], params[:account_number], params[:id]])
+        DB.execute("UPDATE transactions SET quantity = ?, payment_method = ?, account_number = ?, payment_photo = ? WHERE id = ?", [params[:quantity], params[:payment_method], params[:account_number], photo_filename, params[:id]])
 
         redirect '/waiting'
     else 
@@ -1289,6 +1303,7 @@ post '/edit_checkout/:id' do
             'quantity' => params[:quantity] || original_transaction['quantity'],
             'payment_method' => params[:payment_method] || original_transaction['payment_method'],
             'account_number' => params[:account_number] || original_transaction['account_number'],
+            'payment_photo' => photo_filename || original_transaction['payment_photo']
         }
         erb :'user/cars/edit_checkout', layout: :'layouts/main'
     end 

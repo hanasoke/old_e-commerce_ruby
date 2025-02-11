@@ -22,7 +22,8 @@
   <div class="row">
     <div class="col">
       <ul class="list-group">
-        <% if @transactions && @transactions.any? %> <% @transactions.each_with_index do |transaction, index| %> 
+        <% if @transactions && @transactions.any? %> 
+        <% @transactions.each_with_index do |transaction, index| %> 
         <li class="list-group-item">
           <% if index % 3 == 0 && index != 0 %>
           </li>

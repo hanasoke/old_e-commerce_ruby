@@ -184,20 +184,41 @@ def editing_a_transaction(car_name, car_brand, car_color, car_transmission, car_
     errors << "Car Color cannot be blank." if car_color.nil? || car_color.to_s.strip.empty?
     # car transmission method validation
     errors << "Car Transmission cannot be blank." if car_transmission.nil? || car_transmission.to_s.strip.empty?
-    # car color method validation
-    errors << "Car Price cannot be blank." if car_price.nil? || car_price.to_s.strip.empty?
-    # car color method validation
+
+    # car price method validation
+    if car_price.nil? || car_price.strip.empty?
+        errors << "Car Price Cannot be Blank."
+    elsif car_price.to_s !~ /\A\d+(\.\d{1,2})?\z/
+        errors << "Car Price must be a valid number."
+    elsif car_price.to_i <= 0
+        errors << "Car Price must be a positive number"
+    end  
+    
+    # car manufacture method validation
     errors << "Car Manufacture cannot be blank." if car_manufacture.nil? || car_manufacture.to_s.strip.empty?
-    # car color method validation
+    # car seat method validation
     errors << "Car Seat cannot be blank." if car_seat.nil? || car_seat.to_s.strip.empty?
     # car color method validation
     errors << "Car Stock cannot be blank." if car_stock.nil? || car_stock.to_s.strip.empty?
-    # quantity method validation
-    errors << "Quantity cannot be blank." if quantity.nil? || quantity.to_s.strip.empty?
+    if quantity.nil? || quantity.strip.empty?
+        errors << "Quantity Cannot be Blank."
+    elsif quantity.to_s !~ /\A\d+(\.\d{1,2})?\z/
+        errors << "Quantity must be a valid number."
+    elsif quantity.to_i <= 0
+        errors << "Quantity must be a positive number"
+    end  
     # payment method validation
     errors << "Payment Method cannot be blank." if payment_method.nil? || payment_method.strip.empty?
+    
     # account number validation
     errors << "Account Number cannot be blank." if account_number.nil? || account_number.strip.empty?
+    if account_number.nil? || account_number.strip.empty?
+        errors << "Account Number Cannot be Blank."
+    elsif account_number.to_s !~ /\A\d+(\.\d{1,2})?\z/
+        errors << "Account Number must be a valid number."
+    elsif account_number.to_i <= 0
+        errors << "Account Number must be a positive number"
+    end  
 
     errors 
 end
@@ -1259,6 +1280,11 @@ post '/edit_checkout/:id' do
             'id' => params[:id],
             'car_name' => params[:car_name] || original_transaction['car_name'],
             'car_brand' => params[:car_brand] || original_transaction['car_brand'],
+            'car_color' => params[:car_color] || original_transaction['car_color'],
+            'car_transmission' => params[:car_transmission] || original_transaction['car_transmission'],
+            'car_price' => params[:car_price] || original_transaction['car_price'],
+            'car_manufacture' => params[:car_manufacture] || original_transaction['car_manufacture'],
+            'car_seat' => params[:car_seat] || original_transaction['car_seat'],
             'car_stock' => params[:car_stock] || original_transaction['car_stock'],
             'quantity' => params[:quantity] || original_transaction['quantity'],
             'payment_method' => params[:payment_method] || original_transaction['payment_method'],

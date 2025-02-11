@@ -1143,5 +1143,44 @@ get '/edit_transaction/:id' do
 end 
 
 post '/edit_transaction/:id' do 
+    transaction_id = params[:id]
+    new_quantity = params[:quantity].to_i
+    new_payment_method = params[:payment_method]
+    new_account_number = params[:account_number]
 
+    # Fetch the transaction from the database
+    transaction = DB.execute("SELECT * FROM transactions WHERE id = ?", [transaction_id]).first
+    car = DB.execute("SELECT * FROM cars WHERE id = ?", [transaction['car_id']]).first
+
+    if transaction.nil? || car.nil?
+        redirect '/error_page'
+    end 
+
+    previous_quantity = transaction['quantity'].to_i
+    stock = car['stock'].to_i
+
+    # Adjust stock based on quantity change
+    if new_quantity > previous_quantity 
+        difference = new_quantity - previous_quantity
+        if stock >= difference
+            stock -= difference
+        else 
+            @errors = ["Not enough stock available."]
+            return erb :'user/cars/edit_transaction', layout: :'layouts/main'
+        end
+    elsif new_quantity < previous_quantity
+        difference = previous_quantity - new_quantity
+        stock += difference
+    end 
+
+    session[:success] = "A Transaction Has Been Updated successfully!"
+
+    # Update the stock in the database
+    DB.execute("UPDATE cars SET stock = ? WHERE id = ?", [stock, car['id']])
+
+    # Update transaction details 
+    DB.execute("UPDATE transactions SET quantity = ?, payment_method = ?, account_number = ? WHERE id = ?",
+                [new_quantity, new_payment_method, new_account_number, transaction_id])
+    
+    redirect '/waiting'
 end 

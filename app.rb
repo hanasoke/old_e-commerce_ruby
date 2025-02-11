@@ -209,9 +209,8 @@ def editing_a_transaction(car_name, car_brand, car_color, car_transmission, car_
     end  
     # payment method validation
     errors << "Payment Method cannot be blank." if payment_method.nil? || payment_method.strip.empty?
-    
+
     # account number validation
-    errors << "Account Number cannot be blank." if account_number.nil? || account_number.strip.empty?
     if account_number.nil? || account_number.strip.empty?
         errors << "Account Number Cannot be Blank."
     elsif account_number.to_s !~ /\A\d+(\.\d{1,2})?\z/
@@ -1261,9 +1260,10 @@ end
 
 # Edit a Car Transaction
 post '/edit_checkout/:id' do 
-    @errors = editing_a_transaction(params[:car_name], params[:car_brand], params[:car_color], params[:car_transmission], params[:car_price], params[:car_manufacture], params[:car_seat], params[:car_stock], params[:quantity], params[:payment_method], params[:account_number], params[:id])
-
+    @errors = editing_a_transaction(params[:car_name], params[:car_brand], params[:car_color], params[:car_transmission], params[:car_price], params[:car_manufacture], params[:car_seat], params[:car_stock], params[:quantity], params[:payment_method], params[:account_number], params[:id]) 
+    
     if @errors.empty?
+
         # Flash Message
         session[:success] = "A Car Transaction has been successfully updated." 
 
@@ -1288,7 +1288,7 @@ post '/edit_checkout/:id' do
             'car_stock' => params[:car_stock] || original_transaction['car_stock'],
             'quantity' => params[:quantity] || original_transaction['quantity'],
             'payment_method' => params[:payment_method] || original_transaction['payment_method'],
-            'account_number' => params[:account_number] || original_transaction['account_number']
+            'account_number' => params[:account_number] || original_transaction['account_number'],
         }
         erb :'user/cars/edit_checkout', layout: :'layouts/main'
     end 

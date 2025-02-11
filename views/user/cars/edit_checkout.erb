@@ -15,7 +15,7 @@
        <form action="/edit_checkout/<%= @transaction['id']%>" method="post" enctype="multipart/form-data">
         <input type="hidden" name="car_id" value="<%= @transaction['car_id'] %>" />
         <input type="hidden" name="price" value="<%= @transaction['car_price'] %>" />
-        <img src="/uploads/cars/<%= @transaction['car_photo'] %>" class="card-img-top" alt="<%= @transaction['car_name'] %>" />
+        <img src="/uploads/cars/<%= @transaction['car_photo'] %>" name="car_photo" class="card-img-top" alt="<%= @transaction['car_name'] %>" />
         <div class="card-body">
           <div class="mb-3 row">
             <label for="name" class="col-sm-2 col-form-label">Name</label>

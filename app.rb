@@ -1221,3 +1221,7 @@ get '/edit_checkout/:id' do
     @errors = []
     erb :'user/cars/edit_checkout', layout: :'layouts/main'
 end 
+
+post '/edit_checkout/:id' do 
+
+end 

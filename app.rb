@@ -178,10 +178,8 @@ def editing_a_transaction(quantity, payment_method, account_number, id = nil)
 
     # quantity method validation
     errors << "Quantity cannot be blank." if quantity.nil? || quantity.to_s.strip.empty?
-
     # payment method validation
     errors << "Payment Method cannot be blank." if payment_method.nil? || payment_method.strip.empty?
-
     # account number validation
     errors << "Account Number cannot be blank." if account_number.nil? || account_number.strip.empty?
 
@@ -1053,11 +1051,6 @@ post '/transactions/:id/delete' do
     end 
 end 
 
-get '/waiting' do 
-    redirect '/login' unless logged_in?
-    erb :'user/cars/waiting', layout: :'layouts/main'
-end 
-
 # Render the edit form for a transaction
 get '/transaction_edit/:id' do 
     @title = "Edit A Transaction"
@@ -1146,44 +1139,57 @@ post '/edit_transaction/:id' do
     new_quantity = params[:quantity].to_i
     new_payment_method = params[:payment_method]
     new_account_number = params[:account_number]
+    total_price = params[:total_price].to_i
+
+    @errors = editing_a_transaction(new_quantity, new_payment_method, new_account_number, transaction_id)
 
     # Fetch the transaction from the database
     transaction = DB.execute("SELECT * FROM transactions WHERE id = ?", [transaction_id]).first
-    car = DB.execute("SELECT * FROM cars WHERE id = ?", [transaction['car_id']]).first
-
-    if transaction.nil? || car.nil?
+    if transaction.nil?
         redirect '/error_page'
     end 
 
-    previous_quantity = transaction['quantity'].to_i
-    stock = car['stock'].to_i
-
-    # Adjust stock based on quantity change
-    if new_quantity > previous_quantity 
-        difference = new_quantity - previous_quantity
-        if stock >= difference
-            stock -= difference
-        else 
-            @errors = ["Not enough stock available."]
-            return erb :'user/cars/edit_transaction', layout: :'layouts/main'
-        end
-    elsif new_quantity < previous_quantity
-        difference = previous_quantity - new_quantity
-        stock += difference
+    car = DB.execute("SELECT * FROM cars WHERE id = ?", [transaction['car_id']]).first
+    if car.nil?
+        redirect '/error_page'
     end 
 
-    price_per_unit = transaction['price'].to_i
+    # price_per_unit = transaction['price'].to_i
+    # total_price = price_per_unit * new_quantity
 
-    total_price = price_per_unit * new_quantity
-
-    session[:success] = "A Transaction Has Been Updated successfully!"
-
-    # Update the stock in the database
-    DB.execute("UPDATE cars SET stock = ? WHERE id = ?", [stock, car['id']])
-
-    # Update transaction details 
-    DB.execute("UPDATE transactions SET quantity = ?, total_price = ?, payment_method = ?, account_number = ? WHERE id = ?",
-                [new_quantity, total_price, new_payment_method, new_account_number, transaction_id])
+    previous_quantity = transaction['quantity'].to_i
+    stock = car['stock'].to_i
     
-    redirect '/waiting'
+    if @errors.empty? 
+
+        # Adjust stock based on quantity change
+        if new_quantity > previous_quantity 
+            difference = new_quantity - previous_quantity
+            if stock >= difference
+                stock -= difference
+            else 
+                @errors = ["Not enough stock available."]
+                return erb :'user/cars/edit_transaction', layout: :'layouts/main'
+            end
+        elsif new_quantity < previous_quantity
+            difference = previous_quantity - new_quantity
+            stock += difference
+        end 
+
+        # Flash Message
+        session[:success] = "A Transaction Has Been Updated successfully!"
+
+        # Update the stock in the database
+        DB.execute("UPDATE cars SET stock = ? WHERE id = ?", [stock, car['id']])
+        # Update transaction details 
+        DB.execute("UPDATE transactions SET quantity = ?, total_price = ?, payment_method = ?, account_number = ? WHERE id = ?",
+        [new_quantity, total_price, new_payment_method, new_account_number, transaction_id])
+        redirect '/waiting'
+    else 
+        erb :'user/cars/edit_transaction', layout: :'layouts/main'
+    end 
+end 
+
+get 'edit_checkout' do 
+
 end 

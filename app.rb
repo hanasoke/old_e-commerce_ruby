@@ -173,9 +173,25 @@ def editing_transaction(payment_status, id = nil)
     errors 
 end
 
-def editing_a_transaction(quantity, payment_method, account_number, id = nil)
+def editing_a_transaction(car_name, car_brand, car_color, car_transmission, car_price, car_manufacture, car_seat, car_stock, quantity, payment_method, account_number, id = nil)
     errors = []
 
+    # car name method validation
+    errors << "Car Name cannot be blank." if car_name.nil? || car_name.to_s.strip.empty?
+    # car brand method validation
+    errors << "Car Brand cannot be blank." if car_brand.nil? || car_brand.to_s.strip.empty?
+    # car color method validation
+    errors << "Car Color cannot be blank." if car_color.nil? || car_color.to_s.strip.empty?
+    # car transmission method validation
+    errors << "Car Transmission cannot be blank." if car_transmission.nil? || car_transmission.to_s.strip.empty?
+    # car color method validation
+    errors << "Car Price cannot be blank." if car_price.nil? || car_price.to_s.strip.empty?
+    # car color method validation
+    errors << "Car Manufacture cannot be blank." if car_manufacture.nil? || car_manufacture.to_s.strip.empty?
+    # car color method validation
+    errors << "Car Seat cannot be blank." if car_seat.nil? || car_seat.to_s.strip.empty?
+    # car color method validation
+    errors << "Car Stock cannot be blank." if car_stock.nil? || car_stock.to_s.strip.empty?
     # quantity method validation
     errors << "Quantity cannot be blank." if quantity.nil? || quantity.to_s.strip.empty?
     # payment method validation
@@ -1222,6 +1238,33 @@ get '/edit_checkout/:id' do
     erb :'user/cars/edit_checkout', layout: :'layouts/main'
 end 
 
+# Edit a Car Transaction
 post '/edit_checkout/:id' do 
+    @errors = editing_a_transaction(params[:car_name], params[:car_brand], params[:car_color], params[:car_transmission], params[:car_price], params[:car_manufacture], params[:car_seat], params[:car_stock], params[:quantity], params[:payment_method], params[:account_number], params[:id])
+
+    if @errors.empty?
+        # Flash Message
+        session[:success] = "A Car Transaction has been successfully updated." 
+
+        # Update the car in the database
+        DB.execute("UPDATE transactions SET quantity = ?, payment_method = ?, account_number = ? WHERE id = ?", [params[:quantity], params[:payment_method], params[:account_number], params[:id]])
+
+        redirect '/waiting'
+    else 
+        # Handle validation errors and re-render the edit form 
+        original_transaction = DB.execute("SELECT * FROM transactions WHERE id = ?", [params[:id]]).first
+
+        # Merge validation errors and re-render the edit form
+        @transaction = {
+            'id' => params[:id],
+            'car_name' => params[:car_name] || original_transaction['car_name'],
+            'car_brand' => params[:car_brand] || original_transaction['car_brand'],
+            'car_stock' => params[:car_stock] || original_transaction['car_stock'],
+            'quantity' => params[:quantity] || original_transaction['quantity'],
+            'payment_method' => params[:payment_method] || original_transaction['payment_method'],
+            'account_number' => params[:account_number] || original_transaction['account_number']
+        }
+        erb :'user/cars/edit_checkout', layout: :'layouts/main'
+    end 
 
 end 

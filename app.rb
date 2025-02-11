@@ -1192,9 +1192,32 @@ end
 
 get '/edit_checkout/:id' do 
     redirect '/login' unless logged_in?
-
-    @car = DB.execute("SELECT * FROM cars WHERE id = ?", [params[:id]]).first
-    @errors = []
     @title = "Edit A Car Transaction"
+    transaction_id = params[:id]
+
+    # Fetch the transaction data by ID
+    @transaction = DB.get_first_row(<<-SQL, [transaction_id])
+        SELECT transactions.*,
+            cars.name AS car_name,
+            cars.photo AS car_photo,
+            cars.brand AS car_brand,
+            cars.color AS car_color,
+            cars.transmission AS car_transmission,
+            cars.price AS car_price,
+            cars.manufacture AS car_manufacture,
+            cars.seat AS car_seat,
+            cars.stock AS car_stock
+        FROM transactions 
+        JOIN cars ON transactions.car_id = cars.id
+        WHERE transactions.id = ?
+    SQL
+
+    # Handle case where transaction does not exist
+    if @transaction.nil?
+        session[:error] = "Transaction not found!"
+        redirect '/waiting'
+    end 
+
+    @errors = []
     erb :'user/cars/edit_checkout', layout: :'layouts/main'
 end 

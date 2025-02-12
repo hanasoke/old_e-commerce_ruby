@@ -1035,7 +1035,6 @@ get '/rejected' do
                         FROM transactions
                         JOIN cars ON transactions.car_id = cars.id
                         WHERE transactions.payment_status = 'Rejected';
-                        AND transactions.profile_id = #{current_profile['id']}
                     SQL
 
     erb :'user/cars/rejected', layout: :'layouts/main'
@@ -1295,7 +1294,21 @@ post '/edit_checkout/:id' do
         # Update the car in the database
         DB.execute("UPDATE transactions SET quantity = ?, payment_method = ?, account_number = ?, payment_photo = COALESCE(?, payment_photo) WHERE id = ?", [params[:quantity], params[:payment_method], params[:account_number], photo_filename, params[:id]])
 
-        redirect '/waiting'
+        # Fetch the transaction from the database
+        transaction = DB.execute("SELECT * FROM transactions WHERE id = ?", params[:id]).first
+        
+        # Redirect based on access level 
+        case transaction['payment_status']
+
+            # Pending Status
+            when 'Pending' then redirect '/waiting'
+            
+            # Rejected Status
+            when 'Rejected' then redirect '/rejected'
+
+        else 
+            session[:error] = "Invalid access level"
+        end  
     else 
         # Handle validation errors and re-render the edit form 
         original_transaction = DB.execute("SELECT * FROM transactions WHERE id = ?", [params[:id]]).first

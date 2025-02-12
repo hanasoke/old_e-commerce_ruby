@@ -190,7 +190,7 @@ def editing_a_transaction(car_name, car_brand, car_color, car_transmission, car_
         errors << "Car Price Cannot be Blank."
     elsif car_price.to_s !~ /\A\d+(\.\d{1,2})?\z/
         errors << "Car Price must be a valid number."
-    elsif car_price.to_i <= 0
+    elsif car_price.to_f <= 0
         errors << "Car Price must be a positive number"
     end  
     
@@ -200,6 +200,8 @@ def editing_a_transaction(car_name, car_brand, car_color, car_transmission, car_
     errors << "Car Seat cannot be blank." if car_seat.nil? || car_seat.to_s.strip.empty?
     # car color method validation
     errors << "Car Stock cannot be blank." if car_stock.nil? || car_stock.to_s.strip.empty?
+
+    # car quantity method validation
     if quantity.nil? || quantity.strip.empty?
         errors << "Quantity Cannot be Blank."
     elsif quantity.to_s !~ /\A\d+(\.\d{1,2})?\z/
@@ -207,6 +209,7 @@ def editing_a_transaction(car_name, car_brand, car_color, car_transmission, car_
     elsif quantity.to_i <= 0
         errors << "Quantity must be a positive number"
     end  
+
     # payment method validation
     errors << "Payment Method cannot be blank." if payment_method.nil? || payment_method.strip.empty?
 
@@ -1259,14 +1262,15 @@ get '/edit_checkout/:id' do
 end 
 
 # Edit a Car Transaction
-post '/edit_checkout/:id' do 
+post '/edit_checkout/:id' do
+    
     @errors = editing_a_transaction(params[:car_name], params[:car_brand], params[:car_color], params[:car_transmission], params[:car_price], params[:car_manufacture], params[:car_seat], params[:car_stock], params[:quantity], params[:payment_method], params[:account_number], params[:id]) 
 
     # photo
     photo = params['payment_photo']
-
     # Validate only if a new photo is provided
-    @errors += validate_photo(photo) if photo && photo [:tempfile]
+    @errors += validate_photo(photo) if photo && photo[:tempfile]
+    
     photo_filename = nil 
     
     if @errors.empty?
@@ -1278,11 +1282,18 @@ post '/edit_checkout/:id' do
             end 
         end 
 
+        if photo && photo[:tempfile]
+            photo_filename = "#{Time.now.to_i}_#{photo[:filename]}"
+            File.open("./public/uploads/#{photo_filename}", "wb") do |f|
+                f.write(photo[:tempfile].read)
+            end 
+        end 
+
         # Flash Message
         session[:success] = "A Car Transaction has been successfully updated." 
 
         # Update the car in the database
-        DB.execute("UPDATE transactions SET quantity = ?, payment_method = ?, account_number = ?, payment_photo = ? WHERE id = ?", [params[:quantity], params[:payment_method], params[:account_number], photo_filename, params[:id]])
+        DB.execute("UPDATE transactions SET quantity = ?, payment_method = ?, account_number = ?, payment_photo = COALESCE(?, payment_photo) WHERE id = ?", [params[:quantity], params[:payment_method], params[:account_number], photo_filename, params[:id]])
 
         redirect '/waiting'
     else 

@@ -163,6 +163,21 @@ def validate_transaction(payment_method, quantity, account_number, id = nil)
     errors 
 end 
 
+def validate_wishlist(quantity, id = nil)
+    errors = []
+
+     # quantity validation
+    if quantity.nil? || quantity.strip.empty?
+        errors << "Quantity Cannot be Blank."
+    elsif quantity.to_s !~ /\A\d+(\.\d{1,2})?\z/
+        errors << "Quantity must be a valid number."
+    elsif quantity.to_i <= 0
+        errors << "Quantity must be a positive number."
+    end
+
+    errors
+end 
+
 # Validate transaction 
 def editing_transaction(payment_status, id = nil)
     errors = []
@@ -934,7 +949,7 @@ get '/detail_car/:id' do
 
     # Handle Car where car does not exist
     if @car.nil? 
-        session[:error] = " Car is not founded !"
+        session[:error] = "Car is not founded !"
         redirect '/error_page'
     end 
     erb :'user/cars/detail', layout: :'layouts/main'
@@ -1346,6 +1361,12 @@ get '/wishlist/:id' do
     @car = DB.execute("SELECT * FROM cars WHERE id = ?", [params[:id]]).first
     @errors = []
     @title = "Car Detail"
+
+    # Handle Wishlist where car does not exist
+    if @car.nil?
+        session[:error] = "Wishlist is not founded !"
+        redirect '/error_page'
+    end 
     erb :'user/cars/wishlist', layout: :'layouts/main'
 end 
 
@@ -1354,11 +1375,33 @@ post '/wishlist/:id' do
 
     @car = DB.execute("SELECT * FROM cars WHERE id = ?", [params[:id]]).first
 
-    # Check if the car exist
+    # Check The Car if the car exist
     if @car.nil? 
         session[:error] = "Wishlist is not founded."
         redirect '/error_page'
     end 
+
+    quantity = params[:quantity].to_i
+    total_price = @car['price'].to_i * quantity
+
+    @errors = validate_wishlist(params[:quantity])
+
+    if @errors.empty?
+
+        # Flash Message
+        session[:success] = "The Wishlist has been successfully added."
+
+        # Insert transaction into the database
+        DB.execute("INSERT INTO wishlists (car_id, quantity, total_price) VALUES (?, ?, ?)", 
+        [@car[:id], quantity, total_price])
+
+        redirect '/wishlist_list'
+    
+    else 
+        erb :'user/cars/wishlist', layout: 'layouts/main'
+
+    end 
+
 end 
 
 get '/error_page' do 

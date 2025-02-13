@@ -186,7 +186,7 @@ def editing_a_transaction(car_name, car_brand, car_color, car_transmission, car_
     errors << "Car Transmission cannot be blank." if car_transmission.nil? || car_transmission.to_s.strip.empty?
 
     # car price method validation
-    if car_price.nil? || car_price.strip.empty?
+    if car_price.nil? || car_price.to_s.strip.empty?
         errors << "Car Price Cannot be Blank."
     elsif car_price.to_s !~ /\A\d+(\.\d{1,2})?\z/
         errors << "Car Price must be a valid number."
@@ -202,9 +202,9 @@ def editing_a_transaction(car_name, car_brand, car_color, car_transmission, car_
     errors << "Car Stock cannot be blank." if car_stock.nil? || car_stock.to_s.strip.empty?
 
     # car quantity method validation
-    if quantity.nil? || quantity.strip.empty?
+    if quantity.nil? || quantity.to_s.strip.empty?
         errors << "Quantity Cannot be Blank."
-    elsif quantity.to_s !~ /\A\d+(\.\d{1,2})?\z/
+    elsif quantity.to_s !~ /\A\d+\z/
         errors << "Quantity must be a valid number."
     elsif quantity.to_i <= 0
         errors << "Quantity must be a positive number"
@@ -214,9 +214,9 @@ def editing_a_transaction(car_name, car_brand, car_color, car_transmission, car_
     errors << "Payment Method cannot be blank." if payment_method.nil? || payment_method.strip.empty?
 
     # account number validation
-    if account_number.nil? || account_number.strip.empty?
+    if account_number.nil? || account_number.to_s.strip.empty?
         errors << "Account Number Cannot be Blank."
-    elsif account_number.to_s !~ /\A\d+(\.\d{1,2})?\z/
+    elsif account_number.to_s !~ /\A\d+\z/
         errors << "Account Number must be a valid number."
     elsif account_number.to_i <= 0
         errors << "Account Number must be a positive number"
@@ -1262,28 +1262,56 @@ end
 
 # Edit a Car Transaction
 post '/edit_checkout/:id' do
+
+    transaction_id = params[:id].to_i
+
+    quantity = params[:quantity].to_i
     
-    @errors = editing_a_transaction(params[:car_name], params[:car_brand], params[:car_color], params[:car_transmission], params[:car_price], params[:car_manufacture], params[:car_seat], params[:car_stock], params[:quantity], params[:payment_method], params[:account_number], params[:id]) 
+    @errors = editing_a_transaction(params[:car_name], params[:car_brand], params[:car_color], params[:car_transmission], params[:car_price], params[:car_manufacture], params[:car_seat], params[:car_stock], quantity, params[:payment_method], params[:account_number], transaction_id) 
+
+     # Fetch the transaction data by ID
+    transaction = DB.execute("SELECT * FROM transactions WHERE id = ?", [transaction_id]).first
+    if transaction.nil? 
+        redirect '/error_page'
+    end 
+
+    car = DB.execute("SELECT * FROM cars WHERE id = ?", transaction['car_id']).first
+    if car.nil? 
+        redirect '/error_page'
+    end 
+
 
     # photo
     photo = params['payment_photo']
+
     # Validate only if a new photo is provided
-    @errors += validate_photo(photo) if photo && photo[:tempfile]
+    if photo && photo[:tempfile]
+        @errors += validate_photo(photo)
+    end 
     
-    photo_filename = nil 
+    previous_quantity = transaction['quantity'].to_i
+    stock = car['stock'].to_i
     
     if @errors.empty?
-        # Handle file image upload
+
+        # Adjust stock based on quantity change
+        if quantity > previous_quantity 
+            difference = quantity - previous_quantity
+            if stock >= difference 
+                stock -= difference
+            else 
+                @errors = ['Not enough stock available.']
+                return erb :'user/cars/edit_checkout', layout: :'layouts/main'
+            end 
+        elsif  quantity < previous_quantity 
+            difference = previous_quantity - quantity
+            stock += difference
+        end 
+
+        # Handle file payment photo upload
         if photo && photo[:tempfile]
             photo_filename = "#{Time.now.to_i}_#{photo[:filename]}"
             File.open("./public/uploads/payments/#{photo_filename}", 'wb') do |f|
-                f.write(photo[:tempfile].read)
-            end 
-        end 
-
-        if photo && photo[:tempfile]
-            photo_filename = "#{Time.now.to_i}_#{photo[:filename]}"
-            File.open("./public/uploads/#{photo_filename}", "wb") do |f|
                 f.write(photo[:tempfile].read)
             end 
         end 
@@ -1292,10 +1320,13 @@ post '/edit_checkout/:id' do
         session[:success] = "A Car Transaction has been successfully updated." 
 
         # Update the car in the database
-        DB.execute("UPDATE transactions SET quantity = ?, payment_method = ?, account_number = ?, payment_photo = COALESCE(?, payment_photo) WHERE id = ?", [params[:quantity], params[:payment_method], params[:account_number], photo_filename, params[:id]])
+        DB.execute("UPDATE transactions SET quantity = ?, payment_method = ?, account_number = ?, payment_photo = COALESCE(?, payment_photo) WHERE id = ?", [quantity, params[:payment_method], params[:account_number], photo_filename, transaction_id])
+
+        # Update the stock in the database
+        DB.execute("UPDATE cars SET stock = ? WHERE id = ?", [stock, car['id']])
 
         # Fetch the transaction from the database
-        transaction = DB.execute("SELECT * FROM transactions WHERE id = ?", params[:id]).first
+        transaction = DB.execute("SELECT * FROM transactions WHERE id = ?", transaction_id).first
         
         # Redirect based on access level 
         case transaction['payment_status']
@@ -1308,6 +1339,7 @@ post '/edit_checkout/:id' do
 
         else 
             session[:error] = "Invalid access level"
+            redirect '/error_page'
         end  
     else 
         # Handle validation errors and re-render the edit form 
@@ -1324,7 +1356,7 @@ post '/edit_checkout/:id' do
             'car_manufacture' => params[:car_manufacture] || original_transaction['car_manufacture'],
             'car_seat' => params[:car_seat] || original_transaction['car_seat'],
             'car_stock' => params[:car_stock] || original_transaction['car_stock'],
-            'quantity' => params[:quantity] || original_transaction['quantity'],
+            'quantity' => quantity || original_transaction['quantity'],
             'payment_method' => params[:payment_method] || original_transaction['payment_method'],
             'account_number' => params[:account_number] || original_transaction['account_number'],
             'payment_photo' => photo_filename || original_transaction['payment_photo']

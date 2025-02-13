@@ -164,11 +164,10 @@ SQL
 
 DB.execute <<-SQL 
     CREATE TABLE IF NOT EXISTS wishlists (
-        CREATE TABLE IF NOT EXISTS wishlists (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            car_id INTEGER,
-            quantity INTEGER, 
-            total_price INTEGER
-        )
-    );
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        car_id INTEGER,
+        quantity INTEGER, 
+        total_price INTEGER,
+        FOREIGN KEY(car_id) REFERENCES cars(id)
+    )
 SQL

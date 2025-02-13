@@ -1277,7 +1277,46 @@ post '/edit_checkout/:id' do
             'account_number' => params[:account_number] || original_transaction['account_number'],
             'payment_photo' => photo_filename || original_transaction['payment_photo']
         }
+        
         erb :'user/cars/edit_checkout', layout: :'layouts/main'
     end 
 
+end 
+
+get '/back/:id' do 
+    redirect '/login' unless logged_in?
+    @title = "Back to Transaction List"
+
+    transaction_id = params[:id]
+
+    # Fetch the specific transaction data by ID
+    @transaction = DB.execute(<<-SQL, [transaction_id]).first
+        SELECT transactions.*,
+                cars.name AS car_name,
+                cars.photo
+        FROM transactions 
+        JOIN cars ON transactions.car_id = cars.id
+        WHERE transactions.id = ?;
+    SQL
+
+    # Handle case where transaction does not exist
+    if @transaction.nil? 
+        session[:error] = "Transaction not found!"
+        redirect '/error_page'
+    end 
+
+    # Redirect based on payment status
+    case @transaction['payment_status']
+
+    # Pending Status
+    when 'Pending'  
+        redirect '/waiting' 
+        
+    # Reject Status 
+    when 'Rejected' 
+        redirect '/rejected'
+    else
+        session[:error] = "Invalid access level"
+        redirect '/error_page'
+    end 
 end 

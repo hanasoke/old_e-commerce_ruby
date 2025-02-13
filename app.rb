@@ -1395,7 +1395,7 @@ post '/wishlist/:id' do
         DB.execute("INSERT INTO wishlists (car_id, quantity, total_price) VALUES (?, ?, ?)", 
         [@car[:id], quantity, total_price])
 
-        redirect '/wishlist_list'
+        redirect '/wishlist_lists'
     
     else 
         erb :'user/cars/wishlist', layout: 'layouts/main'
@@ -1410,4 +1410,21 @@ get '/error_page' do
     @title = "Error Page"
 
     erb :'user/cars/error_page', layout: :'layouts/main'
+end 
+
+get 'wishlist_lists' do 
+    redirect '/login' unless logged_in?
+
+    @title = "Wishlist Lists"
+
+    # Fetch only wishlist waiting for approval
+    @wishlists = DB.execute(<<-SQL) 
+        SELECT wishlists.*, 
+                cars.name AS car_name,
+                cars.photo AS car_photo
+        FROM wishlists 
+        JOIN cars ON wishlists.car_id = cars.id;
+    SQL
+    
+    erb :'user/cars/wishlist_lists', layout: :'layouts/main'
 end 

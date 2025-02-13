@@ -862,6 +862,11 @@ get '/edit_profile/:id' do
     @title = "Edit Profile"
     @profile = DB.execute("SELECT * FROM profiles WHERE id = ?", [params[:id]]).first
     @errors = []
+
+    if @profile.nil? 
+        session[:error] = "Profile is not founded!"
+        redirect '/error_page'
+    end 
     erb :'user/edit_profile', layout: :'layouts/main'
 end 
 
@@ -926,6 +931,12 @@ get '/detail_car/:id' do
     @car = DB.execute("SELECT * FROM cars WHERE id = ?", [params[:id]]).first
     @errors = []
     @title = "Car Detail"
+
+    # Handle Transaction where transaction does not exist
+    if @car.nil? 
+        session[:error] = " Car is not founded !"
+        redirect '/error_page'
+    end 
     erb :'user/cars/detail', layout: :'layouts/main'
 end 
 

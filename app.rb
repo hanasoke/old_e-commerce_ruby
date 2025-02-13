@@ -1291,6 +1291,9 @@ post '/edit_checkout/:id' do
     
     previous_quantity = transaction['quantity'].to_i
     stock = car['stock'].to_i
+
+    price_per_unit = car['price'].to_i 
+    total_price = price_per_unit * quantity
     
     if @errors.empty?
 
@@ -1320,7 +1323,7 @@ post '/edit_checkout/:id' do
         session[:success] = "A Car Transaction has been successfully updated." 
 
         # Update the car in the database
-        DB.execute("UPDATE transactions SET quantity = ?, payment_method = ?, account_number = ?, payment_photo = COALESCE(?, payment_photo) WHERE id = ?", [quantity, params[:payment_method], params[:account_number], photo_filename, transaction_id])
+        DB.execute("UPDATE transactions SET quantity = ?, total_price = ?, payment_method = ?, account_number = ?, payment_photo = COALESCE(?, payment_photo) WHERE id = ?", [quantity, total_price, params[:payment_method], params[:account_number], photo_filename, transaction_id])
 
         # Update the stock in the database
         DB.execute("UPDATE cars SET stock = ? WHERE id = ?", [stock, car['id']])

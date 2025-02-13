@@ -46,7 +46,8 @@
           <div class="mb-3 row">
             <label for="car_price" class="col-sm-2 col-form-label">Price</label>
             <div class="col-sm-10">
-              <input type="text" class="form-control-plaintext" id="car_price" name="car_price" value="<%= @transaction['car_price'] %>" />
+              <input type="hidden" class="form-control-plaintext" id="car_price" name="car_price" value="<%= @transaction['car_price'] %>" />
+              <input type="text" class="form-control-plaintext" value="<%= format_rupiah(@transaction['car_price']) %>" />
             </div>
           </div>
           <div class="mb-3 row">
@@ -83,8 +84,14 @@
         <div class="mb-3 row">
             <label for="quantity" class="col-sm-2 col-form-label">Quantity Order</label>
             <div class="col-sm-10">
-            <input type="number" class="form-control" name="quantity" id="quantity" min="1" max="<%= @transaction['car_stock'] %>" value="<%= @transaction['quantity'] %>" />
+              <input type="number" class="form-control" name="quantity" id="quantity" min="1" max="<%= @transaction['car_stock'] %>" value="<%= @transaction['quantity'] %>" />
             </div>
+        </div>
+        <div class="mb-3 row">
+          <label for="total_price" class="col-sm col-form-label">Total Price</label>
+          <div class="col-sm-10">
+            <input type="text" class="form-control" disabled id="total_price" value="<%= format_rupiah(@transaction['car_price'].to_i * @transaction['quantity'].to_i) %>">
+          </div>
         </div>
         <div class="mb-3 row">
             <label for="account_number" class="col-sm-2 col-form-label">Account Number</label>
@@ -111,3 +118,19 @@
     </div>
   </div>
 </div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    let quantityInput = document.getElementById("quantity");
+    let totalPriceField = document.getElementById("total_price");
+    
+    // Fetch the unit price
+    let pricePerUnit = <%= @transaction['car_price'].to_i %>;
+
+    quantityInput.addEventListener("input", function() {
+      let newTotal = pricePerUnit * quantityInput.value;
+      totalPriceField.value = newTotal.toLocaleString("id-ID", {style: 'currency', currency: "IDR"});
+    })
+
+  })
+</script>

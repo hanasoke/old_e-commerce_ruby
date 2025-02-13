@@ -161,3 +161,14 @@ SQL
 #     # Rename the new table to transactions
 #     DB.execute("ALTER TABLE transactions_new RENAME TO transactions;")
 # end 
+
+DB.execute <<-SQL 
+    CREATE TABLE IF NOT EXISTS wishlists (
+        CREATE TABLE IF NOT EXISTS wishlists (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            car_id INTEGER,
+            quantity INTEGER, 
+            total_price INTEGER
+        )
+    );
+SQL

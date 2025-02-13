@@ -932,7 +932,7 @@ get '/detail_car/:id' do
     @errors = []
     @title = "Car Detail"
 
-    # Handle Transaction where transaction does not exist
+    # Handle Car where car does not exist
     if @car.nil? 
         session[:error] = " Car is not founded !"
         redirect '/error_page'
@@ -946,6 +946,14 @@ get '/checkout/:id' do
     @car = DB.execute("SELECT * FROM cars WHERE id = ?", [params[:id]]).first
     @errors = []
     @title = "Car Checkout"
+
+    # Handle Car where car does not exist
+    if @car.nil?
+        session[:error] = "Car is not founded !"
+
+        redirect '/error_page'
+    end 
+
     erb :'user/cars/checkout', layout: :'layouts/main'
 end 
 
@@ -956,10 +964,10 @@ post '/checkout/:id' do
 
     # Check if the car exist
     if @car.nil? 
-        session[:error] = "Car not found."
+        session[:error] = "Car is not founded."
 
         # Redirect user back to main page listing or another relevant page
-        redirect '/user_page'
+        redirect '/error_page'
     end 
 
     quantity = params[:quantity].to_i
@@ -1338,13 +1346,25 @@ get '/wishlist/:id' do
     @car = DB.execute("SELECT * FROM cars WHERE id = ?", [params[:id]]).first
     @errors = []
     @title = "Car Detail"
-    erb :'user/cars/detail', layout: :'layouts/main'
+    erb :'user/cars/wishlist', layout: :'layouts/main'
+end 
+
+post '/wishlist/:id' do 
+    redirect '/login' unless logged_in?
+
+    @car = DB.execute("SELECT * FROM cars WHERE id = ?", [params[:id]]).first
+
+    # Check if the car exist
+    if @car.nil? 
+        session[:error] = "Wishlist is not founded."
+        redirect '/error_page'
+    end 
 end 
 
 get '/error_page' do 
     redirect '/login' unless logged_in?
     @errors = []
     @title = "Error Page"
+
     erb :'user/cars/error_page', layout: :'layouts/main'
-    
 end 

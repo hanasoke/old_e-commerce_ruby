@@ -1,14 +1,14 @@
 <div class="container">
-  <div class="row">
+  <div class="row my-5">
     <div class="col">
-      <% if @errors.any? %> 
-        <% @errors.each do |error| %>
-          <div class="alert alert-warning alert-dismissible fade show" role="alert">
-            <strong> <%= error %> </strong>
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-          </div>
-        <% end %> 
-      <% end %>
+      <!-- Success Alert -->
+      <%if session[:error] %>
+      <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        <div><%= session[:error] %></div>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+      </div>
+      <!-- Clear the flash message -->
+      <% session[:error] = nil %> <% end %>
     </div>
   </div>
 </div>

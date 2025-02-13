@@ -1166,7 +1166,7 @@ get '/edit_checkout/:id' do
     # Handle case where transaction does not exist
     if @transaction.nil?
         session[:error] = "Transaction not found!"
-        redirect '/waiting'
+        redirect '/error_page'
     end 
 
     @errors = []
@@ -1319,4 +1319,21 @@ get '/back/:id' do
         session[:error] = "Invalid access level"
         redirect '/error_page'
     end 
+end 
+
+get '/wishlist/:id' do 
+    redirect '/login' unless logged_in?
+
+    @car = DB.execute("SELECT * FROM cars WHERE id = ?", [params[:id]]).first
+    @errors = []
+    @title = "Car Detail"
+    erb :'user/cars/detail', layout: :'layouts/main'
+end 
+
+get '/error_page' do 
+    redirect '/login' unless logged_in?
+    @errors = []
+    @title = "Error Page"
+    erb :'user/cars/error_page', layout: :'layouts/main'
+    
 end 

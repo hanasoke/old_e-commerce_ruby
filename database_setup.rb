@@ -171,3 +171,9 @@ DB.execute <<-SQL
         FOREIGN KEY(car_id) REFERENCES cars(id)
     )
 SQL
+
+begin 
+    DB.execute("ALTER TABLE wishlist ADD COLUMN profile_id INTEGER;")
+rescue SQLite3::SQLException => e 
+    puts "Column 'manufacture' already exists or another error occured: #{e.message}"
+end

@@ -527,6 +527,7 @@ end
 
 get '/wishlist_users' do 
     @title = "Wishlist Lists"
+    @wishlists = DB.execute("SELECT * FROM wishlists")
     erb :'admin/wishlist', layout: :'layouts/admin'
 end 
 

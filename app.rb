@@ -1393,16 +1393,15 @@ post '/wishlist/:id' do
         session[:success] = "The Wishlist has been successfully added."
 
         # Insert transaction into the database
-        DB.execute("INSERT INTO wishlists (car_id, quantity, total_price) VALUES (?, ?, ?)", 
-        [@car[:id], quantity, total_price])
+        DB.execute("INSERT INTO wishlists (car_id, profile_id, quantity, total_price) VALUES (?, ?, ?, ?)", 
+        [@car['id'], current_profile['id'], quantity, total_price])
 
         redirect '/wishlist_lists'
     
     else 
-        erb :'user/cars/wishlist', layout: 'layouts/main'
+        erb :'user/cars/wishlist', layout: :'layouts/main'
 
     end 
-
 end 
 
 get '/error_page' do 
@@ -1413,7 +1412,7 @@ get '/error_page' do
     erb :'user/cars/error_page', layout: :'layouts/main'
 end 
 
-get 'wishlist_lists' do 
+get '/wishlist_lists' do 
     redirect '/login' unless logged_in?
 
     @title = "Wishlist Lists"
@@ -1421,11 +1420,12 @@ get 'wishlist_lists' do
     # Fetch only wishlist waiting for approval
     @wishlists = DB.execute(<<-SQL) 
         SELECT wishlists.*, 
-                cars.name AS car_name,
-                cars.photo AS car_photo
-        FROM wishlists 
-        JOIN cars ON wishlists.car_id = cars.id;
-    SQL
+            cars.name AS car_name,
+            cars.photo AS car_photo
+            FROM wishlists 
+            JOIN cars ON wishlists.car_id = cars.id
+            WHERE wishlists.id = ?;
+        SQL
     
     erb :'user/cars/wishlist_lists', layout: :'layouts/main'
 end 

@@ -68,7 +68,7 @@
             </div>
           </div>
           <form action="/wishlist/<%= @car['id']%>" method="post">
-            <input type="hidden" name="price" value="<%= @car['id'] %>" />
+            <input type="hidden" name="car_id" value="<%= @car['id'] %>" />
             <div class="mb-3 row">
               <label for="quantity" class="col-sm-2 col-form-label">Quantity Wishlist</label>
               <div class="col-sm-10">
@@ -83,7 +83,7 @@
               </div>
             </div>
           <!-- Button trigger modal -->
-          <a href="/wishlist/<%= @car['id'] %>" class="btn btn-success float-end">Checkout Now</a>
+          <button type="submit" class="btn btn-success float-end">Add to My Wishlist</button>
           </form>
           <a href="/user_page" class="btn btn-outline-secondary float-start">Back</a>
         </div>

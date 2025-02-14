@@ -46,7 +46,6 @@
           <div class="mb-3 row">
             <label for="price" class="col-sm-2 col-form-label">Price</label>
             <div class="col-sm-10">
-              <input type="hidden" class="form-control-plaintext" name="price" id="price" value="<%= @car['price'] %>" />
               <input type="text" class="form-control-plaintext" value="<%= format_rupiah(@car['price']) %>" />
             </div>
           </div>
@@ -68,20 +67,24 @@
               <input type="text" class="form-control-plaintext" id="stock" value="<%= @car['stock'] %>" />
             </div>
           </div>
-          <div class="mb-3 row">
-            <label for="quantity" class="col-sm-2 col-form-label">Quantity Wishlist</label>
-            <div class="col-sm-10">
-              <input type="number" class="form-control" name="quantity" id="quantity" min="1" max="<%= @car['stock'] %>" value="<%= params[:quantity] %>" />
+          <form action="/wishlist/<%= @car['id']%>" method="post">
+            <input type="hidden" name="price" value="<%= @car['id'] %>" />
+            <div class="mb-3 row">
+              <label for="quantity" class="col-sm-2 col-form-label">Quantity Wishlist</label>
+              <div class="col-sm-10">
+                <input type="number" class="form-control" name="quantity" id="quantity" min="1" max="<%= @car['stock'] %>" placeholder="Input Your Dream Car" value="<%= params[:quantity] %>" />
+              </div>
             </div>
-          </div>
-          <div class="mb-3 row">
-            <label for="total_price" class="col-sm-2 col-form-label">Total Price</label>
-            <div class="col-sm-10" >
-              <input type="text" id="total_price" class="form-control" disabled value="<%= format_rupiah(@car['price'].to_i * @car['stock'] .to_i) %>" />
+            <div class="mb-3 row">
+              <label for="total_price" class="col-sm-2 col-form-label">Total Price</label>
+              <div class="col-sm-10">
+                <input type="hidden" class="form-control-plaintext" name="price" id="price" value="<%= @car['price'] %>" />
+                <input type="text" id="total_price" class="form-control" disabled value="<%= format_rupiah(@car['price'].to_i * @car['stock'] .to_i) %>" />
+              </div>
             </div>
-          </div>
           <!-- Button trigger modal -->
-          <a href="/checkout/<%= @car['id'] %>" class="btn btn-success float-end">Checkout Now</a>
+          <a href="/wishlist/<%= @car['id'] %>" class="btn btn-success float-end">Checkout Now</a>
+          </form>
           <a href="/user_page" class="btn btn-outline-secondary float-start">Back</a>
         </div>
       </div>

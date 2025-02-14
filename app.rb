@@ -525,9 +525,9 @@ get '/logout' do
     redirect '/login'
 end 
 
-get '/payment_lists' do 
-    @title = "Payment Lists"
-    erb :'admin/payments', layout: :'layouts/admin'
+get '/wishlist_users' do 
+    @title = "Wishlist Lists"
+    erb :'admin/wishlist', layout: :'layouts/admin'
 end 
 
 get '/transactions_lists' do 

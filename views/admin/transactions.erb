@@ -37,8 +37,13 @@
           <tr>
             <!-- Iteration number starts from 1 -->
             <td><%= index + 1 %></td>
-            <td><% profile = DB.get_first_row("SELECT name FROM profiles WHERE id = ?", [transaction['profile_id']]) %> <%= profile && profile['name'] ? profile['name'] : 'No profile' %></td>
-            <td><% car = DB.get_first_row("SELECT name FROM cars WHERE id = ?", [transaction['car_id']]) %> <%= car && car['name'] ? car['name'] : 'No profile found' %></td>
+            <td>
+              <% profile = DB.get_first_row("SELECT name FROM profiles WHERE id = ?", [transaction['profile_id']]) %> 
+              <%= profile && profile['name'] ? profile['name'] : 'No profile' %>
+            </td>
+            <td>
+              <% car = DB.get_first_row("SELECT name FROM cars WHERE id = ?", [transaction['car_id']]) %> 
+              <%= car && car['name'] ? car['name'] : 'No profile found' %></td>
             <td><%= transaction['quantity'] %></td>
             <td><%= format_rupiah(transaction['total_price']) %></td>
             <td><%= transaction['payment_method'] %></td>

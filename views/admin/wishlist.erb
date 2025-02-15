@@ -20,37 +20,35 @@
         <thead>
           <tr>
             <th>No</th>
-            <th>Name</th>
-            <th>Username</th>
-            <th>Email</th>
-            <th>Age</th>
-            <th>Phone Number</th>
-            <th>Country</th>
-            <th>Image</th>
-            <th>Action</th>
+            <th>User</th>
+            <th>Car Name</th>
+            <th>Car Brand</th>
+            <th>Car Photo</th>
+            <th>Price Per Unit</th>
+            <th>Quantity Wishlist</th>
+            <th>Total Price</th>
           </tr>
         </thead>
         <tbody>
           <% @wishlists.each_with_index do |wishlist, index| %>
           <tr>
             <td><%= index + 1 %></td>
-            <td><%= wishlist[''] %></td>
-            <td><%= wishlist[''] %></td>
+            <td><% profile = DB.get_first_row("SELECT name from profiles WHERE id = ?", [wishlist['profile_id']]) %> <%= profile && profile['name'] ? profile['name'] : 'No profile' %></td>
+            <td><% car = DB.get_first_row("SELECT name FROM cars WHERE id = ?" , [wishlist['car_id']]) %> <%= car && car['name'] ? car['name'] : 'No car found' %></td>
+            <td><% car = DB.get_first_row("SELECT brand FROM cars WHERE id = ?" , [wishlist['car_id']]) %> <%= car && car['brand'] ? car['brand'] : 'No brand found' %></td>
+            <!-- <td><%= wishlist[''] %></td> -->
             <td>
-              <% if wishlist['photo'] %>
-              <img src="/uploads/<%= wishlist['photo'] %>" alt="<%= wishlist['name'] %>" style="max-width: 300px" />
+              <% car = DB.get_first_row("SELECT photo FROM cars WHERE id = ?" , [wishlist['car_id']]) %> <% if car['photo'] %>
+              <img src="/uploads/cars/<%= car && car['photo'] ? car['photo'] : 'No profile found' %>" alt="<%= wishlist['name'] %>" style="max-width: 300px" />
               <% else %>
               <p>No Photo Available</p>
               <% end %>
             </td>
             <td>
-              <div class="btn-group" role="group">
-                <a href="/users/<%= wishlist['id'] %>/edit" class="btn btn-info">Edit</a>
-
-                <!-- Delete Button triggers the modal -->
-                <button type="submit" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#">Delete</button>
-              </div>
+              <% car = DB.get_first_row("SELECT price FROM cars WHERE id = ?" , [wishlist['car_id']]) %> <%= car && car['price'] ? format_rupiah(car['price']) : 'No brand found'%>
             </td>
+            <td><%= wishlist['quantity'] %></td>
+            <td><%= format_rupiah(wishlist['total_price']) %></td>
           </tr>
           <% end %>
         </tbody>

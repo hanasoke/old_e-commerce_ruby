@@ -1429,3 +1429,41 @@ get '/wishlist_lists' do
     
     erb :'user/cars/wishlist_lists', layout: :'layouts/main'
 end 
+
+post '/wishlist/:id/delete' do 
+    # Ensure the user is logged in 
+    unless session[:user_id].nil?
+        session[:error] = "You must be logged in to delete a wishlist."
+        redirect '/login'
+    end 
+
+    # Get wishlist & user profile 
+    wishlist_id = params[:id].to_i
+    wishlist = DB.get_first_row("SELECT * FROM wishlists WHERE id = ?", [wishlist_id])
+    profile = current_profile
+
+    if wishlist.nil?
+        session[:error] = "Wishlist is not found."
+    elsif profile.nil?
+        session[:error] = "User is not authenticated."
+        redirect '/login'
+    else 
+        # Delete the wishlist
+        DB.execute("DELETE FROM wishlists WHERE id = ?", [wishlist_id])
+
+        # Flash message
+        session[:success] = "The wishlist has been successfully deleted."
+
+        # Redirect based on access level
+        case profile['access']
+        
+        # Regular user
+        when 0 then redirect '/wishlist_lists'
+        
+        # Admin
+        when 1 then redirect '/wishlist_users'
+        else 
+            session[:error] = "Invalid access level."
+        end 
+    end 
+end 

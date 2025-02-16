@@ -71,7 +71,7 @@
                           </div>
                           <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                            <form action="/wishlists/<%= wishlist['id'] %>/delete" method="POST">
+                            <form action="/wishlist/<%= wishlist['id'] %>/delete" method="POST">
                               <input type="hidden" name="_method" value="POST" />
                               <button type="submit" class="btn btn-primary">Delete</button>
                             </form>

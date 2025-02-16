@@ -1467,3 +1467,37 @@ post '/wishlist/:id/delete' do
         end 
     end 
 end 
+
+get '/edit_a_wishlist/:id' do 
+    redirect '/login' unless logged_in?
+
+    @title = "Edit A Wishlist"
+
+    wishlist_id = params[:id]
+
+    # Fetch the transaction data by ID
+    @wishlist = DB.get_first_row(<<-SQL, [wishlist_id])
+        SELECT wishlists.*,
+            cars.name AS car_name, 
+            cars.photo AS car_photo,
+            cars.brand AS car_brand, 
+            cars.color AS car_color,
+            cars.transmission AS car_transmission,
+            cars.price AS car_price,
+            cars.manufacture AS car_manufacture,
+            cars.seat AS car_seat,
+            cars.stock AS car_stock
+        FROM wishlists
+        JOIN cars ON wishlists.car_id = cars.id 
+        WHERE wishlists.id = ?
+    SQL
+
+    # Handle case where transaction does not exist
+    if @wishlist.nil?
+        session[:error] = "Wishlist not found!"
+        redirect '/error_page'
+    end 
+
+    @errors = []
+    erb :'user/cars/edit_a_wishlist', layout: :'layouts/main'
+end 

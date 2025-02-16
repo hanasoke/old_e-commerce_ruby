@@ -1,0 +1,136 @@
+<div class="container">
+  <div class="row mt-3">
+    <div class="col">
+      <% if @errors.any? %> <% @errors.each do |error| %>
+      <div class="alert alert-warning alert-dismissible fade show" role="alert">
+        <strong> <%= error %> </strong>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+      </div>
+      <% end %> <% end %>
+    </div>
+  </div>
+  <div class="row mb-5">
+    <div class="col mb-3">
+      <div class="card">
+       <form action="/edit_checkout/<%= @transaction['id']%>" method="post" enctype="multipart/form-data">
+        <input type="hidden" name="car_id" value="<%= @transaction['car_id'] %>" />
+        <input type="hidden" name="price" value="<%= @transaction['car_price'] %>" />
+        <% if @transaction['car_photo'] %>
+          <img src="/uploads/cars/<%= @transaction['car_photo'] %>" name="car_photo" class="card-img-top" alt="<%= @transaction['car_name'] %>" />
+        <% end %>
+        <div class="card-body">
+          <div class="mb-3 row">
+            <label for="name" class="col-sm-2 col-form-label">Name</label>
+            <div class="col-sm-10">
+              <input type="text" readonly class="form-control-plaintext" id="name" name="car_name" value="<%= @transaction['car_name'] %>" />
+            </div>
+          </div>
+          <div class="mb-3 row">
+            <label for="brand" class="col-sm-2 col-form-label">Brand</label>
+            <div class="col-sm-10">
+              <input type="text" class="form-control-plaintext" id="brand" name="car_brand" value="<%= @transaction['car_brand'] %>" />
+            </div>
+          </div>
+          <div class="mb-3 row">
+            <label for="color" class="col-sm-2 col-form-label">Color</label>
+            <div class="col-sm-10">
+              <input type="text" class="form-control-plaintext" id="color" name="car_color" value="<%= @transaction['car_color'] %>" />
+            </div>
+          </div>
+          <div class="mb-3 row">
+            <label for="transmission" class="col-sm-2 col-form-label">Transmission</label>
+            <div class="col-sm-10">
+              <input type="text" class="form-control-plaintext" id="transmission" name="car_transmission" value="<%= @transaction['car_transmission'] %>" />
+            </div>
+          </div>
+          <div class="mb-3 row">
+            <label for="car_price" class="col-sm-2 col-form-label">Price</label>
+            <div class="col-sm-10">
+              <input type="hidden" class="form-control-plaintext" id="car_price" name="car_price" value="<%= @transaction['car_price'] %>" />
+              <input type="text" class="form-control-plaintext" value="<%= format_rupiah(@transaction['car_price']) %>" />
+            </div>
+          </div>
+          <div class="mb-3 row">
+            <label for="manufacture" class="col-sm-2 col-form-label">Manufacture</label>
+            <div class="col-sm-10">
+              <input type="text" class="form-control-plaintext" id="manufacture" name="car_manufacture" value="<%= @transaction['car_manufacture'] %>" />
+            </div>
+          </div>
+          <div class="mb-3 row">
+            <label for="seat" class="col-sm-2 col-form-label">Seat</label>
+            <div class="col-sm-10">
+              <input type="text" class="form-control-plaintext" id="seat" name="car_seat" value="<%= @transaction['car_seat'] %>" />
+            </div>
+          </div>
+          <div class="mb-3 row">
+            <label for="car_stock" class="col-sm-2 col-form-label">Stock</label>
+            <div class="col-sm-10">
+              <input type="text" class="form-control-plaintext" id="car_stock" name="car_stock" value="<%= @transaction['car_stock'] %>" />
+            </div>
+          </div>
+        <div class="mb-3 row">
+            <label for="payment_method" class="col-sm-2 col-form-label">Payment Method</label>
+            <div class="col-sm-10">
+            <select type="text" class="form-select" name="payment_method" id="payment_method">
+                <option selected value="<%= @transaction['payment_method'] %>"><%= @transaction['payment_method'] %></option>
+                <option value="Ovo">Ovo</option>
+                <option value="Dana">Dana</option>
+                <option value="Shopee Pay">Shopee Pay</option>
+                <option value="Link Aja">Link Aja</option>
+                <option value="Gopay">Gopay</option>
+            </select>
+            </div>
+        </div>
+        <div class="mb-3 row">
+            <label for="quantity" class="col-sm-2 col-form-label">Quantity Order</label>
+            <div class="col-sm-10">
+              <input type="number" class="form-control" name="quantity" id="quantity" min="1" max="<%= @transaction['car_stock'] %>" value="<%= @transaction['quantity'] %>" />
+            </div>
+        </div>
+        <div class="mb-3 row">
+          <label for="total_price" class="col-sm col-form-label">Total Price</label>
+          <div class="col-sm-10">
+            <input type="text" class="form-control" disabled id="total_price" value="<%= format_rupiah(@transaction['car_price'].to_i * @transaction['quantity'].to_i) %>">
+          </div>
+        </div>
+        <div class="mb-3 row">
+            <label for="account_number" class="col-sm-2 col-form-label">Account Number</label>
+            <div class="col-sm-10">
+            <input type="number" class="form-control" name="account_number" id="account_number" value="<%= @transaction['account_number'] %>" />
+            </div>
+        </div>
+        <div class="mb-3 row">
+            <label for="payment_photo" class="col-sm-2 col-form-label">Payment Proof</label>
+              <div class="col-sm-10">
+                <input type="file" class="form-control" name="payment_photo" id="payment_photo" />
+                <% if @transaction['payment_photo'] %>
+                    <p class="mt-3">Current File : <img src="/uploads/payments/<%= @transaction['payment_photo'] %>" alt="<%= @transaction['car_name'] %>" class="img-thumbnail" style="width: 20%;" /></p>
+                <% end %>
+              </div>
+            </div>
+            <!-- Button trigger modal -->
+            <button type="submit" class="btn btn-success float-end mb-3">Update My Transaction</button>
+          </form>
+
+          <a href="/back/<%= @transaction['id'] %>" class="btn btn-outline-secondary float-start mb-3">Back</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    let quantityInput = document.getElementById("quantity");
+    let totalPriceField = document.getElementById("total_price");
+    
+    // Fetch the unit price
+    let pricePerUnit = <%= @transaction['car_price'].to_i %>;
+
+    quantityInput.addEventListener("input", function() {
+      let newTotal = pricePerUnit * quantityInput.value;
+      totalPriceField.value = newTotal.toLocaleString("id-ID", {style: 'currency', currency: "IDR"});
+    })
+
+  })
+</script>

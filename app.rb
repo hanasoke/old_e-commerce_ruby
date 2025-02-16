@@ -1393,8 +1393,8 @@ post '/wishlist/:id' do
         session[:success] = "The Wishlist has been successfully added."
 
         # Insert transaction into the database
-        DB.execute("INSERT INTO wishlists (car_id, profile_id, quantity, total_price) VALUES (?, ?, ?, ?)", 
-        [@car['id'], current_profile['id'], quantity, total_price])
+        DB.execute("INSERT INTO wishlists (car_id, profile_id, quantity, status, total_price) VALUES (?, ?, ?, ?, ?)", 
+        [@car['id'], current_profile['id'], quantity, "Pending", total_price])
 
         redirect '/wishlist_lists'
     
@@ -1418,14 +1418,14 @@ get '/wishlist_lists' do
     @title = "Wishlist Lists"
 
     # Fetch only wishlist waiting for approval
-    @wishlists = DB.execute(<<-SQL) 
-        SELECT wishlists.*, 
+    @wishlists = DB.execute(<<-SQL)
+        SELECT wishlists.*,
             cars.name AS car_name,
             cars.photo AS car_photo
-            FROM wishlists 
-            JOIN cars ON wishlists.car_id = cars.id
-            WHERE wishlists.id = ?;
-        SQL
+        FROM wishlists
+        JOIN cars ON wishlists.car_id = cars.id
+        WHERE wishlists.status = 'Pending';
+    SQL
     
     erb :'user/cars/wishlist_lists', layout: :'layouts/main'
 end 

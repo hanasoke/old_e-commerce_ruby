@@ -166,14 +166,13 @@ DB.execute <<-SQL
     CREATE TABLE IF NOT EXISTS wishlists (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         car_id INTEGER,
-        quantity INTEGER, 
+        profile_id INTEGER,
+        quantity INTEGER,
+        status TEXT, 
         total_price INTEGER,
-        FOREIGN KEY(car_id) REFERENCES cars(id)
+        FOREIGN KEY(car_id) REFERENCES cars(id),
+        FOREIGN KEY(profile_id) REFERENCES profiles(id)
     )
 SQL
 
-# begin 
-#     DB.execute("ALTER TABLE wishlists ADD COLUMN profile_id INTEGER;")
-# rescue SQLite3::SQLException => e 
-#     puts "Column 'profile_id' already exists or another error occured: #{e.message}"
-# end
+# DB.execute("DROP TABLE wishlists");

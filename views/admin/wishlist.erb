@@ -25,6 +25,7 @@
             <th>Car Brand</th>
             <th>Car Photo</th>
             <th>Price Per Unit</th>
+            <th>Status</th>
             <th>Quantity Wishlist</th>
             <th>Total Price</th>
           </tr>
@@ -44,9 +45,8 @@
               <p>No Photo Available</p>
               <% end %>
             </td>
-            <td>
-              <% car = DB.get_first_row("SELECT price FROM cars WHERE id = ?" , [wishlist['car_id']]) %> <%= car && car['price'] ? format_rupiah(car['price']) : 'No brand found'%>
-            </td>
+            <td><% car = DB.get_first_row("SELECT price FROM cars WHERE id = ?" , [wishlist['car_id']]) %> <%= car && car['price'] ? format_rupiah(car['price']) : 'No brand found'%></td>
+            <td><%= wishlist['status'] %></td>
             <td><%= wishlist['quantity'] %></td>
             <td><%= format_rupiah(wishlist['total_price']) %></td>
           </tr>

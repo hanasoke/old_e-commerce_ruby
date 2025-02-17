@@ -1499,5 +1499,5 @@ get '/edit_a_wishlist/:id' do
     end 
 
     @errors = []
-    erb :'user/cars/edit_a_wishlist', layout: :'layouts/main'
+    erb :'user/cars/edit_wishlist', layout: :'layouts/main'
 end 

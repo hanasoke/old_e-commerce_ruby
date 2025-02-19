@@ -240,6 +240,46 @@ def editing_a_transaction(car_name, car_brand, car_color, car_transmission, car_
     errors 
 end
 
+def editing_a_wishlist(car_name, car_brand, car_color, car_transmission, car_price, car_manufacture, car_seat, car_stock, quantity, id = nil)
+    errors = []
+
+    # car name method validation
+    errors << "Car Name cannot be blank." if car_name.nil? || car_name.to_s.strip.empty?
+    # car brand method validation
+    errors << "Car Brand cannot be blank." if car_brand.nil? || car_brand.to_s.strip.empty?
+    # car color method validation
+    errors << "Car Color cannot be blank." if car_color.nil? || car_color.to_s.strip.empty?
+    # car transmission method validation
+    errors << "Car Transmission cannot be blank." if car_transmission.nil? || car_transmission.to_s.strip.empty?
+
+    # car price method validation
+    if car_price.nil? || car_price.to_s.strip.empty?
+        errors << "Car Price Cannot be Blank."
+    elsif car_price.to_s !~ /\A\d+(\.\d{1,2})?\z/
+        errors << "Car Price must be a valid number."
+    elsif car_price.to_f <= 0
+        errors << "Car Price must be a positive number"
+    end  
+    
+    # car manufacture method validation
+    errors << "Car Manufacture cannot be blank." if car_manufacture.nil? || car_manufacture.to_s.strip.empty?
+    # car seat method validation
+    errors << "Car Seat cannot be blank." if car_seat.nil? || car_seat.to_s.strip.empty?
+    # car color method validation
+    errors << "Car Stock cannot be blank." if car_stock.nil? || car_stock.to_s.strip.empty?
+
+    # car quantity method validation
+    if quantity.nil? || quantity.to_s.strip.empty?
+        errors << "Quantity Cannot be Blank."
+    elsif quantity.to_s !~ /\A\d+\z/
+        errors << "Quantity must be a valid number."
+    elsif quantity.to_i <= 0
+        errors << "Quantity must be a positive number"
+    end  
+
+    errors 
+end
+
 def validate_profile_login(email, password)
     errors = []
     errors << "Password cannot be blank." if password.nil? || password.strip.empty?
@@ -1500,4 +1540,15 @@ get '/edit_a_wishlist/:id' do
 
     @errors = []
     erb :'user/cars/edit_wishlist', layout: :'layouts/main'
+end 
+
+# Edit A Wishlist
+post '/edit_a_wishlist/:id' do 
+
+    transaction_id = params[:id].to_i
+
+    quantity = params[:quantity].to_i
+
+    @errors = editing_a_wishlist(params[:car_name], params[:car_brand])
+
 end 

@@ -1355,7 +1355,6 @@ post '/edit_checkout/:id' do
         
         erb :'user/cars/edit_checkout', layout: :'layouts/main'
     end 
-
 end 
 
 get '/back/:id' do 
@@ -1545,10 +1544,54 @@ end
 # Edit A Wishlist
 post '/edit_a_wishlist/:id' do 
 
-    transaction_id = params[:id].to_i
+    wishlist_id = params[:id].to_i
 
     quantity = params[:quantity].to_i
 
-    @errors = editing_a_wishlist(params[:car_name], params[:car_brand])
+    @errors = editing_a_wishlist(params[:car_name], params[:car_brand], params[:car_color], params[:car_transmission], params[:car_price], params[:car_manufacture], params[:car_seat], params[:car_stock], quantity, wishlist_id)
 
+    # Fetch the Wishlist data by ID
+    wishlist = DB.execute("SELECT * FROM wishlists WHERE id = ?", [wishlist_id]).first
+    if wishlist.nil?
+        redirect '/error_page'
+    end 
+
+    car = DB.execute("SELECT * FROM cars WHERE id = ?", wishlist['car_id']).first
+    if car.nil?
+        redirect '/error_page'
+    end 
+
+    stock = car['stock'].to_i
+
+    price_per_unit = car['price'].to_i 
+    total_price = price_per_unit * quantity
+
+    if @errors.empty?
+        # Flash Message
+        session[:success] = "A Wishlist has been successfully updated."
+
+        # Update the wishlist in the database
+        DB.execute("UPDATE wishlists SET quantity = ?, total_price = ? WHERE id = ?", [quantity, total_price, wishlist_id])
+
+        redirect '/wishlist_lists'
+    else 
+        # Handlle validation errors and re-render the edit form 
+        original_wishlist = DB.execute("SELECT * FROM wishlists WHERE id = ?", [params[:id]]).first
+
+        # Merge validation errors and re-render the edit form 
+        @wishlist = {
+            'id' => params[:id],
+            'car_name' => params[:car_name] || original_wishlist['car_name'],
+            'car_brand' => params[:car_brand] || original_wishlist['car_brand'],
+            'car_color' => params[:car_color] || original_wishlist['car_color'],
+            'car_transmission' => params[:car_transmission] || original_wishlist['car_transmission'],
+            'car_price' => params[:car_price] || original_wishlist['car_price'],
+            'car_manufacture' => params[:car_manufacture] || original_wishlist['car_manufacture'],
+            'car_seat' => params[:car_seat] || original_wishlist['car_seat'],
+            'car_stock' => params[:car_stock] || original_wishlist['car_stock'],
+            'quantity' => quantity || original_transaction['quantity']
+        }
+
+        erb :'user/cars/edit_wishlist', layout: :'layouts/main'
+    end 
 end 

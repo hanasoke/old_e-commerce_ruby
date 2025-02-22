@@ -100,8 +100,7 @@
     let pricePerUnit = <%= @car['price'].to_i %>;
 
     quantityInput.addEventListener("input", function() {
-      let newTotal = pricePerUnit * quantityInput.value;
-      totalPriceField.value = newTotal.toLocaleString("id-ID", {style: 'currency', currency: "IDR"});
+      
     })
 
   });

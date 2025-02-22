@@ -81,7 +81,13 @@
             <div class="mb-3 row">
               <label for="quantity" class="col-sm-2 col-form-label">Quantity Order</label>
               <div class="col-sm-10">
-                <input type="number" class="form-control" name="quantity" id="quantity" min="1" max="<%= @wishlist['stock'] %>" value="<%= params[:quantity] %>" />
+                <input type="number" class="form-control" name="quantity" id="quantity" min="1" max="<%= @wishlist['car_stock'] %>" value="<%= @wishlist['quantity'] %>" />
+              </div>
+            </div>
+            <div class="mb-3 row">
+              <label for="total_price" class="col-sm col-form-label"> Total Price </label>
+              <div class="col-sm-10">
+                <input type="text" class="form-control" disabled id="total_price" value="<%= format_rupiah(@wishlist['car_price'].to_i * @wishlist['quantity'].to_i) %>" />
               </div>
             </div>
             <div class="mb-3 row">
@@ -106,3 +112,19 @@
     </div>
   </div>
 </div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    let quantityInput = document.getElementById('quantity');
+    let totalPriceField = document.getElementById('total_price');
+
+    // Fetch the unit price
+    let pricePerUnit = <%= @wishlist['car_price'].to_i %>;
+
+    quantityInput.addEventListener("input", function() {
+      let newTotal = pricePerUnit * quantityInput.value;
+      totalPriceField.value = newTotal.toLocaleString("id-ID", {style: 'currency', currency: "IDR"});
+    })
+
+  });
+</script>

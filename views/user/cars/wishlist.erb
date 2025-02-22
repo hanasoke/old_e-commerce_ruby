@@ -78,7 +78,7 @@
             <div class="mb-3 row">
               <label for="total_price" class="col-sm-2 col-form-label">Total Price</label>
               <div class="col-sm-10">
-                <input type="hidden" class="form-control-plaintext" name="price" id="price" value="<%= @car['price'] %>" />
+                <input type="hidden" readonly class="form-control-plaintext" name="price" id="price" value="<%= @car['price'] %>" />
                 <input type="text" id="total_price" class="form-control" disabled value="<%= format_rupiah(@car['price'].to_i * @car['stock'] .to_i) %>" />
               </div>
             </div>
@@ -99,9 +99,25 @@
 
     let pricePerUnit = <%= @car['price'].to_i %>;
 
-    quantityInput.addEventListener("input", function() {
-      
-    })
+    function updateTotalPrice() {
+      // Default to 1 if empty
+      let quantity = parseInt(quantityInput.value) || 1;
+      let newTotal = pricePerUnit * quantity;
+
+      // Format as currency
+      totalPriceField.value = newTotal.toLocaleString("id-ID", 
+        { 
+          style: "currency",
+          currency: "IDR"
+        }
+      )
+    }
+
+    // Run once on load in case quantity is pre-filled
+    updateTotalPrice();
+
+    // Add event lister to update on change
+    quantityInput.addEventListener("input", updateTotalPrice);
 
   });
 </script>

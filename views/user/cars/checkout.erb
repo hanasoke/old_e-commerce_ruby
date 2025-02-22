@@ -87,7 +87,7 @@
             <div class="mb-3 row">
               <label for="quantity" class="col-sm-2 col-form-label">Total Price</label>
               <div class="col-sm-10">
-                <input type="number" class="form-control" readonly id="total_price" min="1" max="<%= @car['stock'] %>" value="<%= format_rupiah(@car['price'].to_i * (params[:quantity].to_i || 1) ) %>" />
+                <input type="text" class="form-control" disabled id="total_price" min="1" max="<%= @car['stock'] %>" value="<%= format_rupiah(@car['price'].to_i * (params[:quantity].to_i || 1)) %>" />
               </div>
             </div>
             <div class="mb-3 row">
@@ -121,10 +121,22 @@
     // Fetch the unit price
     let pricePerUnit = <%= @car['price'].to_i %>;
 
-    quantityInput.updateTotalPrice("input", function() {
-      let newTotal = pricePerUnit * quantityInput.value;
-      totalPriceField.value = newTotal.toLocaleString("id-ID", {style: 'currency', currency: "IDR"});
-    })
+    function updateTotalPrice() {
+      // Default to 1 if empty
+      let quantity = parseInt(quantityInput.value) || 1;
+      let newTotal = pricePerUnit * quantity;
 
-  })
+      // format as curreny
+      totalPriceField.value = newTotal.toLocaleString("id-ID", {
+        style: "currency", 
+        currency: "IDR"
+      });
+    }
+
+    // Run once on Load in case quantity is pre-filled
+    updateTotalPrice();
+
+    // Add event listener to update on change
+    quantityInput.addEventListener("input", updateTotalPrice);
+  });
 </script>

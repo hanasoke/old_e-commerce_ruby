@@ -190,14 +190,8 @@ def validate_wishlist_checkout(car_name, car_brand, car_color, car_transmission,
     # car transmission method validation
     errors << "Car Transmission cannot be blank." if car_transmission.nil? || car_transmission.to_s.strip.empty?
 
-    # car price method validation
-    if car_price.nil? || car_price.to_s.strip.empty?
-        errors << "Car Price Cannot be Blank."
-    elsif car_price.to_s !~ /\A\d+(\.\d{1,2})?\z/
-        errors << "Car Price must be a valid number."
-    elsif car_price.to_f <= 0
-        errors << "Car Price must be a positive number"
-    end  
+     # price validation
+    errors << "Price cannot be blank." if car_price.nil? || car_price.to_s.strip.empty?
     
     # car manufacture method validation
     errors << "Car Manufacture cannot be blank." if car_manufacture.nil? || car_manufacture.to_s.strip.empty?
@@ -307,7 +301,7 @@ def editing_a_wishlist(car_name, car_brand, car_color, car_transmission, car_pri
     # car price method validation
     if car_price.nil? || car_price.to_s.strip.empty?
         errors << "Car Price Cannot be Blank."
-    elsif car_price.to_s !~ /\A\d+(\.\d{1,2})?\z/
+    elsif car_price.to_s !~ /\A\d+\z/
         errors << "Car Price must be a valid number."
     elsif car_price.to_f <= 0
         errors << "Car Price must be a positive number"
@@ -1695,8 +1689,14 @@ post '/checkout_wishlist/:id' do
         redirect '/error_page'
     end 
 
+    car = DB.execute("SELECT * FROM cars WHERE id = ?", @wishlist['car_id']).first
+    if car.nil?
+        redirect '/error_page'
+    end
+
     quantity = params['quantity'].to_i
-    total_price = @wishlist['car_price'].to_i * quantity
+    price_per_unit = car['price'].to_i 
+    total_price = price_per_unit * quantity
     transaction_date = Time.now.strftime("%Y-%m-%d %H:%M:%S")
 
     @errors = validate_wishlist_checkout(params[:car_name], params[:car_brand], params[:car_color], params[:car_transmission], params[:car_price], params[:car_manufacture], params[:car_seat], params[:car_stock], quantity, params[:payment_method], params[:account_number])
@@ -1719,12 +1719,29 @@ post '/checkout_wishlist/:id' do
         session[:success] = "The Transaction has been successfully added."
 
         # Insert transaction into the database
-        DB.execute("INSERT INTO transactions (profile_id, car_id, wishlist_id, quantity, total_price, payment_method, account_number, payment_photo, payment_status, transaction_date) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", [current_profile['id'], @wishlist['car_id'], @wishlist['wishlist_id'],quantity, total_price, params[:payment_method], params[:account_number], photo_filename, "Pending", transaction_date])
+        DB.execute("INSERT INTO transactions (profile_id, car_id, wishlist_id, quantity, total_price, payment_method, account_number, payment_photo, payment_status, transaction_date) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", [current_profile['id'], @wishlist['car_id'], @wishlist['wishlist_id'], quantity, total_price, params[:payment_method], params[:account_number], photo_filename, "Pending", transaction_date])
 
         # Reduce Stock of the car 
         DB.execute("UPDATE cars SET stock = stock - ? WHERE id = ?", [quantity, @wishlist['car_id']])
         redirect '/waiting'
     else 
+        # Handle validate errors and re-render the edit form
+        original_wishlist = DB.execute("SELECT * FROM wishlists WHERE id = ?", [params[:id]]).first
+
+        # Merge validation errors and re-render the edit form
+        @wishlist = {
+            'id' => params[:id],
+            'car_name' => params[:car_name] || original_wishlist['car_name'],
+            'car_brand' => params[:car_brand] || original_wishlist['car_brand'],
+            'car_color' => params[:car_color] || original_wishlist['car_color'],
+            'car_transmission' => params[:car_transmission] || original_wishlist['car_transmission'],
+            'car_price' => params[:car_price] || original_wishlist['car_price'],
+            'car_manufacture' => params[:car_manufacture] || original_wishlist['car_manufacture'],
+            'car_seat' => params[:car_seat] || original_wishlist['car_seat'],
+            'car_stock' => params[:car_stock] || original_wishlist['car_stock'],
+            'quantity' => quantity || original_wishlist['quantity']
+        }
+
         erb :'user/cars/checkout_wishlist', layout: :'layouts/main'
     end 
     

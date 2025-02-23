@@ -20,49 +20,50 @@
             <div class="mb-3 row">
               <label for="name" class="col-sm-2 col-form-label">Name</label>
               <div class="col-sm-10">
-                <input type="text" readonly class="form-control-plaintext" id="name" value="<%= @wishlist['car_name'] %>" />
+                <input type="text" readonly class="form-control-plaintext" id="name" name="car_name" value="<%= @wishlist['car_name'] %>" />
               </div>
             </div>
             <div class="mb-3 row">
               <label for="brand" class="col-sm-2 col-form-label">Brand</label>
               <div class="col-sm-10">
-                <input type="text" class="form-control-plaintext" id="brand" value="<%= @wishlist['car_brand'] %>" />
+                <input type="text" class="form-control-plaintext" id="brand" name="car_brand" value="<%= @wishlist['car_brand'] %>" />
               </div>
             </div>
             <div class="mb-3 row">
               <label for="color" class="col-sm-2 col-form-label">Color</label>
               <div class="col-sm-10">
-                <input type="text" class="form-control-plaintext" id="color" value="<%= @wishlist['car_color'] %>" />
+                <input type="text" class="form-control-plaintext" id="color" name="car_color" value="<%= @wishlist['car_color'] %>" />
               </div>
             </div>
             <div class="mb-3 row">
               <label for="transmission" class="col-sm-2 col-form-label">Transmission</label>
               <div class="col-sm-10">
-                <input type="text" class="form-control-plaintext" id="transmission" value="<%= @wishlist['car_transmission'] %>" />
+                <input type="text" class="form-control-plaintext" id="transmission" name="car_transmission" value="<%= @wishlist['car_transmission'] %>" />
               </div>
             </div>
             <div class="mb-3 row">
-              <label for="price" class="col-sm-2 col-form-label">Price Per Unit</label>
+              <label for="car_price" class="col-sm-2 col-form-label">Price Per Unit</label>
               <div class="col-sm-10">
-                <input type="text" class="form-control-plaintext" id="price" value="<%= format_rupiah(@wishlist['car_price']) %>" />
+                <input type="hidden" class="form-control-plaintext" id="car_price" name="car_price" value="<%= @wishlist['car_price'] %> " />
+                <input type="text" class="form-control-plaintext" value="<%= format_rupiah(@wishlist['car_price']) %>" />
               </div>
             </div>
             <div class="mb-3 row">
               <label for="manufacture" class="col-sm-2 col-form-label">Manufacture</label>
               <div class="col-sm-10">
-                <input type="text" class="form-control-plaintext" id="manufacture" value="<%= @wishlist['car_manufacture'] %>" />
+                <input type="text" class="form-control-plaintext" id="manufacture" name="car_manufacture" value="<%= @wishlist['car_manufacture'] %>" />
               </div>
             </div>
             <div class="mb-3 row">
               <label for="seat" class="col-sm-2 col-form-label">Seat</label>
               <div class="col-sm-10">
-                <input type="text" class="form-control-plaintext" id="seat" value="<%= @wishlist['car_seat'] %>" />
+                <input type="text" class="form-control-plaintext" id="seat" name="car_seat" value="<%= @wishlist['car_seat'] %>" />
               </div>
             </div>
             <div class="mb-3 row">
               <label for="stock" class="col-sm-2 col-form-label">Stock</label>
               <div class="col-sm-10">
-                <input type="text" class="form-control-plaintext" id="stock" value="<%= @wishlist['car_stock'] %>" />
+                <input type="text" class="form-control-plaintext" id="stock" name="car_stock" value="<%= @wishlist['car_stock'] %>" />
               </div>
             </div>
             <div class="mb-3 row">
@@ -87,7 +88,6 @@
             <div class="mb-3 row">
               <label for="total_price" class="col-sm col-form-label"> Total Price </label>
               <div class="col-sm-10">
-                <input type="hidden" name="car_price" value="<%= @wishlist['car_price'] %>" />
                 <input type="text" class="form-control" disabled id="total_price" value="<%= format_rupiah(@wishlist['car_price'].to_i * @wishlist['quantity'].to_i) %>" />
               </div>
             </div>

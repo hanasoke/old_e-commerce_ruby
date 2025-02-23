@@ -178,6 +178,63 @@ def validate_wishlist(quantity, id = nil)
     errors
 end 
 
+def validate_wishlist_checkout(car_name, car_brand, car_color, car_transmission, car_price, car_manufacture, car_seat, car_stock, quantity, payment_method, account_number, id = nil)
+    errors = []
+
+    # car name method validation
+    errors << "Car Name cannot be blank." if car_name.nil? || car_name.to_s.strip.empty?
+
+    # car brand method validation
+    errors << "Car Brand cannot be blank." if car_brand.nil? || car_brand.to_s.strip.empty?
+
+    # car color method validation
+    errors << "Car Color cannot be blank." if car_color.nil? || car_color.to_s.strip.empty?
+
+    # car transmission method validation
+    errors << "Car Transmission canoot be blank." if car_transmission? || car_transmission.to_s.strip.empty?
+
+    # car price method validation
+    if car_price.nil? ||car_price.to_s.strip.empty?
+        errors << "Car Price Cannot be Blank."
+    elsif car_price.to_s !~ /\A\d+(\.\d{1,2})?\z/
+        errors << "Car Price must be a valid number."
+    elsif car_price.to_f <= 0
+        errors << "Car Price must be a positive number"
+    end
+
+    # car manufacture method validation
+    errors << "Car Manufacture cannot be blank." if car_manufacture.nil? || car_manufacture.to_s.strip.empty?
+
+    # color seat method validation
+    errors << "Car Seat cannot be blank." if car_seat.nil? || car_seat.to_s.strip.empty?
+
+    # car stock method validation
+    errors << "Car Stock cannot be blank." if car_stock.nil? || car_stock.to_s.strip.empty?
+
+    # car quantity method validation
+    if quantity.nil? || quantity.to_s.strip.empty?
+        errors << "Quantity Cannot be Blank."
+    elsif quantity.to_s !~ /\A\d+\z/
+        errors << "Quantity must be a valid number."
+    elsif quantity.to_i <= 0
+        errors << "Quantity must be a positive number."
+    end 
+
+    # payment method validation
+    errors << "Payment Method cannot be blank." if payment_method.nil? || payment_method.strip.empty?
+
+    # account method validation
+    if account_number.nil? || account_number.to_s.strip.empty?
+        errors << "Account Number cannot be blank." 
+    elsif account_number.to_s !~ /\A\d+\z/
+        errors << "Account Number must be a valid number."
+    elsif account_number.to_i <= 0
+        errors << "Account Number must be a positive number"
+    end 
+
+    errors
+end 
+
 # Validate transaction 
 def editing_transaction(payment_status, id = nil)
     errors = []
@@ -213,7 +270,7 @@ def editing_a_transaction(car_name, car_brand, car_color, car_transmission, car_
     errors << "Car Manufacture cannot be blank." if car_manufacture.nil? || car_manufacture.to_s.strip.empty?
     # car seat method validation
     errors << "Car Seat cannot be blank." if car_seat.nil? || car_seat.to_s.strip.empty?
-    # car color method validation
+    # car stock method validation
     errors << "Car Stock cannot be blank." if car_stock.nil? || car_stock.to_s.strip.empty?
 
     # car quantity method validation
@@ -234,7 +291,7 @@ def editing_a_transaction(car_name, car_brand, car_color, car_transmission, car_
     elsif account_number.to_s !~ /\A\d+\z/
         errors << "Account Number must be a valid number."
     elsif account_number.to_i <= 0
-        errors << "Account Number must be a positive number"
+        errors << "Account Number must be a positive number."
     end  
 
     errors 
@@ -1622,7 +1679,7 @@ get '/checkout_wishlist/:id' do
 
     # Handle case where 
     if @wishlist.nil? 
-        session[:error] = "Wishlist not found!"
+        session[:error] = "Wishlist isn't found!"
         redirect '/error_page'
     end 
 
@@ -1630,4 +1687,54 @@ get '/checkout_wishlist/:id' do
     erb :'/user/cars/checkout_wishlist', layout: :'layouts/main'
 end 
 
-post 
+post '/checkout_wishlist/:id' do 
+    redirect '/login' unless logged_in?
+
+    @wishlist = DB.execute("SELECT * FROM wishlists WHERE id = ?", [params[:id]]).first
+    # Check if the wishlist exist 
+    if @wishlist.nil?
+        session[:error] = "Wishlist is not found."
+
+        # Redirect user back to main page listing or another relevant page
+        redirect '/error_page'
+    end 
+
+    quantity = params['quantity'].to_i
+    total_price = @wishlist['price'].to_i * quantity
+    transaction_date = Time.now.strftime("%Y-%m-%d %H:%M:%S")
+
+    @errors = validate_wishlist_checkout(params['car_name'], params['car_brand'], params['car_color'], params['car_transmission'], params['car_price'], params['car_manufacture'], params['car_seat'], params['car_stock'], quantity, params[:payment_method], params[:account_number])
+
+    photo = params['payment_photo']
+
+    # Add photo validation errors
+    @errors += validate_photo(photo)
+
+    if @errors.empty? 
+        # Handle file upload
+        if photo && photo['tempfile']
+            photo_filename = "#{Time.now.to_i}_#{photo[:filename]}"
+            File.open("./public/uploads/payments/#{photo_filename}", 'wb') do |f|
+                f.write(photo[:tempfile].read)
+            end 
+        end 
+
+        # Flash Message
+        session[:success] = "The Transaction has been successfully added."
+
+        # Insert transaction into the database
+        DB.execute("INSERT INTO transactions (profile_id, car_id, quantity, total_price, payment_method, account_number, payment_photo, payment_status, transaction_date) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)", [current_profile['id'], @car['id'], quantity, total_price, params[:payment_method], params[:account_number], photo_filename, "Pending", transaction_date])
+
+        # Reduce Stock of the car 
+        DB.execute("UPDATE cars SET stock = stock - ? WHERE id = ?", [quantity, @wishlist['car_id']])
+        redirect '/waiting'
+    else 
+        if quantity > @car['stock']
+            @errors = ["Not Enought stock available."]
+            return erb :'user/cars/checkout_wishlist', layout: :'layouts/main'
+        end 
+        erb :'user/cars/checkout_wishlist', layout: :'layouts/main'
+    end 
+    
+
+end 

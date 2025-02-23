@@ -37,7 +37,7 @@
             <div class="mb-3 row">
               <label for="transmission" class="col-sm-2 col-form-label">Transmission</label>
               <div class="col-sm-10">
-                <input type="text" class="form-control-plaintext" id="transmission" value="<%= @wishlist['car_transmission'] %>" />
+                <input type="text" class="form-control-plaintext" name="car_transmission" id="transmission" value="<%= @wishlist['car_transmission'] %>" />
               </div>
             </div>
             <div class="mb-3 row">
@@ -106,7 +106,7 @@
             <!-- Button trigger modal -->
             <button type="submit" class="btn btn-success float-end">Order Now</button>
 
-            <a href="/detail_car/<%= @wishlist['id'] %>" class="btn btn-outline-secondary float-start">Back</a>
+            <a href="/wishlist_lists" class="btn btn-outline-secondary float-start mb-3">Back</a>
           </div>
         </form>
       </div>

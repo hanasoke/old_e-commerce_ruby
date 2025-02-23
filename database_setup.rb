@@ -118,6 +118,13 @@ DB.execute <<-SQL
     );
 SQL
 
+# Add the `stock` column if it doesn't exist
+# begin 
+#     DB.execute("ALTER TABLE transactions ADD COLUMN wishlist_id INTEGER;")
+# rescue SQLite3::SQLException => e 
+#     puts "Column 'wishlist_id' already exists or another error occured: #{e.message}"
+# end
+
 # begin 
 #     DB.execute("ALTER TABLE transactions ADD COLUMN admin_approved BOOLEAN DEFAULT 0;")
 # rescue SQLite3::SQLException => e 

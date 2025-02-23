@@ -183,31 +183,26 @@ def validate_wishlist_checkout(car_name, car_brand, car_color, car_transmission,
 
     # car name method validation
     errors << "Car Name cannot be blank." if car_name.nil? || car_name.to_s.strip.empty?
-
     # car brand method validation
     errors << "Car Brand cannot be blank." if car_brand.nil? || car_brand.to_s.strip.empty?
-
     # car color method validation
     errors << "Car Color cannot be blank." if car_color.nil? || car_color.to_s.strip.empty?
-
     # car transmission method validation
-    errors << "Car Transmission canoot be blank." if car_transmission? || car_transmission.to_s.strip.empty?
+    errors << "Car Transmission cannot be blank." if car_transmission.nil? || car_transmission.to_s.strip.empty?
 
     # car price method validation
-    if car_price.nil? ||car_price.to_s.strip.empty?
+    if car_price.nil? || car_price.to_s.strip.empty?
         errors << "Car Price Cannot be Blank."
     elsif car_price.to_s !~ /\A\d+(\.\d{1,2})?\z/
         errors << "Car Price must be a valid number."
     elsif car_price.to_f <= 0
         errors << "Car Price must be a positive number"
-    end
-
+    end  
+    
     # car manufacture method validation
     errors << "Car Manufacture cannot be blank." if car_manufacture.nil? || car_manufacture.to_s.strip.empty?
-
-    # color seat method validation
+    # car seat method validation
     errors << "Car Seat cannot be blank." if car_seat.nil? || car_seat.to_s.strip.empty?
-
     # car stock method validation
     errors << "Car Stock cannot be blank." if car_stock.nil? || car_stock.to_s.strip.empty?
 
@@ -1691,6 +1686,7 @@ post '/checkout_wishlist/:id' do
     redirect '/login' unless logged_in?
 
     @wishlist = DB.execute("SELECT * FROM wishlists WHERE id = ?", [params[:id]]).first
+
     # Check if the wishlist exist 
     if @wishlist.nil?
         session[:error] = "Wishlist is not found."
@@ -1700,10 +1696,10 @@ post '/checkout_wishlist/:id' do
     end 
 
     quantity = params['quantity'].to_i
-    total_price = @wishlist['price'].to_i * quantity
+    total_price = @wishlist['car_price'].to_i * quantity
     transaction_date = Time.now.strftime("%Y-%m-%d %H:%M:%S")
 
-    @errors = validate_wishlist_checkout(params['car_name'], params['car_brand'], params['car_color'], params['car_transmission'], params['car_price'], params['car_manufacture'], params['car_seat'], params['car_stock'], quantity, params[:payment_method], params[:account_number])
+    @errors = validate_wishlist_checkout(params[:car_name], params[:car_brand], params[:car_color], params[:car_transmission], params[:car_price], params[:car_manufacture], params[:car_seat], params[:car_stock], quantity, params[:payment_method], params[:account_number])
 
     photo = params['payment_photo']
 
@@ -1723,16 +1719,12 @@ post '/checkout_wishlist/:id' do
         session[:success] = "The Transaction has been successfully added."
 
         # Insert transaction into the database
-        DB.execute("INSERT INTO transactions (profile_id, car_id, quantity, total_price, payment_method, account_number, payment_photo, payment_status, transaction_date) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)", [current_profile['id'], @car['id'], quantity, total_price, params[:payment_method], params[:account_number], photo_filename, "Pending", transaction_date])
+        DB.execute("INSERT INTO transactions (profile_id, car_id, wishlist_id, quantity, total_price, payment_method, account_number, payment_photo, payment_status, transaction_date) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", [current_profile['id'], @wishlist['car_id'], @wishlist['wishlist_id'],quantity, total_price, params[:payment_method], params[:account_number], photo_filename, "Pending", transaction_date])
 
         # Reduce Stock of the car 
         DB.execute("UPDATE cars SET stock = stock - ? WHERE id = ?", [quantity, @wishlist['car_id']])
         redirect '/waiting'
     else 
-        if quantity > @car['stock']
-            @errors = ["Not Enought stock available."]
-            return erb :'user/cars/checkout_wishlist', layout: :'layouts/main'
-        end 
         erb :'user/cars/checkout_wishlist', layout: :'layouts/main'
     end 
     

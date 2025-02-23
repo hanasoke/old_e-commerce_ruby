@@ -14,6 +14,7 @@
       <div class="card">
         <form action="/checkout_wishlist/<%= @wishlist['id'] %>" method="post" enctype="multipart/form-data">
           <input type="hidden" name="car_id" value="<%= @wishlist['car_id'] %>" />
+          <input type="hidden" name="wishlist_id" value="<%= @wishlist['id'] %>" />
           <img src="/uploads/cars/<%= @wishlist['car_photo'] %>" class="card-img-top" alt="<%= @wishlist['name'] %>" />
           <div class="card-body">
             <div class="mb-3 row">
@@ -37,7 +38,7 @@
             <div class="mb-3 row">
               <label for="transmission" class="col-sm-2 col-form-label">Transmission</label>
               <div class="col-sm-10">
-                <input type="text" class="form-control-plaintext" name="car_transmission" id="transmission" value="<%= @wishlist['car_transmission'] %>" />
+                <input type="text" class="form-control-plaintext" id="transmission" value="<%= @wishlist['car_transmission'] %>" />
               </div>
             </div>
             <div class="mb-3 row">
@@ -64,7 +65,6 @@
                 <input type="text" class="form-control-plaintext" id="stock" value="<%= @wishlist['car_stock'] %>" />
               </div>
             </div>
-            <input type="hidden" name="car_id" value="<%= @wishlist['id'] %>" />
             <div class="mb-3 row">
               <label for="payment_method" class="col-sm-2 col-form-label">Payment Method</label>
               <div class="col-sm-10">
@@ -87,7 +87,7 @@
             <div class="mb-3 row">
               <label for="total_price" class="col-sm col-form-label"> Total Price </label>
               <div class="col-sm-10">
-                <input type="hidden" name="price" value="<%= @wishlist['price'] %>" />
+                <input type="hidden" name="car_price" value="<%= @wishlist['car_price'] %>" />
                 <input type="text" class="form-control" disabled id="total_price" value="<%= format_rupiah(@wishlist['car_price'].to_i * @wishlist['quantity'].to_i) %>" />
               </div>
             </div>

@@ -1629,3 +1629,5 @@ get '/checkout_wishlist/:id' do
     @errors = []
     erb :'/user/cars/checkout_wishlist', layout: :'layouts/main'
 end 
+
+post 

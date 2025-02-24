@@ -24,7 +24,7 @@
                 <% if @cars && @cars.any? %>
                   <% @cars.each do |car| %>
                     <li>
-                      <a class="dropdown-item" href="#">
+                      <a class="dropdown-item" href="/car_brand?brand=<%= car['brand'] %>">
                         <%= car['brand'] %>
                       </a>
                     </li>

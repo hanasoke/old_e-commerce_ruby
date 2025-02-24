@@ -1744,6 +1744,14 @@ post '/checkout_wishlist/:id' do
 
         erb :'user/cars/checkout_wishlist', layout: :'layouts/main'
     end 
-    
+end 
 
+get '/car_brand' do 
+    # Get the brand from the query string
+    brand = params[:brand]
+
+    # Query database for matching brand
+    @cars = DB.execute("SELECT * FROM cars WHERE brand = ?", brand)
+
+    erb :'user/cars/car_category', layout: :'layouts/main'
 end 

@@ -1755,3 +1755,9 @@ get '/car_brand' do
 
     erb :'user/cars/car_category', layout: :'layouts/main'
 end 
+
+get '/search' do 
+    query = params[:query]
+    @cars = DB.execute("SELECT * FROM cars WHERE name LIKE ?", "%#{query}%")
+    erb :'user/cars/search_car', layout: :'layouts/main'
+end 

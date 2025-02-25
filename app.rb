@@ -893,10 +893,19 @@ post '/cars/:id/delete' do
     redirect '/car_lists'
 end 
 
+get '/user/:id/detail' do 
+    redirect '/login' unless
+
+    @title = "View the User Profile"
+    @user = DB.execute("SELECT * FROM profiles WHERE id = ?", [params[:id]]).first
+    @errors = []
+    erb :'admin/users/detail', layout: :'layouts/admin'
+end 
+
 get '/users/:id/edit' do 
     redirect '/login' unless logged_in?
 
-    @title = "View the User Profile"
+    @title = "Edit the User Profile"
     @user = DB.execute("SELECT * FROM profiles WHERE id = ?", [params[:id]]).first
     @errors = []
     erb :'admin/users/edit', layout: :'layouts/admin'

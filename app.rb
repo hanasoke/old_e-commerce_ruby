@@ -1549,6 +1549,10 @@ post '/wishlist/:id' do
 
     @car = DB.execute("SELECT * FROM cars WHERE id = ?", [params[:id]]).first
 
+    profile = current_profile
+
+    car_id = params[:car_id].to_i
+
     # Check The Car if the car exist
     if @car.nil? 
         session[:error] = "Wishlist is not founded."
@@ -1562,14 +1566,32 @@ post '/wishlist/:id' do
 
     if @errors.empty?
 
-        # Flash Message
-        session[:success] = "The Wishlist has been successfully added."
+        # Check if the car exists
+        car = DB.get_first_row("SELECT * FROM cars WHERE id = ?", [car_id])
 
-        # Insert transaction into the database
-        DB.execute("INSERT INTO wishlists (car_id, profile_id, quantity, status, total_price) VALUES (?, ?, ?, ?, ?)", 
-        [@car['id'], current_profile['id'], quantity, "Pending", total_price])
+        if car.nil?
+            session[:error] = "Car not found."
+            redirect '/error_page'
+        end 
 
-        redirect '/wishlist_lists'
+        # Check if the car is already in the wishlist
+        existing_entry = DB.get_first_row("SELECT * FROM wishlists WHERE profile_id = ? AND car_id = ?", [profile['id'], car_id])
+
+        if existing_entry 
+            session[:error] = "This car is already in your wishlist!"
+            # redirect '/detail_car/:id'
+            redirect '/error_page'
+            # erb :'user/cars/wishlist', layout: :'layouts/main'
+        else 
+            # Flash Message
+            session[:success] = "The Wishlist has been successfully added."
+
+            # Insert transaction into the database
+            DB.execute("INSERT INTO wishlists (car_id, profile_id, quantity, status, total_price) VALUES (?, ?, ?, ?, ?)", 
+            [@car['id'], current_profile['id'], quantity, "Pending", total_price])
+
+            redirect '/wishlist_lists'
+        end 
     
     else 
         erb :'user/cars/wishlist', layout: :'layouts/main'

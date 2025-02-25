@@ -1226,10 +1226,31 @@ post '/transactions/:id/delete' do
 
     if transaction.nil?
         session[:error] = "Transaction not found."
+        redirect '/transactions_lists'
     elsif profile.nil?
-        session[:error] = "User not authenticated."
+        session[:error] = "User isn't authenticated."
         redirect '/login'
     else 
+        # Check if payment_status is 'Pending' or 'Rejected'
+        if["Pending", "Rejected"].include?(transaction['payment_status'])
+            # Fetch the car data by ID
+            car = DB.get_first_row("SELECT * FROM cars WHERE id = ?", [transaction['car_id']])
+
+            # Check Car Id
+            if car.nil?
+                session[:error] = "A Car is not found."
+                redirect '/error_page'
+            end 
+
+            # Ensure stock and quantity are valid numbers
+            car_stock = car['stock'].to_i rescue 0
+            transaction_quantity = transaction['quantity'].to_i rescue 0
+
+            # Restore the deleted quantity back to stock
+            new_stock = car_stock + transaction_quantity
+            DB.execute("UPDATE cars SET stock = ? WHERE id = ?", [new_stock, transaction['car_id']])
+        end 
+
         # Delete the transaction
         DB.execute("DELETE FROM transactions WHERE id = ?", [transaction_id])
 
@@ -1246,6 +1267,7 @@ post '/transactions/:id/delete' do
         when 1 then redirect '/transactions_lists'
         else 
             session[:error] = "Invalid access level."
+            redirect '/transactions_lists'
         end 
     end 
 end 

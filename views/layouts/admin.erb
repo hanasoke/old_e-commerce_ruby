@@ -130,7 +130,7 @@
                 <div class="dropdown-list dropdown-menu dropdown-menu-right shadow animated--grow-in" aria-labelledby="alertsDropdown">
                   <h6 class="dropdown-header">Out of Stock Notification</h6>
                   <% if @out_of_stock_cars && @out_of_stock_cars.any? %> <% @out_of_stock_cars.each do |car| %>
-                  <a class="dropdown-item d-flex align-items-center" href="#">
+                  <a class="dropdown-item d-flex align-items-center" href="/edit_car/<%= car['id'] %>">
                     <div class="mr-3">
                       <div class="icon-circle bg-danger">
                         <i class="fas fa-exclamation-triangle text-white"></i>
@@ -147,7 +147,7 @@
 
                   <% end %>
 
-                  <a class="dropdown-item text-center small text-gray-500" href="#">Show All Alerts</a>
+                  <a class="dropdown-item text-center small text-gray-500" href="/car_lists">Show All Alerts</a>
                 </div>
               </li>
 

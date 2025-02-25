@@ -24,6 +24,8 @@ end
 before do 
     # Fetch car brands
     @cars = DB.execute("SELECT DISTINCT brand FROM cars")
+    @out_of_stock_cars = DB.execute("SELECT * FROM cars WHERE stock = 0")
+    @out_of_stock_cars = [] if @out_of_stock_cars.nil?
 end 
 
 # validate email 
@@ -600,6 +602,8 @@ get '/admin_page' do
     redirect '/login' unless session[:profile_id] && DB.execute("SELECT access FROM profiles WHERE id = ?", [session[:profile_id]]).first['access'] == 1
     @title = "Admin Page"
     @profiles = DB.execute("SELECT * FROM profiles WHERE access = 0")
+
+    # Fetch cars where
     erb :'admin/index', layout: :'layouts/admin'
 end 
 

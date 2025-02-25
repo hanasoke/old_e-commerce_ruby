@@ -1,6 +1,6 @@
 <div class="card shadow mb-4">
   <div class="card-header py-3">
-    <h3 class="m-0 font-weight-bold text-danger float-left">Edit A Transaction</h3>
+    <h3 class="m-0 font-weight-bold text-danger float-left">User's Transaction Detail</h3>
   </div>
   <div class="card-body">
     <div class="row">
@@ -29,9 +29,15 @@
       </div>
     </div>
     <div class="mb-3 row">
+      <label for="car_brand" class="col-sm-2 col-form-label">Car Brand</label>
+      <div class="col-sm-10">
+        <input type="text" class="form-control-plaintext" id="brand" name="brand" value="<%= @transaction['car_brand'] %>" readonly />
+      </div>
+    </div>
+    <div class="mb-3 row">
       <label for="car_name" class="col-sm-2 col-form-label">Car Photo</label>
       <div class="col-sm-10">
-        <img src="/uploads/cars/<%= @transaction['photo'] %>" class="img-thumbnail" id="name" name="name" value="<%= @transaction['car_name'] %>" style="width: 40%;" />
+        <img src="/uploads/cars/<%= @transaction['car_photo'] %>" class="img-thumbnail" id="name" name="name" value="<%= @transaction['car_name'] %>" style="width: 40%;" />
       </div>
     </div>
     <div class="mb-3 row">
@@ -58,27 +64,14 @@
         <img src="/uploads/payments/<%= @transaction['payment_photo'] %>" class="img-thumbnail" id="name" name="name" value="<%= @transaction['buyer_name'] %>" style="width: 40%;" />
       </div>
     </div>
-    <form action="/transaction_edit/<%= @transaction['id'] %>" method="post" enctype="multipart/form-data">
-      <!-- Hidden Method Fields -->
-      <div class="mb-3">
-        <input type="hidden" name="_method" value="post" />
+    <div class="mb-3 row">
+      <label for="payment_status" class="col-sm-2 col-form-label">Payment Status</label>
+      <div class="col-sm-10">
+        <input type="text" class="form-control-plaintext" id="payment_status" name="payment_status" value="<%= @transaction['payment_status'] %>" readonly />
       </div>
-      <div class="mb-3 row">
-        <label for="payment_status" class="col-sm-2 col-form-label"> Payment Status </label>
-        <div class="col-sm-10">
-          <select class="form-control" id="payment_status" name="payment_status">
-            <option selected value="<%= @transaction['payment_status'] %>">
-              <%= @transaction['payment_status'] %>
-            </option>
-            <option value="Rejected">Rejected</option>
-            <option value="Pending">Pending</option>
-            <option value="Approved">Approved</option>
-          </select>
-        </div>
-      </div>
-      <!-- Submit Button -->
-      <button type="submit" class="btn btn-primary float-right">Update</button>
-    </form>
+    </div>
+    <!-- Edit Button -->
+    <a href="/transaction_edit/<%= @transaction['id'] %>" class="btn btn-primary float-right">Edit</a>
     <a href="/transactions_lists" class="btn btn-secondary float-left">Back</a>
   </div>
 </div>

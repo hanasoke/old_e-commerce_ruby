@@ -163,7 +163,7 @@
                   <h6 class="dropdown-header">Pending Transactions</h6>
                   <% if @pending_transactions.any? %> 
                     <% @pending_transactions.each do |transaction| %>
-                      <a class="dropdown-item d-flex align-items-center" href="/transaction_edit/ <%= transaction['id']%>">
+                      <a class="dropdown-item d-flex align-items-center" href="/transaction_details/ <%= transaction['id']%>">
                         <div class="dropdown-list-image mr-3">
                           <img class="rounded-circle" src="/uploads/cars/<%= transaction['car_photo'] %>" alt="<%= transaction['car_name'] %>" />
                           <div class="status-indicator bg-success"></div>

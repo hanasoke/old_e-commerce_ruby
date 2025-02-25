@@ -1192,7 +1192,7 @@ end
 post '/transactions/:id/delete' do 
     # Ensure the user is logged in 
     unless session[:user_id].nil?
-        session[:error] = "You must be logged in to delete transactions."
+        session[:error] = "You must be logged in to delete a transaction."
         redirect '/login'
     end 
 
@@ -1229,6 +1229,7 @@ end
 
 # Render the edit form for a transaction
 get '/transaction_edit/:id' do 
+    redirect '/login' unless logged_in?
     @title = "Edit A Transaction"
 
     # Fetch the transaction data by ID
@@ -1274,6 +1275,7 @@ end
 
 # Read all cars 
 get '/car_category' do 
+    redirect '/login' unless logged_in?
     @title = "Car Category"
     @cars = DB.execute("SELECT * FROM cars WHERE id = ?", [params[:id]]).first
     erb :'admin/cars/views', layout: :'layouts/admin'
@@ -1785,7 +1787,28 @@ get '/search' do
     erb :'user/cars/search_car', layout: :'layouts/main'
 end 
 
-get '/transaction_details' do 
+get '/transaction_details/:id' do 
+    redirect '/login' unless logged_in?
+    @title = "View A Transaction"
 
+    # Fetch the transaction data by ID
+    @transaction = DB.execute("
+        SELECT transactions.*,
+                cars.name AS car_name,
+                cars.brand AS car_brand,
+                cars.photo AS car_photo,
+                profiles.name AS buyer_name
+            FROM transactions
+            JOIN cars ON transactions.car_id = cars.id
+            JOIN profiles ON transactions.profile_id = profiles.id
+            WHERE transactions.id = ?", [params[:id]]).first
+    
+    # Handle case where transaction doesn't exist
+    if @transaction.nil?
+        session[:error] = "Transaction not found!"
+        redirect '/transactions_lists'
+    end 
 
+    @errors = []
+    erb :'admin/transactions/details', layout: :'layouts/admin'
 end 

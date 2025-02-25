@@ -1784,3 +1784,8 @@ get '/search' do
     end 
     erb :'user/cars/search_car', layout: :'layouts/main'
 end 
+
+get '/transaction_details' do 
+
+
+end 

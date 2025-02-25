@@ -1757,7 +1757,13 @@ get '/car_brand' do
 end 
 
 get '/search' do 
-    query = params[:query]
-    @cars = DB.execute("SELECT * FROM cars WHERE name LIKE ?", "%#{query}%")
+    # Remove unnecessary spaces
+    query = params[:query]&.strip
+    if query.nil? || query.empty?
+        # No search term provided, return empty result
+        @cars= []
+    else 
+        @cars = DB.execute("SELECT * FROM cars WHERE name LIKE ? OR brand LIKE ?", ["%#{query}%", "%#{query}%"])
+    end 
     erb :'user/cars/search_car', layout: :'layouts/main'
 end 

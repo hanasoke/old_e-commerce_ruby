@@ -1550,47 +1550,39 @@ post '/wishlist/:id' do
     @car = DB.execute("SELECT * FROM cars WHERE id = ?", [params[:id]]).first
 
     profile = current_profile
-
     car_id = params[:car_id].to_i
+    quantity = params[:quantity].to_i
 
     # Check The Car if the car exist
     if @car.nil? 
-        session[:error] = "Wishlist is not founded."
+        session[:error] = "Wishlist is not found."
         redirect '/error_page'
     end 
 
-    quantity = params[:quantity].to_i
     total_price = @car['price'].to_i * quantity
-
     @errors = validate_wishlist(params[:quantity])
 
     if @errors.empty?
-
-        # Check if the car exists
-        car = DB.get_first_row("SELECT * FROM cars WHERE id = ?", [car_id])
-
-        if car.nil?
-            session[:error] = "Car not found."
-            redirect '/error_page'
-        end 
-
-        # Check if the car is already in the wishlist
         existing_entry = DB.get_first_row("SELECT * FROM wishlists WHERE profile_id = ? AND car_id = ?", [profile['id'], car_id])
 
         if existing_entry 
-            session[:error] = "This car is already in your wishlist!"
-            erb :'user/cars/wishlist', layout: :'layouts/main'
-        else 
-            # Flash Message
-            session[:success] = "The Wishlist has been successfully added."
+            # If car exists in wishlist, update quantity and total price
+            new_quantity = existing_entry['quantity'].to_i + quantity
+            new_total_price = @car['price'].to_i * new_quantity
 
+            DB.execute("UPDATE wishlists SET quantity = ?, total_price = ? WHERE profile_id = ? AND car_id = ?", [new_quantity, new_total_price, profile['id'], car_id])
+
+            session[:success] = "Wishlist updated! Added #{quantity} more to your existing wishlist."
+        else 
+            
             # Insert transaction into the database
             DB.execute("INSERT INTO wishlists (car_id, profile_id, quantity, status, total_price) VALUES (?, ?, ?, ?, ?)", 
             [@car['id'], current_profile['id'], quantity, "Pending", total_price])
-
-            redirect '/wishlist_lists'
+            
+            # Flash Message
+            session[:success] = "The Wishlist has been successfully added."
         end 
-    
+        redirect '/wishlist_lists'
     else 
         erb :'user/cars/wishlist', layout: :'layouts/main'
 

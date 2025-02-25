@@ -6,15 +6,14 @@
   <div class="card-body">
     <!-- Success Alert -->
     <%if session[:success] %>
-      <div class="alert alert-success alert-dismissible fade show" role="alert">
-        <div><%= session[:success] %></div>
-        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+      <div><%= session[:success] %></div>
+      <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
     <!-- Clear the flash message -->
-    <% session[:success] = nil %> 
-    <% end %>
+    <% session[:success] = nil %> <% end %>
 
     <div class="table-responsive">
       <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
@@ -50,8 +49,10 @@
             </td>
             <td>
               <div class="btn-group" role="group">
-                <a href="/users/<%= profile['id'] %>/edit" class="btn btn-info">Edit</a>
-
+                <!-- View Button -->
+                <a href="#" class="btn btn-info">View</a>
+                <!-- Edit Button -->
+                <a href="/users/<%= profile['id'] %>/edit" class="btn btn-primary">Edit</a>
                 <!-- Delete Button triggers the modal -->
                 <button type="submit" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#">Delete</button>
               </div>

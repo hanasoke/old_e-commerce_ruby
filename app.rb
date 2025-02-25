@@ -899,7 +899,7 @@ post '/cars/:id/delete' do
 end 
 
 get '/user/:id/detail' do 
-    redirect '/login' unless
+    redirect '/login' unless logged_in?
 
     @title = "View the User Profile"
     @user = DB.execute("SELECT * FROM profiles WHERE id = ?", [params[:id]]).first
@@ -1579,9 +1579,7 @@ post '/wishlist/:id' do
 
         if existing_entry 
             session[:error] = "This car is already in your wishlist!"
-            # redirect '/detail_car/:id'
-            redirect '/error_page'
-            # erb :'user/cars/wishlist', layout: :'layouts/main'
+            erb :'user/cars/wishlist', layout: :'layouts/main'
         else 
             # Flash Message
             session[:success] = "The Wishlist has been successfully added."

@@ -26,7 +26,20 @@
               <% end %>
               <!-- Clear the flash message -->
 
-              <!-- Success Alert -->
+              <!-- Error Alert -->
+              <!-- for outer page -->
+              <% if session[:error] %>
+                <div class="alert alert-success alert-dismissible fade show">
+                  <div>
+                    <%= session.delete(:error) %>
+                  </div>
+                  <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+                </div>
+                <% session[:error] = nil %> 
+              <% end %>
+              <!-- For error in the page -->
               <% if @errors&.any? %>
                 <% @errors.each do|error| %>
                 <div class="alert alert-danger alert-dismissible fade show">

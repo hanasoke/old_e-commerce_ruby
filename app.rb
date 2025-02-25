@@ -624,18 +624,23 @@ get '/logout' do
 end 
 
 get '/wishlist_users' do 
+    redirect '/login' unless logged_in?
+
     @title = "Wishlist Lists"
     @wishlists = DB.execute("SELECT * FROM wishlists")
     erb :'admin/wishlist', layout: :'layouts/admin'
 end 
 
 get '/transactions_lists' do 
+    redirect '/login' unless logged_in?
+
     @title = "Transactions Lists"
     @transactions = DB.execute("SELECT * FROM transactions")
     erb :'admin/transactions', layout: :'layouts/admin'
 end 
 
 get '/admin_profile' do 
+    redirect '/login' unless logged_in?
     @title = "Admin Profile"
     erb :'admin/admin_profile', layout: :'layouts/admin'
 end 
@@ -1156,15 +1161,21 @@ end
 get '/waiting' do 
     redirect '/login' unless logged_in?
     @title = "Waiting Page"
+
+    profile = current_profile
+    if profile.nil?
+        session[:error] = "You must be logged in to view your Waiting Orders."
+        redirect '/login'
+    end 
     
     # Fetch only transactions waiting for approval
-    @transactions = DB.execute(<<-SQL)
+    @transactions = DB.execute(<<-SQL, profile['id'])
         SELECT transactions.*,
                 cars.name AS car_name,
                 cars.photo
         FROM transactions 
         JOIN cars ON transactions.car_id = cars.id
-        WHERE transactions.payment_status = 'Pending';
+        WHERE transactions.profile_id = ? AND transactions.payment_status = 'Pending';
     SQL
 
     erb :'user/cars/waiting', layout: :'layouts/main'
@@ -1173,14 +1184,20 @@ end
 get '/orders' do 
     redirect '/login' unless logged_in?
     @title = "Orders Page"
-    @transactions = DB.execute(<<-SQL)
+
+    profile = current_profile
+    if profile.nil?
+        session[:error] = "You must be logged in to view your orders."
+        redirect '/login'
+    end 
+
+    @transactions = DB.execute(<<-SQL, profile['id'])
                     SELECT transactions.*, 
                         cars.name AS car_name, 
                         cars.photo
                         FROM transactions
                         JOIN cars ON transactions.car_id = cars.id
-                        WHERE transactions.payment_status = 'Approved';
-                        AND transactions.profile_id = #{current_profile['id']}
+                        WHERE transactions.profile_id = ? AND transactions.payment_status = 'Approved';
                     SQL
 
     erb :'user/cars/orders', layout: :'layouts/main'
@@ -1189,13 +1206,20 @@ end
 get '/rejected' do 
     redirect '/login' unless logged_in?
     @title = "Rejected Page"
-    @transactions = DB.execute(<<-SQL)
+
+    profile = current_profile
+    if profile.nil?
+        session[:error] = "You must be logged in to view your Reject Orders."
+        redirect '/login'
+    end 
+
+    @transactions = DB.execute(<<-SQL, profile['id'])
                     SELECT transactions.*, 
                         cars.name AS car_name, 
                         cars.photo
                         FROM transactions
                         JOIN cars ON transactions.car_id = cars.id
-                        WHERE transactions.payment_status = 'Rejected';
+                        WHERE transactions.profile_id = ? AND transactions.payment_status = 'Rejected';
                     SQL
 
     erb :'user/cars/rejected', layout: :'layouts/main'
@@ -1564,16 +1588,22 @@ end
 get '/wishlist_lists' do 
     redirect '/login' unless logged_in?
 
+    profile = current_profile
+    if profile.nil?
+        session[:error] = "You must be logged in to view your wishlist."
+        redirect '/login'
+    end 
+
     @title = "Wishlist Lists"
 
     # Fetch only wishlist waiting for approval
-    @wishlists = DB.execute(<<-SQL)
+    @wishlists = DB.execute(<<-SQL, profile['id'])
         SELECT wishlists.*,
             cars.name AS car_name,
             cars.photo AS car_photo
         FROM wishlists
         JOIN cars ON wishlists.car_id = cars.id
-        WHERE wishlists.status = 'Pending';
+        WHERE wishlists.profile_id = ? AND wishlists.status = 'Pending';
     SQL
     
     erb :'user/cars/wishlist_lists', layout: :'layouts/main'

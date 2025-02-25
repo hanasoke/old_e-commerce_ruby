@@ -26,6 +26,14 @@ before do
     @cars = DB.execute("SELECT DISTINCT brand FROM cars")
     @out_of_stock_cars = DB.execute("SELECT * FROM cars WHERE stock = 0")
     @out_of_stock_cars = [] if @out_of_stock_cars.nil?
+
+    @pending_transactions = DB.execute(
+        "SELECT t.*, p.name AS user_name, c.name AS car_name
+            FROM transactions t
+            JOIN profiles p ON t.profile_id = p.id
+            JOIN cars c ON t.car_id = c.id
+            WHERE t.payment_status = 'Pending'"
+    ) || []
 end 
 
 # validate email 

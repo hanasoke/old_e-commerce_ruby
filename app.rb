@@ -1060,12 +1060,26 @@ get '/detail_car/:id' do
     @errors = []
     @title = "Car Detail"
 
-    # Handle Car where car does not exist
+    # Handle Car where the car does not exist
     if @car.nil? 
-        session[:error] = "Car is not founded !"
+        session[:error] = "The Car is not found !"
         redirect '/error_page'
     end 
     erb :'user/cars/detail', layout: :'layouts/main'
+end 
+
+get '/car_detail/:id' do 
+    redirect '/login' unless logged_in?
+
+    @car = DB.execute("SELECT * FROM cars WHERE id = ?", [params[:id]]).first
+    @errors = []
+    @title = "Car Detail"
+
+    # Handle Car where the car doesn't exist
+    if @car.nil?
+        session[:error] = "The Car isn't found !"
+    end 
+    erb :'admin/cars/detail', layout: :'layouts/admin'
 end 
 
 get '/checkout/:id' do 

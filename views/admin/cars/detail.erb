@@ -1,0 +1,97 @@
+<div class="card shadow mb-4">
+  <div class="card-header py-3">
+    <h3 class="m-0 font-weight-bold text-danger float-left">Edit A Car</h3>
+  </div>
+  <div class="card-body">
+    <div class="row">
+      <div class="col">
+        <!-- Success Alert -->
+        <% if @errors.any? %> <% @errors.each do |error| %>
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+          <div><%= error %></div>
+          <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <% end %> <% end %>
+      </div>
+    </div>
+    <div class="mb-3 row">
+      <label for="name" class="col-sm-2 col-form-label">Name</label>
+      <div class="col-sm-10">
+        <input type="text" class="form-control-plaintext" id="name" name="name" value="<%= @car['name'] %>" />
+      </div>
+    </div>
+    <div class="mb-3 row">
+      <label for="type" class="col-sm-2 col-form-label">Color</label>
+      <div class="col-sm-10">
+        <input type="text" class="form-control-plaintext" id="color" name="color" value="<%= @car['color'] %>" />
+      </div>
+    </div>
+    <div class="mb-3 row">
+      <label for="brand" class="col-sm-2 col-form-label">Brand</label>
+      <div class="col-sm-10">
+        <input type="text" class="form-control-plaintext" id="brand" name="brand" value="<%= @car['brand'] %>" />
+      </div>
+    </div>
+    <div class="mb-3 row">
+      <label for="transmission" class="col-sm-2 col-form-label">Transmission</label>
+      <div class="col-sm-10">
+        <input type="text" class="form-control-plaintext" name="transmission" id="transmission" value="<%= @car['transmission'] %>" />
+      </div>
+    </div>
+    <div class="mb-3 row">
+      <label for="seat" class="col-sm-2 col-form-label">Seat</label>
+      <div class="col-sm-10">
+        <input class="form-control-plaintext" type="text" name="seat" id="seat" value="<%= @car['seat'] %>" />
+      </div>
+    </div>
+    <div class="mb-3 row">
+      <label for="machine" class="col-sm-2 col-form-label">Machine</label>
+      <div class="col-sm-10">
+        <input type="text" class="form-control-plaintext" name="machine" id="machine" value="<%= @car['machine'] %>" />
+      </div>
+    </div>
+    <div class="mb-3 row">
+      <label for="power" class="col-sm-2 col-form-label">Power</label>
+      <div class="col-sm-10">
+        <input type="text" class="form-control-plaintext" name="power" id="power" value="<%= @car['power'] %>" />
+      </div>
+    </div>
+    <div class="mb-3 row">
+      <label for="photo" class="col-sm-2 col-form-label">Photo</label>
+      <div class="col-sm-10">
+        <% if @car['photo'] %>
+        <img src="/uploads/cars/<%= @car['photo'] %>" class="img-thumbnail mb-2" alt="<%= @car['name'] %>" style="max-width: 200px" />
+        <% end %>
+      </div>
+    </div>
+
+    <div class="mb-3 row">
+      <label for="price" class="col-sm-2 col-form-label">Price</label>
+      <div class="col-sm-10">
+        <input type="text" class="form-control-plaintext" name="price" id="price" value="<%= format_rupiah(@car['price'])%>" />
+      </div>
+    </div>
+
+    <div class="mb-3 row">
+      <label for="stock" class="col-sm-2 col-form-label">Stock</label>
+      <div class="col-sm-10">
+        <input type="text" class="form-control-plaintext" name="stock" id="stock" value="<%= @car['stock'] %>" />
+      </div>
+    </div>
+
+    <div class="mb-3 row">
+      <label for="manufacture" class="col-sm-2 col-form-label">Manufacture</label>
+      <div class="col-sm-10">
+        <input type="date" class="form-control-plaintext" name="manufacture" id="manufacture" value="<%= @car['manufacture'] %>" />
+      </div>
+    </div>
+
+    <!-- Edit Button -->
+    <a href="/edit_car/<%= @car['id'] %>" class="btn btn-primary float-right">Edit</a>
+
+    <!-- Back Button -->
+    <a href="/car_lists" class="btn btn-secondary float-left">Back</a>
+  </div>
+</div>

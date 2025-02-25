@@ -56,7 +56,8 @@
               <td><%= car['manufacture'] %></td>
               <td>
                 <div class="btn-group" role="group">
-                  <a href="/edit_car/<%= car['id'] %>" class="btn btn-info">Edit</a>
+                  <a href="/car_detail/<%= car['id'] %>" class="btn btn-info">View</a>
+                  <a href="/edit_car/<%= car['id'] %>" class="btn btn-success">Edit</a>
                   <button type="submit" class="btn btn-danger" data-toggle="modal" data-target="#deleteModal<%= car['id']%>">Delete</button>
                 </div>
                 <!-- Delete Confirmation Modal -->

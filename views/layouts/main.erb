@@ -49,19 +49,36 @@
           <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
             
             <li class="nav-item dropdown position-relative">
-              <a class="nav-link text-white" href="#" id="notificationsDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+              <a class="nav-link text-white position-relative" href="#" id="notificationsDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                 <i class="fa-regular fa-bell">
                   <span class="position-absolute top-5 start-10 translate-middle badge rounded-pill bg-secondary" style="font-size: 8px;">
-                    2
+                    <%= @approved_transactions ? @approved_transactions.count : 0 %>
                     <span class="visually-hidden">unread messages</span>
                   </span>
                 </i>
               </a>
               <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="notificationsDropdown">
-                <li>
-                  <a class="dropdown-item" href="#">
-                    New order received
-                  </a>
+                <li class="nav-item">
+                  <% if @approved_transactions && @approved_transactions.any? %>
+                    <% @approved_transactions.each do |approved| %>
+                      <a class="dropdown-item d-flex align-items-center" href="/new_detail_car/<%= approved['id'] %>">
+                        <div class="position-relative">
+                          <img src="/uploads/cars/<%= approved['car_photo'] %> " alt="<%= approved['car_name'] %>" class="rounded-circle" width="40" height="40">
+                          <div class="position-absolute bottom-0 end-0 bg-success rounded-circle" style="width: 10px; height: 10px;"></div>
+                        </div>
+                        <div>
+                          <div class="fw-bold">
+                            <%= approved['username'] %>
+                          </div>
+                          <div class="small text-muted">
+                            <%= approved['transaction_date'] %>
+                          </div>
+                        </div>
+                      </a>
+                    <% end %>
+                  <% else %>
+                    <p class="text-center small text-gray-500">No Approved Transactions</p>
+                  <% end %>
                 </li>
                 <li>
                   <hr class="dropdown-divider">

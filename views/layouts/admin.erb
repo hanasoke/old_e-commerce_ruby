@@ -119,14 +119,14 @@
                 </div>
               </li>
 
-              <!-- Nav Item - Alerts -->
+              <!-- Nav Item - Out Of Stock -->
               <li class="nav-item dropdown no-arrow mx-1">
                 <a class="nav-link dropdown-toggle" href="#" id="alertsDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                   <i class="fas fa-bell fa-fw"></i>
-                  <!-- Counter - Alerts -->
+                  <!-- Counter - Out Of Stock -->
                   <span class="badge badge-danger badge-counter"> <%= @out_of_stock_cars ? @out_of_stock_cars.count : 0 %> </span>
                 </a>
-                <!-- Dropdown - Alerts -->
+                <!-- Dropdown - Out of Stock -->
                 <div class="dropdown-list dropdown-menu dropdown-menu-right shadow animated--grow-in" aria-labelledby="alertsDropdown">
                   <h6 class="dropdown-header">Out of Stock Notification</h6>
                   <% if @out_of_stock_cars && @out_of_stock_cars.any? %> <% @out_of_stock_cars.each do |car| %>
@@ -151,14 +151,14 @@
                 </div>
               </li>
 
-              <!-- Nav Item - Messages -->
+              <!-- Nav Item - Pending Transactions -->
               <li class="nav-item dropdown no-arrow mx-1">
                 <a class="nav-link dropdown-toggle" href="#" id="messagesDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                   <i class="fas fa-envelope fa-fw"></i>
-                  <!-- Counter - Messages -->
+                  <!-- Counter - Pending Transactions -->
                   <span class="badge badge-danger badge-counter"> <%= @pending_transactions ? @pending_transactions.count : 0 %> </span>
                 </a>
-                <!-- Dropdown - Messages -->
+                <!-- Dropdown - Pending Transactions -->
                 <div class="dropdown-list dropdown-menu dropdown-menu-right shadow animated--grow-in" aria-labelledby="messagesDropdown">
                   <h6 class="dropdown-header">Pending Transactions</h6>
                   <% if @pending_transactions.any? %> 
@@ -175,7 +175,7 @@
                       </a>
                     <% end %> 
                   <% else %>
-                    <a class="dropdown-item text-center small text-gray-500">No Pending Transactions</a>
+                    <p class="dropdown-item text-center small text-gray-500">No Pending Transactions</p>
                   <% end %>
                   <a href="/transactions_lists" class="dropdown-item text-center small text-gray-500">View All Transactions</a>
                 </div>

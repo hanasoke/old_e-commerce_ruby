@@ -24,7 +24,7 @@ end
 before do 
     # Fetch car brands
     @cars = DB.execute("SELECT DISTINCT brand FROM cars")
-    @out_of_stock_cars = DB.execute("SELECT * FROM cars WHERE stock = 0")
+    @out_of_stock_cars = DB.execute("SELECT * FROM cars WHERE stock = 0").first(6) || []
     @out_of_stock_cars = [] if @out_of_stock_cars.nil?
 
     @pending_transactions = DB.execute(
@@ -33,7 +33,15 @@ before do
             JOIN profiles p ON t.profile_id = p.id
             JOIN cars c ON t.car_id = c.id
             WHERE t.payment_status = 'Pending'"
-    ) || []
+    ).first(6) || []
+
+    @approved_transactions = DB.execute(
+        "SELECT t.*, p.name AS name, c.name AS car_name, c.photo AS car_photo, p.username AS username
+            FROM transactions t
+            JOIN profiles p ON t.profile_id = p.id
+            JOIN cars c ON t.car_id = c.id
+            WHERE t.payment_status = 'Approved'"
+    ).first(6) || []
 end 
 
 # validate email 

@@ -1951,7 +1951,7 @@ get '/car_details_transaction/:id' do
     @title = "View A Detail of Transaction"
 
     # Fetch the transaction data by ID
-    @transaction = DB.execute("
+    @transaction = DB.get_first_row(<<-SQL, params[:id])
         SELECT transactions.*,
             cars.name AS car_name,
             cars.brand AS car_brand,
@@ -1964,7 +1964,8 @@ get '/car_details_transaction/:id' do
         FROM transactions
         JOIN cars ON transactions.car_id = cars.id
         JOIN profiles ON transactions.profile_id = profiles.id
-        WHERE transactions.id = ?", [params[:id]]).first
+        WHERE transactions.id = ?
+    SQL
         
     # Handle case where transaction doesn't exist
     if @transaction.nil?
@@ -1972,6 +1973,20 @@ get '/car_details_transaction/:id' do
         redirect '/error_page'    
     end 
 
+    # Defined before rendering views
     @errors = []
-    erb :'user/cars/car_details_transaction', layout: :'layouts/main'
+
+    # Redirect based on payment status
+    case @transaction['payment_status']
+
+    # Pending Status
+    when 'Pending', 'Rejected'
+        erb :'user/cars/car_details_transaction', layout: :'layouts/main'
+    # Approved Status
+    when 'Approved'
+        erb :'user/cars/checkout_success', layout: :'layouts/main'
+    else 
+        session[:error] = "Invalid access level"
+        redirect '/error_page'
+    end 
 end 

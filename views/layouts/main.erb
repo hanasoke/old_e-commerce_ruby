@@ -148,7 +148,7 @@
                 <li class="nav_item">
                   <% if @rejected_transactions && @rejected_transactions.any? %>
                     <%  @rejected_transactions.each do |rejected| %>
-                      <a class="dropdown-item" href="/new_detail_transaction/<%= rejected['id'] %>">
+                      <a class="dropdown-item" href="/car_details_transaction/<%= rejected['id'] %>">
                         <div class="position-relative">
                           <img src="/uploads/cars/<%= rejected['car_photo'] %>" alt="<%= rejected['car_name'] %>" class="rounded-circle" width="40" height="40">
                           <div class="position-absolute bottom-0 end-0 bg-success rounded-circle" style="width: 10px; height: 10px;"></div>

@@ -24,24 +24,50 @@ end
 before do 
     # Fetch car brands
     @cars = DB.execute("SELECT DISTINCT brand FROM cars")
-    @out_of_stock_cars = DB.execute("SELECT * FROM cars WHERE stock = 0").first(6) || []
-    @out_of_stock_cars = [] if @out_of_stock_cars.nil?
 
-    @pending_transactions = DB.execute(
+    all_out_of_stock_cars = DB.execute("SELECT * FROM cars WHERE stock = 0")
+
+    @out_of_stock_cars = all_out_of_stock_cars.first(6) || []
+    @out_of_stock_count = all_out_of_stock_cars.count
+
+    if logged_in?
+        all_pending_transactions = DB.execute(
+            "SELECT t.*, p.name AS name, c.name AS car_name, c.photo AS car_photo, p.username AS username
+                FROM transactions t
+                JOIN profiles p ON t.profile_id = p.id
+                JOIN cars c ON t.car_id = c.id
+                WHERE t.payment_status = 'Pending'"
+        )
+        @pending_transactions = all_pending_transactions.first(6) || []
+        @pending_transactions_count = all_pending_transactions.count
+
+        all_approved_transactions = DB.execute(
         "SELECT t.*, p.name AS name, c.name AS car_name, c.photo AS car_photo, p.username AS username
             FROM transactions t
             JOIN profiles p ON t.profile_id = p.id
             JOIN cars c ON t.car_id = c.id
-            WHERE t.payment_status = 'Pending'"
-    ).first(6) || []
+            WHERE t.payment_status = 'Approved' AND t.profile_id = ?", [session[:profile_id]]
+        )
+        @approved_transactions = all_approved_transactions.first(6) || []
+        @approved_transactions_count = all_approved_transactions.count
 
-    @approved_transactions = DB.execute(
+        all_rejected_transactions = DB.execute(
         "SELECT t.*, p.name AS name, c.name AS car_name, c.photo AS car_photo, p.username AS username
             FROM transactions t
             JOIN profiles p ON t.profile_id = p.id
             JOIN cars c ON t.car_id = c.id
-            WHERE t.payment_status = 'Approved'"
-    ).first(6) || []
+            WHERE t.payment_status = 'Rejected' AND t.profile_id = ?", [session[:profile_id]]
+        )
+        @rejected_transactions = all_rejected_transactions.first(6) || []
+        @rejected_transactions_count = all_rejected_transactions.count
+    else 
+        @pending_transactions = []
+        @approved_transactions = []
+        @rejected_transactions = []
+        @pending_transactions_count = 0
+        @approved_transactions_count = 0
+        @rejected_transactions_count = 0
+    end 
 end 
 
 # validate email 

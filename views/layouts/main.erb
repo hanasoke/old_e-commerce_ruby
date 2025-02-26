@@ -52,7 +52,7 @@
               <a class="nav-link text-white position-relative" href="#" id="notificationsDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                 <i class="fa-regular fa-bell">
                   <span class="position-absolute top-5 start-10 translate-middle badge rounded-pill bg-secondary" style="font-size: 8px;">
-                    <%= @approved_transactions ? @approved_transactions.count : 0 %>
+                    <%= @approved_transactions_count > 6 ? "6+" : @approved_transactions_count %>
                     <span class="visually-hidden">unread messages</span>
                   </span>
                 </i>

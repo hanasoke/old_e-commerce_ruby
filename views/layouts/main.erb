@@ -61,7 +61,7 @@
                 <li class="nav-item">
                   <% if @approved_transactions && @approved_transactions.any? %>
                     <% @approved_transactions.each do |approved| %>
-                      <a class="dropdown-item d-flex align-items-center" href="/new_detail_car/<%= approved['id'] %>">
+                      <a class="dropdown-item d-flex align-items-center" href="/car_details_transaction/<%= approved['id'] %>">
                         <div class="position-relative">
                           <img src="/uploads/cars/<%= approved['car_photo'] %> " alt="<%= approved['car_name'] %>" class="rounded-circle" width="40" height="40">
                           <div class="position-absolute bottom-0 end-0 bg-success rounded-circle" style="width: 10px; height: 10px;"></div>

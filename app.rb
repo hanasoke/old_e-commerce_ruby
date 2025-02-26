@@ -1945,3 +1945,33 @@ get '/transaction_details/:id' do
     @errors = []
     erb :'admin/transactions/details', layout: :'layouts/admin'
 end 
+
+get '/car_details_transaction/:id' do 
+    redirect '/login' unless logged_in?
+    @title = "View A Detail of Transaction"
+
+    # Fetch the transaction data by ID
+    @transaction = DB.execute("
+        SELECT transactions.*,
+            cars.name AS car_name,
+            cars.brand AS car_brand,
+            cars.photo AS car_photo,
+            cars.color AS car_color,
+            cars.price AS car_price,
+            cars.seat AS car_seat,
+            cars.transmission AS car_transmission,
+            cars.manufacture AS car_manufacture
+        FROM transactions
+        JOIN cars ON transactions.car_id = cars.id
+        JOIN profiles ON transactions.profile_id = profiles.id
+        WHERE transactions.id = ?", [params[:id]]).first
+        
+    # Handle case where transaction doesn't exist
+    if @transaction.nil?
+        session[:error] = "Transaction not found!"
+        redirect '/error_page'    
+    end 
+
+    @errors = []
+    erb :'user/cars/car_details_transaction', layout: :'layouts/main'
+end 

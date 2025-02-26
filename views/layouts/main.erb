@@ -47,35 +47,100 @@
           </form>
 
           <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
-            <div class="nav-item">
-              <a class="nav-link text-white" href="/orders">
-                <i class="fa-regular fa-bell"></i>
+            
+            <li class="nav-item dropdown position-relative">
+              <a class="nav-link text-white" href="#" id="notificationsDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                <i class="fa-regular fa-bell">
+                  <span class="position-absolute top-5 start-10 translate-middle badge rounded-pill bg-secondary" style="font-size: 8px;">
+                    2
+                    <span class="visually-hidden">unread messages</span>
+                  </span>
+                </i>
               </a>
-            </div>
-            <li class="nav-item">
-              <a class="nav-link text-white" href="/wishlist_lists">
-                <i class="fa-regular fa-heart"></i>
-              </a>
+              <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="notificationsDropdown">
+                <li>
+                  <a class="dropdown-item" href="#">
+                    New order received
+                  </a>
+                </li>
+                <li>
+                  <hr class="dropdown-divider">
+                </li>
+                <li>
+                  <a class="dropdown-item text-center" href="/orders">
+                    View all notification
+                  </a>
+                </li>
+              </ul>
             </li>
-            <li class="nav-item">
-              <a class="nav-link text-white" href="/rejected">
-                <i class="fa-regular fa-message"></i>
+
+            <li class="nav-item dropdown position-relative">
+              <a class="nav-link text-white " href="/#" id="myWishlist" role="button" data-bs-toggle="dropdown" aria-expanded="false" >
+                <i class="fa-regular fa-heart">
+                  <span class="position-absolute top-5 start-10 translate-middle badge rounded-pill bg-secondary" style="font-size: 8px;">
+                    2
+                    <span class="visually-hidden">unread messages</span>
+                  </span>
+                </i>
               </a>
+              <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="myWishlist">
+                <li>
+                  <a class="dropdown-item" href="#">New Wishlist</a>
+                </li>
+                <li>
+                  <hr class="dropdown-divider">
+                </li>
+                <li>
+                  <a class="dropdown-item text-center" href="/wishlist_lists">
+                    View my wishlist
+                  </a>
+                </li>
+
+              </ul>
+            </li>
+            <li class="nav-item dropdown position-relative">
+              <a class="nav-link text-white" href="#" id="rejectDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                <i class="fa-regular fa-message">
+                  <span class="position-absolute top-5 start-10 translate-middle badge rounded-pill bg-secondary" style="font-size: 8px;" >
+                    6
+                    <span class="visually-hidden">unread messages</span>
+                  </span>
+                </i>
+              </a>
+              <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="rejectDropdown">
+                <li>
+                  <a class="dropdown-item" href="#">
+                    New reject received
+                  </a>
+                </li>
+                <li>
+                  <hr class="dropdown-divider"></hr>
+                </li>
+                <li>
+                  <a class="dropdown-item text-center" href="/rejected">
+                    View all notification
+                  </a>
+                </li>
+              </ul>
             </li>
             <li class="nav-item dropdown">
               <button class="nav-link text-white dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                 <i class="fa-regular fa-user"></i>
               </button>
               <ul class="dropdown-menu">
-                <li><a class="dropdown-item" href="/user_profile">
-                  <i class="fa-regular fa-user"></i> My Profile
-                </a></li>
+                <li>
+                  <a class="dropdown-item" href="/user_profile">
+                    <i class="fa-regular fa-user"></i> My Profile
+                  </a>
+                </li>
                 <li>
                   <a class="dropdown-item" href="/waiting"><i class="fa-solid fa-rectangle-list"></i> Checklist</a>
                 </li>
                 <li><hr class="dropdown-divider"></li>
                 <li>
-                  <button class="dropdown-item" data-bs-toggle="modal" data-bs-target="#exampleModal"><i class="fa-solid fa-arrow-right-from-bracket"></i> Logout</button>
+                  <button class="dropdown-item" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                    <i class="fa-solid fa-arrow-right-from-bracket"></i> Logout
+                  </button>
                 </li>
               </ul>
             </li>
@@ -103,10 +168,9 @@
       </div>
     </div>
 
-
     <%= yield %>
 
-    <script src="/bootstrap/js/bootstrap.min.js"></script>
+    <!-- <script src="/bootstrap/js/bootstrap.min.js"></script> -->
     <script src="/bootstrap/js/bootstrap.bundle.min.js"></script>
     <script src="/bootstrap/js/popper.min.js"></script>
 

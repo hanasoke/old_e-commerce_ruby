@@ -60,13 +60,25 @@ before do
         )
         @rejected_transactions = all_rejected_transactions.first(6) || []
         @rejected_transactions_count = all_rejected_transactions.count
+
+        all_wishlists = DB.execute(
+        "SELECT w.*, p.name AS name, c.name AS car_name, c.brand AS car_brand, c.photo AS car_photo, p.username AS username
+            FROM wishlists w
+            JOIN profiles p ON w.profile_id = p.id
+            JOIN cars c ON w.car_id = c.id
+            WHERE w.status = 'Pending' AND w.profile_id = ?", [session[:profile_id]]
+        )
+        @wishlists = all_wishlists.first(6) || []
+        @wishlists_count = all_wishlists.count
     else 
         @pending_transactions = []
         @approved_transactions = []
         @rejected_transactions = []
+        @wishlists
         @pending_transactions_count = 0
         @approved_transactions_count = 0
         @rejected_transactions_count = 0
+        @wishlist_count = 0
     end 
 end 
 

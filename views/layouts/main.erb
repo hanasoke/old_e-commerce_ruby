@@ -68,7 +68,7 @@
                         </div>
                         <div>
                           <div class="fw-bold">
-                            <%= approved['username'] %>
+                            <%= approved['car_name'] %>
                           </div>
                           <div class="small text-muted">
                             <%= approved['transaction_date'] %>
@@ -95,14 +95,34 @@
               <a class="nav-link text-white " href="/#" id="myWishlist" role="button" data-bs-toggle="dropdown" aria-expanded="false" >
                 <i class="fa-regular fa-heart">
                   <span class="position-absolute top-5 start-10 translate-middle badge rounded-pill bg-secondary" style="font-size: 8px;">
-                    2
+                    <%= @wishlists_count > 6 ? "6+" : @wishlists_count %>
                     <span class="visually-hidden">unread messages</span>
                   </span>
                 </i>
               </a>
               <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="myWishlist">
-                <li>
-                  <a class="dropdown-item" href="#">New Wishlist</a>
+                <li class="nav-item">
+                  <% if @wishlists && @wishlists.any? %>
+                    <% @wishlists.each do |wishlist| %>
+                      <a class="dropdown-item d-flex align-items-center" href="/new_detail_transaction/<%= wishlist['id'] %>">
+
+                        <div class="position-relative">
+                          <img src="/uploads/cars/<%= wishlist['car_photo'] %>" alt="<%= wishlist['car_name'] %>" class="rounded-circle" width="40">
+                          <div class="position-absolute bottom-0 end-0 bg-success rounded-circle" style="width: 10px; height: 10px;"></div>
+                        </div>
+                        <div>
+                          <div class="fw-bold">
+                            <%= wishlist['car_brand'] %>
+                          </div>
+                          <div class="small text-muted">
+                            <%= wishlist['car_name'] %>
+                          </div>
+                        </div>
+                      </a>
+                    <% end %>
+                  <% else %>
+                    <p class="text-center small text-gray-500" >No Adding A Wishlist</p>
+                  <% end %>
                 </li>
                 <li>
                   <hr class="dropdown-divider">
@@ -119,16 +139,33 @@
               <a class="nav-link text-white" href="#" id="rejectDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                 <i class="fa-regular fa-message">
                   <span class="position-absolute top-5 start-10 translate-middle badge rounded-pill bg-secondary" style="font-size: 8px;" >
-                    6
+                    <%= @rejected_transactions_count > 6 ? "6+" : @rejected_transactions_count %>
                     <span class="visually-hidden">unread messages</span>
                   </span>
                 </i>
               </a>
               <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="rejectDropdown">
-                <li>
-                  <a class="dropdown-item" href="#">
-                    New reject received
-                  </a>
+                <li class="nav_item">
+                  <% if @rejected_transactions && @rejected_transactions.any? %>
+                    <%  @rejected_transactions.each do |rejected| %>
+                      <a class="dropdown-item" href="/new_detail_transaction/<%= rejected['id'] %>">
+                        <div class="position-relative">
+                          <img src="/uploads/cars/<%= rejected['car_photo'] %>" alt="<%= rejected['car_name'] %>" class="rounded-circle" width="40" height="40">
+                          <div class="position-absolute bottom-0 end-0 bg-success rounded-circle" style="width: 10px; height: 10px;"></div>
+                        </div>
+                        <div>
+                          <div class="fw-bold">
+                            <%= rejected['car_name'] %>
+                          </div>
+                          <div class="small text-muted">
+                            <%= rejected['transaction_date'] %>
+                          </div>
+                        </div>
+                      </a>
+                    <% end %>
+                  <% else %>
+                    <p class="text-center small text-gray-500">No Rejected Transactions</p>
+                  <% end %>
                 </li>
                 <li>
                   <hr class="dropdown-divider"></hr>

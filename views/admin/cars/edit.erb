@@ -64,7 +64,12 @@
       <div class="mb-3 row">
         <label for="transmission" class="col-sm-2 col-form-label">Transmission</label>
         <div class="col-sm-10">
-          <input type="text" class="form-control" name="transmission" id="transmission" value="<%= @car['transmission'] %>" />
+          <select type="text" class="form-control" name="transmission" id="transmission" value="<%= @car['transmission'] %>">
+            <option selected value="<%= @car['transmission'] %>"><%= @car['transmission'] %></option>
+            <option value="CVT">CVT</option>
+            <option value="Manual">Manual</option>
+            <option value="Matic">Matic</option>
+          </select>
         </div>
       </div>
       <div class="mb-3 row">

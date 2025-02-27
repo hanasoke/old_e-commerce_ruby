@@ -104,8 +104,7 @@
                 <li class="nav-item">
                   <% if @wishlists && @wishlists.any? %>
                     <% @wishlists.each do |wishlist| %>
-                      <a class="dropdown-item d-flex align-items-center" href="/new_detail_transaction/<%= wishlist['id'] %>">
-
+                      <a class="dropdown-item d-flex align-items-center" href="/wishlist_detail/<%= wishlist['id'] %>">
                         <div class="position-relative">
                           <img src="/uploads/cars/<%= wishlist['car_photo'] %>" alt="<%= wishlist['car_name'] %>" class="rounded-circle" width="40">
                           <div class="position-absolute bottom-0 end-0 bg-success rounded-circle" style="width: 10px; height: 10px;"></div>

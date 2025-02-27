@@ -1994,3 +1994,47 @@ get '/car_details_transaction/:id' do
         redirect '/error_page'
     end 
 end 
+
+get '/wishlist_detail/:id' do 
+    redirect '/login' unless logged_in?
+    @title = "View A Detail Wishlist"
+
+    # Fetch the wishlist data by ID
+    @wishlist = DB.get_first_row(<<-SQL, params[:id])
+        SELECT wishlists.*,
+            cars.name AS car_name,
+            cars.brand AS car_brand,
+            cars.photo AS car_photo,
+            cars.color AS car_color,
+            cars.price AS car_price,
+            cars.seat AS car_seat,
+            cars.stock AS car_stock,
+            cars.transmission AS car_transmission,
+            cars.manufacture AS car_manufacture
+            FROM wishlists
+            JOIN cars ON wishlists.car_id = cars.id
+            JOIN profiles ON wishlists.profile_id = profiles.id
+            WHERE wishlists.id = ?
+        SQL
+
+        # Handle case where wishlist doesn't exist
+        if @wishlist.nil?
+            session[:error] = "Wishlist isn't found!"
+            redirect '/error_page'
+        end
+
+        # Defined before rendering views
+        @errors = []
+
+        # Redirect based on payment status
+        case @wishlist['status']
+
+        # Pending Status
+        when 'Pending'
+            erb :'user/cars/wishlist_detail', layout: :'layouts/main'
+        else 
+            session[:error] = "Invalid access level"
+            redirect '/error_page'
+        end     
+end 
+

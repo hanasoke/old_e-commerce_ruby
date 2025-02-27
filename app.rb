@@ -691,7 +691,7 @@ get '/admin_profile' do
     erb :'admin/admin_profile', layout: :'layouts/admin'
 end 
 
-get '/profiles/edit' do 
+get '/profiles/:id/edit' do 
     redirect '/login' unless logged_in?
 
     @title = "Edit Admin Profile"

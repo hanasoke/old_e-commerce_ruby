@@ -187,7 +187,12 @@
                   </a>
                 </li>
                 <li>
-                  <a class="dropdown-item" href="/waiting"><i class="fa-solid fa-rectangle-list"></i> Checklist</a>
+                  <a class="dropdown-item" href="/waiting">
+                    <i class="fa-solid fa-rectangle-list"></i> Checklist   
+                    <span class="badge text-bg-primary float-end">
+                      <%= @my_transactions_count > 6 ? "6+" : @my_transactions_count %>
+                    </span>
+                  </a>
                 </li>
                 <li><hr class="dropdown-divider"></li>
                 <li>

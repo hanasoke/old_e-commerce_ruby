@@ -70,15 +70,27 @@ before do
         )
         @wishlists = all_wishlists.first(6) || []
         @wishlists_count = all_wishlists.count
+
+        my_pending_transactions = DB.execute(
+        "SELECT t.*, p.name AS name, c.name AS car_name, c.photo AS car_photo, p.username AS username
+            FROM transactions t
+            JOIN profiles p ON t.profile_id = p.id
+            JOIN cars c ON t.car_id = c.id
+            WHERE t.payment_status = 'Pending'"
+        )
+        @my_transactions = my_pending_transactions.first(6) || []
+        @my_transactions_count = my_pending_transactions.count        
     else 
         @pending_transactions = []
         @approved_transactions = []
         @rejected_transactions = []
-        @wishlists
+        @wishlists = []
+        @my_transactions = []
         @pending_transactions_count = 0
         @approved_transactions_count = 0
         @rejected_transactions_count = 0
         @wishlist_count = 0
+        @my_transactions_count = 0
     end 
 end 
 

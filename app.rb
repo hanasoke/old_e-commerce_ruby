@@ -1565,6 +1565,10 @@ get '/back/:id' do
     # Pending Status
     when 'Pending'  
         redirect '/waiting' 
+
+    # Approved Status
+    when 'Approved'
+        redirect '/orders'
         
     # Reject Status 
     when 'Rejected' 

@@ -2028,30 +2028,29 @@ get '/wishlist_detail/:id' do
             cars.stock AS car_stock,
             cars.transmission AS car_transmission,
             cars.manufacture AS car_manufacture
-            FROM wishlists
-            JOIN cars ON wishlists.car_id = cars.id
-            JOIN profiles ON wishlists.profile_id = profiles.id
-            WHERE wishlists.id = ?
-        SQL
+        FROM wishlists
+        JOIN cars ON wishlists.car_id = cars.id
+        JOIN profiles ON wishlists.profile_id = profiles.id
+        WHERE wishlists.id = ?
+    SQL
 
-        # Handle case where wishlist doesn't exist
-        if @wishlist.nil?
-            session[:error] = "Wishlist isn't found!"
-            redirect '/error_page'
-        end
+    # Handle case where wishlist doesn't exist
+    if @wishlist.nil?
+        session[:error] = "Wishlist isn't found!"
+        redirect '/error_page'
+    end
 
-        # Defined before rendering views
-        @errors = []
+    # Defined before rendering views
+    @errors = []
 
-        # Redirect based on payment status
-        case @wishlist['status']
+    # Redirect based on payment status
+    case @wishlist['status']
 
-        # Pending Status
-        when 'Pending'
-            erb :'user/cars/wishlist_detail', layout: :'layouts/main'
-        else 
-            session[:error] = "Invalid access level"
-            redirect '/error_page'
-        end     
+    # Pending Status
+    when 'Pending'
+        erb :'user/cars/wishlist_detail', layout: :'layouts/main'
+    else 
+        session[:error] = "Invalid access level"
+        redirect '/error_page'
+    end     
 end 
-

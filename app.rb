@@ -1116,6 +1116,11 @@ def wishlist_count
     result.to_i
 end 
 
+def my_transactions_count 
+    result = DB.get_first_value("SELECT COUNT(*) FROM transactions")
+    result.to_i
+end 
+
 get '/detail_car/:id' do 
     redirect '/login' unless logged_in?
 

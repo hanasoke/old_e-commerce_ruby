@@ -2054,3 +2054,55 @@ get '/wishlist_detail/:id' do
         redirect '/error_page'
     end     
 end 
+
+get '/generate_report/:type' do 
+    redirect '/login' unless logged_in?
+
+    type = params[:type]
+
+    case type 
+    when 'pdf' 
+        content_type 'application/pdf'
+        attachment "report_transactions.pdf"
+        generate_pdf
+    when 'excel'
+        content_type 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+        attachment "report_transactions.xlsx"
+        generate_excel
+    else 
+        session[:error] = "Invalid report type!"
+        redirect '/error_page'
+    end 
+end 
+
+def generate_pdf 
+    pdf = Prawn::Document.new
+    pdf.text "Transaction Report", size: 20, style :bold
+    pdf.move_down 20
+
+    transactions = DB.execute(<<-SQL)
+        SELECT t.id, p.name AS customer_name, c.name AS car_name, t.quantity, t.total_price, t.payment_status, t.transaction_date
+        FROM transactions t
+            JOIN profiles p ON t.profile_id = p.id
+            JOIN cars c ON t.car_id = c.id
+        SQL
+    
+    pdf.table([["ID", "Customer Name", "Car Name", "Quantity", "Total Price", "Status", "Date"]] + 
+        transactions.map { |t| [t['id'], t['customer_name'], t['car_name'], t['quantity'], t['total_price'], t['payment_status'], t['transaction_date']]},
+        header: true)
+
+    pdf.render
+end 
+
+def generate_excel
+    workbook = RubyXL::Workbook.new
+    worksheet = workbook[0]
+    worksheet.add_cell(0, 0, "ID")
+    worksheet.add_cell(0, 1, "Customer Name")
+    worksheet.add_cell(0, 2, "Car Name")
+    worksheet.add_cell(0, 3, "Quantity")
+    worksheet.add_cell(0, 4, "Total Price")
+    worksheet.add_cell(0, 5, "Status")
+    worksheet.add_cell(0, 6, "Date")
+
+end 

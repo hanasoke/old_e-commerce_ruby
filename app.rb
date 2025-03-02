@@ -2,6 +2,14 @@ require 'sinatra'
 require 'sinatra/flash'
 require 'bcrypt'
 require_relative 'database_setup'
+require 'prawn'
+require 'rubyXL'
+require 'prawn/table'
+
+require 'write_xlsx'
+
+# This is also needed for generating files in memory
+require 'stringio'
 
 enable :sessions
 register Sinatra::Flash
@@ -2077,7 +2085,7 @@ end
 
 def generate_pdf 
     pdf = Prawn::Document.new
-    pdf.text "Transaction Report", size: 20, style :bold
+    pdf.text "Transaction Report", size: 20, style: :bold
     pdf.move_down 20
 
     transactions = DB.execute(<<-SQL)
@@ -2086,23 +2094,53 @@ def generate_pdf
             JOIN profiles p ON t.profile_id = p.id
             JOIN cars c ON t.car_id = c.id
         SQL
-    
-    pdf.table([["ID", "Customer Name", "Car Name", "Quantity", "Total Price", "Status", "Date"]] + 
-        transactions.map { |t| [t['id'], t['customer_name'], t['car_name'], t['quantity'], t['total_price'], t['payment_status'], t['transaction_date']]},
-        header: true)
+
+    if transactions.any?
+        table_data = [["ID", "Customer Name", "Car Name", "Quantity", "Total Price", "Status", "Date"]]
+
+        transactions.each do |t|
+            table_data << [t['id'], t['customer_name'], t['car_name'], t['quantity'], t['payment_status'], t['transaction_date']]
+        end 
+
+        pdf.table(table_data, header: true, row_colors: ["DDDDDD", "FFFFFF"], cell_style: { border_width: 1 })
+    else 
+        pdf.text "No Transactions Available.", size: 12, style: :italic
+    end
 
     pdf.render
 end 
 
 def generate_excel
-    workbook = RubyXL::Workbook.new
-    worksheet = workbook[0]
-    worksheet.add_cell(0, 0, "ID")
-    worksheet.add_cell(0, 1, "Customer Name")
-    worksheet.add_cell(0, 2, "Car Name")
-    worksheet.add_cell(0, 3, "Quantity")
-    worksheet.add_cell(0, 4, "Total Price")
-    worksheet.add_cell(0, 5, "Status")
-    worksheet.add_cell(0, 6, "Date")
 
+    # Make sure this is here
+    require 'stringio'
+
+    stream = StringIO.new
+    
+    # This is the wrong path
+    workbook = WriteXLSX.new(stream)
+    worksheet = workbook.add_worksheet
+
+    # Add headers
+    headers = ["ID", "Customer Name", "Car Name", "Quantity", "Total Price", "Status", "Date"]
+    worksheet.write_row(0, 0, headers)
+
+    # Fetch Transactions
+    transactions =  DB.execute(<<-SQL)
+        SELECT t.id, p.name AS customer_name, c.name AS car_name, t.quantity, t.total_price, t.payment_status, t.transaction_date 
+        FROM transactions t 
+        JOIN profiles p ON t.profile_id = p.id
+        JOIN cars c ON t.car_id = c.id
+    SQL
+
+    # Add rows 
+    transactions.each_with_index do |t, index|
+        worksheet.write_row(index + 1, 0, [t['id'], t['customer_name'], t['car_name'], t['quantity'], t['total_price'], t['payment_status'], t['transaction_date']])
+    end 
+
+    # Make sure to close the workbok
+    workbook.close 
+    # Rewind the stream to read content from the beginning
+    stream.rewind
+    stream.read
 end 

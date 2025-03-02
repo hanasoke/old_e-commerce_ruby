@@ -13,3 +13,5 @@ gem 'prawn'
 
 # For Excel
 gem 'rubyXL'
+
+gem 'prawn-table'

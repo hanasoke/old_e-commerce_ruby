@@ -5,6 +5,7 @@ require_relative 'database_setup'
 require 'prawn'
 require 'rubyXL'
 require 'prawn/table'
+require 'write_xlsx'
 
 require 'write_xlsx'
 

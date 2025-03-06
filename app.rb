@@ -7,8 +7,6 @@ require 'rubyXL'
 require 'prawn/table'
 require 'write_xlsx'
 
-require 'write_xlsx'
-
 # This is also needed for generating files in memory
 require 'stringio'
 

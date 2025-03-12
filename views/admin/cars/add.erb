@@ -121,7 +121,9 @@
 
 <script>
   document.addEventListener("DOMContentLoaded", function() {
-    let today = new Date().toISOString().split("T")[0]; // Get today
-    document.getElementById("manufacture").setAttribute("max", today); // Set max attribute
+    let today = new Date();
+    today.setDate(today.getDate() - 1); // Get yesterday's date
+    let maxDate = today.toISOString().split("T")[0]; // Format as YYYY-MM-DD
+    document.getElementById("manufacture").setAttribute("max", maxDate); // Set max attribute
   });
 </script>

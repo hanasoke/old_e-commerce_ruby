@@ -2120,9 +2120,16 @@ def generate_excel
     workbook = WriteXLSX.new(stream)
     worksheet = workbook.add_worksheet
 
-    # Add headers
+    # Defini Styles
+    bold_format = workbook.add_format(bold: true, align: 'center', bg_color: 'yellow')
+
+    normal_format = workbook.add_format(align: 'left')
+
+    money_format = workbook.add_format(num_format: 'Rp #,##0', align: 'right')
+
+    # Add Headers
     headers = ["ID", "Customer Name", "Car Name", "Quantity", "Total Price", "Status", "Date"]
-    worksheet.write_row(0, 0, headers)
+    worksheet.write_row(0, 0, headers, bold_format)
 
     # Fetch Transactions
     transactions =  DB.execute(<<-SQL)
@@ -2132,9 +2139,19 @@ def generate_excel
         JOIN cars c ON t.car_id = c.id
     SQL
 
-    # Add rows 
+    # Add Data Rows with Alternating Colors
     transactions.each_with_index do |t, index|
-        worksheet.write_row(index + 1, 0, [t['id'], t['customer_name'], t['car_name'], t['quantity'], t['total_price'], t['payment_status'], t['transaction_date']])
+
+        row_format = index.even? ? workbook.add_format(bg_color: 'EEEEEE') : normal_format
+
+        worksheet.write(index + 1, 0, t['id'], row_format)
+        worksheet.write(index + 1, 1, t['customer_name'], row_format)
+        worksheet.write(index + 1, 2, t['car_name'], row_format)
+        worksheet.write(index + 1, 3, t['quantity'], row_format)
+        worksheet.write(index + 1, 4, t['total_price'], money_format) #Format as money
+
+        worksheet.write(index + 1, 5, t['payment_status'], row_format)
+        worksheet.write(index + 1, 6, t['transaction_date'], row_format)
     end 
 
     # Make sure to close the workbok

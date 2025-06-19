@@ -2098,7 +2098,7 @@ def generate_pdf
         table_data = [["ID", "Customer Name", "Car Name", "Quantity", "Total Price", "Status", "Date"]]
 
         transactions.each do |t|
-            table_data << [t['id'], t['customer_name'], t['car_name'], t['quantity'], t['payment_status'], t['transaction_date']]
+            table_data << [t['id'], t['customer_name'], t['car_name'], t['quantity'], t['total_price'], t['payment_status'], t['transaction_date']]
         end 
 
         pdf.table(table_data, header: true, row_colors: ["DDDDDD", "FFFFFF"], cell_style: { border_width: 1 })

@@ -113,7 +113,7 @@ def validate_email(email)
     elsif email !~ email_regex
         # check if email matches the regular expression
         errors << "Email format is invalid"
-    # else 
+    else 
         # Check for Email fields
         query = id ? "SELECT id FROM profiles WHERE LOWER(email) = ? AND id != ?" : "SELECT id FROM profiles WHERE LOWER(email) = ?"
         existing_email = DB.execute(query, id ? [email.downcase, id] : [email.downcase]).first

@@ -102,7 +102,7 @@ before do
 end 
 
 # validate email 
-def validate_email(email)
+def validate_email(email, id = nil)
     errors = []
     # Regular expression for email validation
     email_regex = /\A[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}\z/ 
@@ -401,12 +401,26 @@ def editing_a_wishlist(car_name, car_brand, car_color, car_transmission, car_pri
     errors 
 end
 
+def validate_email_login(email)
+    errors = []
+    email_regex = /\A[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}\z/
+
+    if email.nil? || email.strip.empty?
+        errors << "Email cannot be blank."
+    elsif email !~ email_regex
+        errors << "Email format is invalid"
+    end
+
+    errors
+end
+
+
 def validate_profile_login(email, password)
     errors = []
     errors << "Password cannot be blank." if password.nil? || password.strip.empty?
 
     # Validate email format
-    errors.concat(validate_email(email)) 
+    errors.concat(validate_email_login(email)) 
     errors
 end 
 

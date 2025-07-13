@@ -1006,7 +1006,7 @@ post '/users/:id' do
         # Flash Message
         session[:success] = "A User has been successfully updated."
 
-        # Update the car in the database
+        # Update the profile in the database
         DB.execute("UPDATE profiles SET username = ?, name = ?, email = ?, age = ?, country = ?, phone = ?, photo = COALESCE(?, photo), access = ? WHERE id = ?",
         [params[:username], params[:name], params[:email], params[:age], params[:country], params[:phone], photo_filename, params[:access], params[:id]])
 

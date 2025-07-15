@@ -57,23 +57,23 @@
                 <button type="submit" class="btn btn-danger" data-toggle="modal" data-target="#deleteModal<%= profile['id'] %>">Delete</button>
               </div>
               <!-- Delete Confirmation Modal -->
-                <div class="modal fade" id="deleteModal<%= profile['id']%>" aria-labelledby="deleteModalLabel<%= profile['id']%>" aria-hidden="true">
-                  <div class="modal-dialog">
-                    <div class="modal-content">
-                      <div class="modal-header">
-                        <h3 class="modal-title fs-5" id="deleteModalLabel<%= profile['id']%>">Confirm Deletion</h3>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">x</button>
-                      </div>
-                      <div class="modal-body mb-3">Are you sure want to delete this User ?</div>
-                      <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                        <form action="/users/<%= profile['id'] %>/delete" method="POST">
-                          <button class="btn btn-primary" type="submit">Delete</button>
-                        </form>
-                      </div>
+              <div class="modal fade" id="deleteModal<%= profile['id']%>" aria-labelledby="deleteModalLabel<%= profile['id']%>" aria-hidden="true">
+                <div class="modal-dialog">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <h3 class="modal-title fs-5" id="deleteModalLabel<%= profile['id']%>">Confirm Deletion</h3>
+                      <button type="button" class="close" data-dismiss="modal" aria-label="Close">x</button>
+                    </div>
+                    <div class="modal-body mb-3">Are you sure want to delete this User ?</div>
+                    <div class="modal-footer">
+                      <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                      <form action="/users/<%= profile['id'] %>/delete" method="POST">
+                        <button class="btn btn-primary" type="submit">Delete</button>
+                      </form>
                     </div>
                   </div>
                 </div>
+              </div>
             </td>
           </tr>
           <% end %>

@@ -794,12 +794,14 @@ end
 # Show Forgot Password Page
 get '/forgot_password' do 
     @errors = []
+    @title = "Forgot Password"
     erb :'password/forgot_password', layout: :'layouts/sign'
 end 
 
 post '/forgot_password' do 
     email = params[:email]
     @errors = []
+    
 
     session[:success] = "Password reset link sent to your email."
 
@@ -825,6 +827,7 @@ end
 get '/reset_password/:token' do 
     @reset_token = params[:token]
     @profile = DB.execute("SELECT * FROM profiles WHERE reset_token = ?", [@reset_token]).first
+    @title = "Reset Password"
 
     if @profile.nil?
         session[:error] = "Invalid or expired reset token."

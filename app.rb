@@ -802,7 +802,6 @@ post '/forgot_password' do
     email = params[:email]
     @errors = []
     
-
     session[:success] = "Password reset link sent to your email."
 
     if email.strip.empty?

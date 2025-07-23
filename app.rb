@@ -1101,7 +1101,7 @@ post '/edit_profile/:id' do
 
         # Flash message
         session[:success] = "Your Profile has been successfully updated"
-        # Update the car in the database
+        # Update the profile in the database
         DB.execute("UPDATE profiles SET username = ?, name = ?, email = ?, age = ?, phone = ?, country = ?, photo = COALESCE(?, photo) WHERE id = ?",
         [params[:username], params[:name], params[:email], params[:age], params[:phone], params[:country], photo_filename, params[:id]])
         redirect '/user_profile'

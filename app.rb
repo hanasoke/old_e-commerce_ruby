@@ -762,7 +762,7 @@ post '/profiles/:id/edit' do
         case profile['access']
         when 0
             # Flash message 
-            session[:success] = "Your Are Customer Now"
+            session[:success] = "You Are Customer Now"
             redirect '/login'
         when 1
             # Flash message 

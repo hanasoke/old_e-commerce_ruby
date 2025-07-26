@@ -468,7 +468,7 @@ def editing_profile(name, username, email, age, phone, country, access, id = nil
     errors << "Access cannot be blank." if access.nil? || access.strip.empty?
 
     # Validate email
-    errors.concat(validate_email(email))
+    errors.concat(validate_email(email, id))
     errors
 end 
 

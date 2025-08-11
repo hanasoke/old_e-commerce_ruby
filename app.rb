@@ -865,13 +865,16 @@ post '/reset_password' do
 end 
 
 # Read all cars 
-get '/car_lists' do 
+get '/car_lists' do
+    redirect '/login' unless logged_in? 
     @title = "Car List"
     @cars = DB.execute("SELECT * FROM cars")
     erb :'admin/cars/views', layout: :'layouts/admin'
 end 
 
 get '/add_car' do 
+    redirect '/login' unless logged_in?
+
     @title = "Adding A Car"
     @errors = []
     erb :'admin/cars/add', layout: :'layouts/admin'
@@ -910,6 +913,8 @@ end
 
 # Render the edit form for a car
 get '/edit_car/:id' do 
+    redirect '/login' unless logged_in?
+    
     @title = "Edit A Car"
 
     # Fetch the tree data by ID
